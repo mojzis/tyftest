@@ -12,9 +12,12 @@ RUN="$ROOT/runs/$TASK/$COND/rep$REP"
 HOLD="$ROOT/holdout/$TASK"
 [ -d "$RUN" ] || { echo "no run dir: $RUN" >&2; exit 2; }
 
-# --- did the agent touch test files? (flag, don't auto-fail) ---
+# --- did the agent touch test SOURCE files? (flag, don't auto-fail) ---
+# ignore __pycache__/*.pyc which pytest writes on every run (not tampering)
 TEST_TAMPERED=false
-if ! diff -rq "$FIX/tests" "$RUN/tests" >/dev/null 2>&1; then TEST_TAMPERED=true; fi
+if [ -n "$(diff -rq -x '__pycache__' -x '*.pyc' "$FIX/tests" "$RUN/tests" 2>&1)" ]; then
+    TEST_TAMPERED=true
+fi
 
 # --- restore pristine tests, then apply the held-out verifier ---
 rm -rf "$RUN/tests"
@@ -53,20 +56,16 @@ METRICS="$(python3 "$ROOT/harness/parse_transcript.py" "$RUN/transcript.jsonl" 2
 TY_STATUS="$(grep -E '^ty_status:' "$HOLD/manifest.yaml" 2>/dev/null | awk '{print $2}')"
 EC="$(cat "$RUN/exit_code" 2>/dev/null || echo NA)"
 
-python3 - "$METRICS" <<PY
-import json, sys
-m = json.loads(sys.argv[1] or "{}")
-row = {
-  "task": "$TASK", "cond": "$COND", "rep": $REP,
-  "repo": "$REPO_SLUG", "pin_sha": "$PIN_SHA",
-  "ty_status": "${TY_STATUS:-unknown}",
-  "exit_code": "$EC",
-  "oracle_pass": $ORACLE_PASS,
-  "fail_to_pass": "$F2P", "pass_to_pass": "$P2P",
-  "regression_ok": $REGRESS_OK,
-  "oracle_applied": $ORACLE_APPLIED,
-  "test_tampered": $TEST_TAMPERED,
-}
-row.update(m)
-print(json.dumps(row))
-PY
+[ -n "$METRICS" ] || METRICS='{}'
+jq -nc \
+  --argjson m "$METRICS" \
+  --arg task "$TASK" --arg cond "$COND" --argjson rep "$REP" \
+  --arg repo "$REPO_SLUG" --arg pin "$PIN_SHA" --arg ty "${TY_STATUS:-unknown}" \
+  --arg ec "$EC" \
+  --argjson oracle_pass "$ORACLE_PASS" --arg f2p "$F2P" --arg p2p "$P2P" \
+  --argjson regression_ok "$REGRESS_OK" --argjson oracle_applied "$ORACLE_APPLIED" \
+  --argjson test_tampered "$TEST_TAMPERED" \
+  '$m + {task:$task, cond:$cond, rep:$rep, repo:$repo, pin_sha:$pin,
+         ty_status:$ty, exit_code:$ec, oracle_pass:$oracle_pass,
+         fail_to_pass:$f2p, pass_to_pass:$p2p, regression_ok:$regression_ok,
+         oracle_applied:$oracle_applied, test_tampered:$test_tampered}'

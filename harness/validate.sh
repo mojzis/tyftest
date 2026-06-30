@@ -34,13 +34,17 @@ if pytest_ids "$SCRATCH" "$HOLD/oracle_tests.txt" >/dev/null 2>&1; then
     echo "  ok: oracle passes once fixed"; G2=ok; else
     echo "  UNEXPECTED FAIL — oracle/solution mismatch. TASK INVALID."; G2=bad; fi
 
-echo "== gate 3: pre-fix + pass_to_pass  -> expect PASS =="
+# gate 3 mirrors SCORING semantics: oracle.patch IS applied before pass_to_pass.
+# This catches pass_to_pass tests that the oracle.patch itself modifies (they'd
+# behave like fail_to_pass on an unfixed tree and wrongly fail regression).
+echo "== gate 3: pre-fix + oracle + pass_to_pass  -> expect PASS (must be fix-independent) =="
 if [ -s "$HOLD/pass_to_pass.txt" ]; then
-    fresh
+    fresh; git -C "$SCRATCH" apply "$HOLD/oracle.patch"
     if pytest_ids "$SCRATCH" "$HOLD/pass_to_pass.txt" >/dev/null 2>&1; then
-        echo "  ok: regression baseline green"; G3=ok; else
-        echo "  WARN: pass_to_pass not green on pristine — trim the list"; G3=warn; fi
+        echo "  ok: regression baseline green on buggy+oracle tree"; G3=ok; else
+        echo "  BAD: pass_to_pass fails on buggy+oracle — contaminated by oracle.patch; re-pick"; G3=bad; fi
 else echo "  (no pass_to_pass set)"; G3=skip; fi
 
 echo "---"; echo "RESULT $TASK: gate1=$G1 gate2=$G2 gate3=$G3"
-[ "$G1" = ok ] && [ "$G2" = ok ] && echo "VALID" || { echo "INVALID — discard or fix"; exit 1; }
+[ "$G1" = ok ] && [ "$G2" = ok ] && [ "$G3" != bad ] \
+    && echo "VALID" || { echo "INVALID — discard or fix"; exit 1; }

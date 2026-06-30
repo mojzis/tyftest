@@ -91,6 +91,10 @@ def main():
         in_tok = (u.get("input_tokens", 0)
                   + u.get("cache_creation_input_tokens", 0)
                   + u.get("cache_read_input_tokens", 0))
+        # the primary model is the one that produced the most output (Claude Code
+        # uses a small aux model for titles etc.; don't report that as "the model")
+        mu = result.get("modelUsage", {}) or {}
+        primary_model = max(mu, key=lambda k: mu[k].get("outputTokens", 0)) if mu else None
         out.update({
             "input_tokens": in_tok,
             "input_tokens_uncached": u.get("input_tokens", 0),
@@ -101,7 +105,8 @@ def main():
             "is_error": result.get("is_error"),
             "terminal_reason": result.get("terminal_reason"),
             "stop_reason": result.get("stop_reason"),
-            "model": next(iter(result.get("modelUsage", {})), None),
+            "model": primary_model,
+            "models": list(mu.keys()),
             "permission_denials": len(result.get("permission_denials", []) or []),
             "final_answer": result.get("result", ""),
         })

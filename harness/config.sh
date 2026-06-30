@@ -19,7 +19,7 @@ PIN_FILE="$ROOT/repos/dlt.pin"          # written by setup_repo.sh
 
 # --- experiment matrix (pilot) ---
 CONDS=(A B C)
-REPS=3
+REPS="${REPS:-3}"
 # TASKS is discovered from holdout/ at run time:
 list_tasks() { ls "$ROOT/holdout" 2>/dev/null | sort; }
 
