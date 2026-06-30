@@ -24,22 +24,27 @@ log "installed neutral CLAUDE.md"
 # 3. launder git: single neutral fixed-date commit (kills `git log` mining)
 rm -rf .git
 git init -q
+git config gc.auto 0          # prevent background repack racing the fixture copy
 git add -A
 GIT_AUTHOR_DATE="2025-09-01T12:00:00" GIT_COMMITTER_DATE="2025-09-01T12:00:00" \
   git -c user.name=dev -c user.email=dev@example.com commit -qm "Initial import"
 log "git laundered -> single 'Initial import' commit"
 
-# 4. pre-flight ty on the gold source files -> tyf-working | tyf-degraded
+# 4. pre-flight ty on the gold source files -> tyf-working | tyf-degraded.
+# MUST point ty at the project venv (VIRTUAL_ENV) or it falls back to an unrelated
+# environment and reports bogus unresolved-imports. Platform-optional modules that
+# legitimately aren't installed on Linux are NOT a degradation (tyf still resolves
+# first-party symbols) — filter them out.
+OPTIONAL_MODS='win_precise_time|winreg|_winapi|pwd|grp'
 TY_STATUS="working"
 if [ -s "$HOLD/gold_files.txt" ]; then
-    if ! PATH="$VENV/bin:$PATH" "$VENV/bin/ty" check $(cat "$HOLD/gold_files.txt") \
-            > "$HOLD/ty_check.log" 2>&1; then
-        # ty check exits non-zero on type errors too; treat unresolved-import as degraded
-        grep -qiE 'unresolved-import|cannot resolve|could not resolve' "$HOLD/ty_check.log" \
-            && TY_STATUS="degraded"
+    VIRTUAL_ENV="$VENV" PATH="$VENV/bin:$PATH" "$VENV/bin/ty" check $(cat "$HOLD/gold_files.txt") \
+        > "$HOLD/ty_check.log" 2>&1 || true
+    # real degradation = an unresolved import that is NOT a known platform-optional module
+    if grep -E 'unresolved-import' "$HOLD/ty_check.log" \
+         | grep -ivE "$OPTIONAL_MODS" | grep -q 'unresolved-import'; then
+        TY_STATUS="degraded"
     fi
-    grep -qiE 'unresolved-import|cannot resolve|could not resolve' "$HOLD/ty_check.log" \
-        && TY_STATUS="degraded"
 fi
 sed -i "s/^ty_status:.*/ty_status:    $TY_STATUS/" "$HOLD/manifest.yaml"
 log "ty_status = $TY_STATUS (see $HOLD/ty_check.log)"

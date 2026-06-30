@@ -1,0 +1,10 @@
+task_id:      dlt-002
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      e6e62fd19
+prompt_file:  holdout/dlt-002/prompt.txt
+gold_files:   dlt/common/data_types/type_helpers.py
+oracle_patch: holdout/dlt-002/oracle.patch
+oracle_tests: [tests/common/schema/test_coercion.py::test_coerce_double_to_decimal_no_float_expansion]
+pass_to_pass: [tests/common/schema/test_coercion.py::test_coerce_type_from_hex_text]
+ty_status:    working

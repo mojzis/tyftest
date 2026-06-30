@@ -1,0 +1,1 @@
+tests/common/schema/test_coercion.py::test_coerce_double_to_decimal_no_float_expansion

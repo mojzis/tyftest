@@ -1,0 +1,17 @@
+Retry honors a stale `Retry-After` value of zero (or in the past).
+
+dlt's request client (`dlt/sources/helpers/requests`) supports backoff that
+respects a server's `Retry-After` header. When the header points at a time that
+is now in the past, the computed wait can be zero or negative. In that case the
+client should fall through to its normal exponential backoff, but instead it
+returns the (non-positive) header-derived wait, so retries fire immediately with
+no delay.
+
+Concretely: the `wait_exponential_retry_after` wait strategy computes
+`seconds = retry_date - time.time()` from a `Retry-After` HTTP date. When that
+`seconds` is <= 0 (the date is now or already passed), the strategy should ignore
+the header and use the configured exponential backoff instead of waiting a
+non-positive amount.
+
+Please fix the wait strategy so a non-positive `Retry-After`-derived wait falls
+through to the normal backoff.

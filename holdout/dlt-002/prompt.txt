@@ -1,0 +1,20 @@
+Coercing a Python float to a decimal column introduces spurious precision.
+
+When dlt coerces a `double` value into a `decimal` (or `wei`) column, the result
+shows floating-point expansion artifacts instead of the value the user actually
+passed. Repro:
+
+    from decimal import Decimal
+    from dlt.common.data_types import coerce_value
+
+    result = coerce_value("decimal", "double", 34.7)
+    print(result, "==", Decimal("34.7"), "?", result == Decimal("34.7"))
+
+Expected: `coerce_value("decimal", "double", 34.7)` yields `Decimal("34.7")` and
+`str(result) == "34.7"`. Actual: it yields something like
+`34.70000000000000284217...` because the float is converted to Decimal directly,
+carrying the IEEE-754 binary representation. The same problem affects coercion of
+`double` into `wei`.
+
+Please make double→decimal and double→wei coercion preserve the value as the user
+would write it.

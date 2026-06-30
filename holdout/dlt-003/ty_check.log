@@ -1,0 +1,87 @@
+error[unresolved-attribute]: Attribute `exception` is not defined on `None` in union `Future | None`
+  --> dlt/sources/helpers/requests/retry.py:46:10
+   |
+46 |     ex = retry_state.outcome.exception()
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[unresolved-attribute]: Attribute `result` is not defined on `None` in union `Future | None`
+  --> dlt/sources/helpers/requests/retry.py:51:14
+   |
+51 |     result = retry_state.outcome.result()
+   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[unresolved-attribute]: Attribute `exception` is not defined on `None` in union `Future | None`
+  --> dlt/sources/helpers/requests/retry.py:75:21
+   |
+75 |         exception = retry_state.outcome.exception()
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-assignment]: Object of type `list[((Response | None, BaseException | None, /) -> bool) | (Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object])]` is not assignable to `((Response | None, BaseException | None, /) -> bool) | Sequence[(Response | None, BaseException | None, /) -> bool] | None`
+   --> dlt/sources/helpers/requests/retry.py:122:13
+    |
+122 |             condition = [condition]
+    |             ---------   ^^^^^^^^^^^ Incompatible value of type `list[((Response | None, BaseException | None, /) -> bool) | (Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object])]`
+    |             |
+    |             Declared type `((Response | None, BaseException | None, /) -> bool) | Sequence[(Response | None, BaseException | None, /) -> bool] | None`
+    |
+info: type `list[((Response | None, BaseException | None, /) -> bool) | (Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object])]` is not assignable to any element of the union `((Response | None, BaseException | None, /) -> bool) | Sequence[(Response | None, BaseException | None, /) -> bool] | None`
+info: ├── element `Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object]` of union `((Response | None, BaseException | None, /) -> bool) | (Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object])` is not assignable to `(Response | None, BaseException | None, /) -> bool`
+info: │   └── no element of intersection `Sequence[(Response | None, BaseException | None, /) -> bool] & Top[(...) -> object]` is assignable to `(Response | None, BaseException | None, /) -> bool`
+info: │       └── incompatible return types: `object` is not assignable to `bool`
+info: └── ... omitted 2 union elements without additional context
+
+error[not-iterable]: Object of type `Sequence[(Response | None, BaseException | None, /) -> bool] | ((Response | None, BaseException | None, /) -> bool) | None` may not be iterable
+   --> dlt/sources/helpers/requests/retry.py:123:60
+    |
+123 |         retry_conds.extend([retry_if_predicate(c) for c in condition])
+    |                                                            ^^^^^^^^^
+    |
+info: It may not have an `__iter__` method or a `__getitem__` method
+info: `(Response | None, BaseException | None, /) -> bool` does not implement `__iter__`
+info: `None` does not implement `__iter__`
+
+error[unresolved-attribute]: Attribute `result` is not defined on `None` in union `Future | None`
+   --> dlt/sources/helpers/requests/retry.py:131:44
+    |
+131 |         retry_error_callback=lambda state: state.outcome.result(),
+    |                                            ^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `RuntimeConfiguration`
+   --> dlt/sources/helpers/requests/retry.py:227:25
+    |
+227 |     def configure(self, config: RuntimeConfiguration = ConfigValue) -> None:
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to `Session.__init__` is incorrect
+   --> dlt/sources/helpers/requests/retry.py:240:27
+    |
+240 |         session = Session(**self._session_kwargs)  # type: ignore[arg-type]
+    |                           ^^^^^^^^^^^^^^^^^^^^^^ Expected `bool`, found `int | float | timedelta | tuple[int | float | timedelta, int | float | timedelta] | None`
+    |
+info: element `int` of union `int | float | timedelta | tuple[int | float | timedelta, int | float | timedelta] | None` is not assignable to `bool`
+info: Method defined here
+  --> dlt/sources/helpers/requests/session.py:33:9
+   |
+33 |     def __init__(
+   |         ^^^^^^^^
+34 |         self,
+35 |         timeout: Optional[
+36 |             Union[TimedeltaSeconds, Tuple[TimedeltaSeconds, TimedeltaSeconds]]
+37 |         ] = DEFAULT_TIMEOUT,
+38 |         raise_for_status: bool = True,
+   |         ----------------------------- Parameter declared here
+   |
+
+error[invalid-assignment]: Object of type `bound method Session.send(request, **kwargs) -> Unknown` is not assignable to attribute `send` of type `def send(self, request, **kwargs) -> Unknown`
+   --> dlt/sources/helpers/requests/retry.py:246:9
+    |
+246 |         session.send = retry.wraps(session.send)  # type: ignore[method-assign]
+    |         ^^^^^^^^^^^^
+    |
+
+Found 9 diagnostics

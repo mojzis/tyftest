@@ -1,0 +1,24 @@
+error[invalid-assignment]: Object of type `None` is not assignable to `() -> int | float`
+  --> dlt/common/time.py:26:15
+   |
+26 | precise_time: Callable[[], float] = None
+   |               -------------------   ^^^^ Incompatible value of type `None`
+   |               |
+   |               Declared type
+   |
+
+error[unresolved-import]: Cannot resolve imported module `win_precise_time`
+  --> dlt/common/time.py:30:12
+   |
+30 |     import win_precise_time as wpt
+   |            ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+info: Searched in the following paths during module resolution:
+info:   1. /home/matous/git/tyftest/repos/stage-dlt-001 (first-party code)
+info:   2. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   3. /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages (site-packages)
+info:   4. /home/matous/git/tyftest/runs/_validate/dlt-001 (editable install)
+info:   5. /home/matous/git/tyftest/repos/dlt.venv/lib64/python3.13/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+Found 2 diagnostics

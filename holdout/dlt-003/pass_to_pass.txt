@@ -1,0 +1,1 @@
+tests/sources/helpers/test_requests.py::test_retry_on_status_all_fails

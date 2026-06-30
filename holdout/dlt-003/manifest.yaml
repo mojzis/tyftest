@@ -1,0 +1,10 @@
+task_id:      dlt-003
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      1e7366b2b
+prompt_file:  holdout/dlt-003/prompt.txt
+gold_files:   dlt/sources/helpers/requests/retry.py
+oracle_patch: holdout/dlt-003/oracle.patch
+oracle_tests: [tests/sources/helpers/test_requests.py::test_wait_retry_after_zero_falls_through_to_backoff,tests/sources/helpers/test_requests.py::test_wait_retry_after_zero_then_nonzero_uses_header]
+pass_to_pass: [tests/sources/helpers/test_requests.py::test_retry_on_status_all_fails]
+ty_status:    working

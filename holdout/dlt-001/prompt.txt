@@ -1,0 +1,26 @@
+Week-based ISO date strings don't round-trip near year boundaries.
+
+dlt's datetime helpers in `dlt/common/time.py` are supposed to detect the format
+of a date/time string and then be able to re-render the parsed value back into
+the same string (this is what incremental "lag" does when a cursor is stored as
+a string).
+
+For ISO week dates this breaks around year boundaries. Repro:
+
+    from dlt.common.time import (
+        detect_datetime_format,
+        ensure_pendulum_datetime_non_utc,
+        datetime_obj_to_str,
+    )
+
+    for value in ["2026-W01", "2026-W01-1", "2020-W53", "2021-W01"]:
+        fmt = detect_datetime_format(value)
+        parsed = ensure_pendulum_datetime_non_utc(value)
+        print(value, "->", datetime_obj_to_str(parsed, fmt))
+
+Expected: each value re-renders to exactly the original string ("2026-W01" ->
+"2026-W01", etc.). Actual: the re-rendered string is wrong for weeks that fall in
+a different ISO week-numbering year than the calendar year (e.g. ISO week 1 of
+2026 begins on 2025-12-29), so the cursor value silently shifts.
+
+Please fix the detection so week-based date strings round-trip correctly.

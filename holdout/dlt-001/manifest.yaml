@@ -1,0 +1,10 @@
+task_id:      dlt-001
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      bffc2dabb
+prompt_file:  holdout/dlt-001/prompt.txt
+gold_files:   dlt/common/time.py
+oracle_patch: holdout/dlt-001/oracle.patch
+oracle_tests: [tests/common/test_time.py::test_detect_datetime_format_week_roundtrip]
+pass_to_pass: [tests/common/test_time.py::test_detect_datetime_format]
+ty_status:    working
