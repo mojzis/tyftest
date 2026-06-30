@@ -1,0 +1,15 @@
+# Regenerable / large artifacts — NOT part of the experiment record.
+/bin/tyf
+/bin/.tyf_sha
+/repos/
+/fixtures/
+/runs/
+
+# Python / tooling noise
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Keep the tracked record: docs/, holdout/, harness/, results/*.jsonl,
+# TOOL_VERSION.md, README.md
