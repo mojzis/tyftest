@@ -41,3 +41,13 @@ SNIPPET_SRC="$HOME/git/ty-find/docs/shared/claude-snippet.md"
 NEUTRAL_CLAUDE="$ROOT/harness/neutral_claude.md"
 
 log() { printf '>> %s\n' "$*" >&2; }
+
+# Make `import dlt` (and its metadata, read at import time) resolve from a
+# specific working copy, NOT from the pristine clone — so the agent's edits are
+# what runs/tests. Editable install writes a .pth to the shared venv; pilot runs
+# are sequential so the single .pth is always the dir we're about to use.
+install_editable() {  # <dir>
+    VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" \
+        -e "$1" --no-deps -q 2>/dev/null \
+    || PATH="$VENV/bin:$PATH" pip install -e "$1" --no-deps -q 2>/dev/null || true
+}

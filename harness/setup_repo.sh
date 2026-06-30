@@ -31,9 +31,11 @@ log "installing target deps (editable, then drop the package so cwd source wins)
 # per-run working copy's cwd (RUN/dlt), so the agent's edits are what gets tested.
 VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" -e "$REPO_SRC" \
     || log "WARN: editable install failed — inspect extras/deps manually"
-# pytest tooling commonly needed by dlt's suite
-VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" \
-    pytest pytest-mock pytest-cases pytest-forked >/dev/null 2>&1 || true
+# install the repo's PINNED test stack (dev group) — NOT latest, which breaks
+# pytest-cases/pytest-asyncio against the repo's expected pytest<8.
+( cd "$REPO_SRC" && VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" \
+    --group dev >/dev/null 2>&1 ) \
+  || log "WARN: 'uv pip install --group dev' failed — inspect dependency-groups"
 VIRTUAL_ENV="$VENV" uv pip uninstall --python "$VENV/bin/python" dlt >/dev/null 2>&1 || true
 
 log "smoke: python + pytest + ty present?"

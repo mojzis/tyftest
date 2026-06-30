@@ -17,6 +17,9 @@ HOLD="$ROOT/holdout/$TASK"
 rm -rf "$RUN"; mkdir -p "$(dirname "$RUN")"
 cp -a "$FIX" "$RUN"
 
+# point `import dlt` (+ metadata) at THIS copy so the agent can import/test its edits
+install_editable "$RUN"
+
 # --- environment: out-of-tree venv on PATH for ALL conditions (python/pytest/ty);
 #     tyf binary on PATH for B/C ONLY (the present/absent lever) ---
 RUN_PATH="$VENV/bin:$PATH"

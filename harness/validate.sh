@@ -16,6 +16,7 @@ PYENV=(env PATH="$VENV/bin:$PATH" VIRTUAL_ENV="$VENV")
 
 pytest_ids() {  # <dir> <id-file>
     local d="$1" f="$2"; mapfile -t ids < "$f"
+    install_editable "$d"   # import dlt -> this scratch tree
     ( cd "$d" && "${PYENV[@]}" python -m pytest "${ids[@]}" -q -p no:cacheprovider )
 }
 

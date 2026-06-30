@@ -24,6 +24,9 @@ git -C "$RUN" apply --whitespace=nowarn "$HOLD/oracle.patch" 2>"$RUN/oracle_appl
     || patch -p1 -d "$RUN" < "$HOLD/oracle.patch" 2>>"$RUN/oracle_apply.err" \
     || ORACLE_APPLIED=false
 
+# ensure `import dlt` resolves from THIS run copy (agent's edits) before scoring
+install_editable "$RUN"
+
 run_pytest() {  # <id-file> -> prints "PASS"/"FAIL"/"SKIP(no ids)"
     local idfile="$1" ; local ids
     [ -s "$idfile" ] || { echo "SKIP"; return; }

@@ -11,8 +11,9 @@
 | tyf version | `0.4.0` |
 | tyf SHA | `cda1468` |
 | tyf describe | `v0.4.0-11-gcda1468` |
-| `ty` version | `0.0.49` |
+| `ty` version | `0.0.55` (installed in the dlt venv; this is what tyf uses at run time) |
 | Built with | cargo 1.94.1 |
+| Pilot repo | `dlt-hub/dlt` @ `0955489a3` (tag `1.28.1`), py 3.13, pytest 7.4.4 (dlt `dev` group) |
 | Pilot model | _set at run time; recorded per result row_ |
 | Date pinned | 2026-06-30 |
 
