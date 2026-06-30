@@ -1,0 +1,10 @@
+task_id:      dlt-110
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      55078eb0b
+prompt_file:  holdout/dlt-110/prompt.txt
+gold_files:   dlt/extract/extract.py,dlt/extract/extractors.py
+oracle_patch: holdout/dlt-110/oracle.patch
+oracle_tests: [tests/extract/test_extract.py::test_materialize_table_schema_multi_table]
+pass_to_pass: [tests/extract/test_extract.py::test_storage_reuse_package]
+ty_status:    working

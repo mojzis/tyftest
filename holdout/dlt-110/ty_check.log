@@ -1,0 +1,490 @@
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Schema`
+  --> dlt/extract/extract.py:81:5
+   |
+81 |     schema: Schema = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+  --> dlt/extract/extract.py:82:5
+   |
+82 |     table_name: str = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+  --> dlt/extract/extract.py:83:5
+   |
+83 |     parent_table_name: str = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["skip", "append", "replace", "merge"] | TWriteDispositionDict | TMergeDispositionDict | TScd2StrategyDict | TDeleteInsertStrategyDict`
+  --> dlt/extract/extract.py:84:5
+   |
+84 |     write_disposition: TWriteDispositionConfig = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Sequence[str]`
+  --> dlt/extract/extract.py:86:5
+   |
+86 |     primary_key: TColumnNames = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["iceberg", "delta", "hive", "native"]`
+  --> dlt/extract/extract.py:87:5
+   |
+87 |     table_format: TTableFormat = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["evolve", "discard_value", "freeze", "discard_row"] | TSchemaContractDict`
+  --> dlt/extract/extract.py:88:5
+   |
+88 |     schema_contract: TSchemaContract = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["jsonl", "typed-jsonl", "insert_values", "parquet", "csv", "reference", "model"]`
+  --> dlt/extract/extract.py:89:5
+   |
+89 |     loader_file_format: TLoaderFileFormat = None,
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `str`
+   --> dlt/extract/extract.py:176:22
+    |
+176 |             section: str = None
+    |                      ---   ^^^^ Incompatible value of type `None`
+    |                      |
+    |                      Declared type
+    |
+
+error[invalid-argument-type]: Argument to function `_get_all_resource_custom_metrics` is incorrect
+   --> dlt/extract/extract.py:279:65
+    |
+279 |                 custom_metrics=_get_all_resource_custom_metrics(resource_name),
+    |                                                                 ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/extract/extract.py:269:13
+    |
+269 |         def _get_all_resource_custom_metrics(resource_name: str) -> Dict[str, Any]:
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ ------------------ Parameter declared here
+    |
+
+error[no-matching-overload]: No overload of `dict.__init__` matches arguments
+   --> dlt/extract/extract.py:315:39
+    |
+315 |                         hints[name] = dict(hint)  # type: ignore[call-overload]
+    |                                       ^^^^^^^^^^
+    |
+info: First overload defined here
+    --> stdlib/builtins.pyi:3101:5
+     |
+3101 | /     @overload
+3102 | |     def __init__(self, /) -> None: ...
+     | |______________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `__init__`:
+info:   (self, /) -> None
+info:   (self: dict[str, _VT@dict], /, **kwargs: _VT@dict) -> None
+info:   (self, map: SupportsKeysAndGetItem[_KT@dict, _VT@dict], /) -> None
+info:   (self: dict[str, _VT@dict], map: SupportsKeysAndGetItem[str, _VT@dict], /, **kwargs: _VT@dict) -> None
+info:   (self, iterable: Iterable[tuple[_KT@dict, _VT@dict]], /) -> None
+info:   (self: dict[str, _VT@dict], iterable: Iterable[tuple[str, _VT@dict]], /, **kwargs: _VT@dict) -> None
+info:   (self: dict[str, str], iterable: Iterable[list[str]], /) -> None
+info:   (self: dict[bytes, bytes], iterable: Iterable[list[bytes]], /) -> None
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/extract/extract.py:332:16
+    |
+332 |           return {
+    |  ________________^
+333 | |             "started_at": None,
+334 | |             "finished_at": None,
+335 | |             "schema_name": source.schema.name,
+336 | |             "job_metrics": {job.job_id(): metrics for job, metrics in job_metrics.items()},
+337 | |             "table_metrics": table_metrics,
+338 | |             "resource_metrics": resource_metrics,
+339 | |             "dag": source.resources.selected_dag,
+340 | |             "hints": clean_hints,
+341 | |         }
+    | |_________^ expected `ExtractMetrics`, found `dict[Literal["started_at", "finished_at", "schema_name", "job_metrics", "table_metrics", ... omitted 3 literals], None | str | dict[str, DataWriterMetrics] | ... omitted 4 union elements]`
+    |
+   ::: dlt/extract/extract.py:254:68
+    |
+254 |       def _compute_metrics(self, load_id: str, source: DltSource) -> ExtractMetrics:
+    |                                                                      -------------- Expected `ExtractMetrics` because of return type
+    |
+
+error[invalid-argument-type]: Invalid argument to key "started_at" with declared type `datetime` on TypedDict `ExtractMetrics`
+   --> dlt/extract/extract.py:332:16
+    |
+332 |           return {
+    |  ________________-
+333 | |             "started_at": None,
+    | |             ------------  ^^^^ value of type `None`
+    | |             |
+    | |             key has declared type `datetime`
+334 | |             "finished_at": None,
+335 | |             "schema_name": source.schema.name,
+336 | |             "job_metrics": {job.job_id(): metrics for job, metrics in job_metrics.items()},
+337 | |             "table_metrics": table_metrics,
+338 | |             "resource_metrics": resource_metrics,
+339 | |             "dag": source.resources.selected_dag,
+340 | |             "hints": clean_hints,
+341 | |         }
+    | |_________- TypedDict `ExtractMetrics`
+    |
+info: Item declaration
+  --> dlt/common/metrics.py:64:5
+   |
+64 |     started_at: datetime.datetime
+   |     ----------------------------- Item declared here
+   |
+
+error[invalid-argument-type]: Invalid argument to key "finished_at" with declared type `datetime` on TypedDict `ExtractMetrics`
+   --> dlt/extract/extract.py:332:16
+    |
+332 |           return {
+    |  ________________-
+333 | |             "started_at": None,
+334 | |             "finished_at": None,
+    | |             -------------  ^^^^ value of type `None`
+    | |             |
+    | |             key has declared type `datetime`
+335 | |             "schema_name": source.schema.name,
+336 | |             "job_metrics": {job.job_id(): metrics for job, metrics in job_metrics.items()},
+337 | |             "table_metrics": table_metrics,
+338 | |             "resource_metrics": resource_metrics,
+339 | |             "dag": source.resources.selected_dag,
+340 | |             "hints": clean_hints,
+341 | |         }
+    | |_________- TypedDict `ExtractMetrics`
+    |
+info: Item declaration
+  --> dlt/common/metrics.py:66:5
+   |
+66 |     finished_at: datetime.datetime
+   |     ------------------------------ Item declared here
+   |
+
+error[invalid-argument-type]: Invalid argument to key "resource_metrics" with declared type `dict[str, DataWriterAndCustomMetrics]` on TypedDict `ExtractMetrics`
+   --> dlt/extract/extract.py:332:16
+    |
+332 |           return {
+    |  ________________-
+333 | |             "started_at": None,
+334 | |             "finished_at": None,
+335 | |             "schema_name": source.schema.name,
+336 | |             "job_metrics": {job.job_id(): metrics for job, metrics in job_metrics.items()},
+337 | |             "table_metrics": table_metrics,
+338 | |             "resource_metrics": resource_metrics,
+    | |             ------------------  ^^^^^^^^^^^^^^^^ value of type `dict[str | None, DataWriterAndCustomMetrics]`
+    | |             |
+    | |             key has declared type `dict[str, DataWriterAndCustomMetrics]`
+339 | |             "dag": source.resources.selected_dag,
+340 | |             "hints": clean_hints,
+341 | |         }
+    | |_________- TypedDict `ExtractMetrics`
+    |
+info: Item declaration
+  --> dlt/common/metrics.py:81:5
+   |
+81 |     resource_metrics: Dict[str, DataWriterAndCustomMetrics]
+   |     ------------------------------------------------------- Item declared here
+   |
+
+error[invalid-argument-type]: Argument to function `group_tables_by_resource` is incorrect
+   --> dlt/extract/extract.py:352:62
+    |
+352 |         tables_by_resources = utils.group_tables_by_resource(data_tables)
+    |                                                              ^^^^^^^^^^^ Expected `dict[str, TTableSchema]`, found `dict[str | None, TTableSchema]`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+    --> dlt/common/schema/utils.py:1102:5
+     |
+1102 | def group_tables_by_resource(
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^
+1103 |     tables: TSchemaTables, pattern: Optional[REPattern] = None
+     |     --------------------- Parameter declared here
+     |
+
+error[invalid-argument-type]: Argument to bound method `Extractor.write_empty_items_file` is incorrect
+   --> dlt/extract/extract.py:361:59
+    |
+361 |                     json_extractor.write_empty_items_file(table["name"])
+    |                                                           ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/extractors.py:162:9
+    |
+162 |     def write_empty_items_file(self, table_name: str) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^^^       --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `group_tables_by_resource` is incorrect
+   --> dlt/extract/extract.py:371:62
+    |
+371 |         tables_by_resources = utils.group_tables_by_resource(data_tables)
+    |                                                              ^^^^^^^^^^^ Expected `dict[str, TTableSchema]`, found `dict[str | None, TTableSchema]`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+    --> dlt/common/schema/utils.py:1102:5
+     |
+1102 | def group_tables_by_resource(
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^
+1103 |     tables: TSchemaTables, pattern: Optional[REPattern] = None
+     |     --------------------- Parameter declared here
+     |
+
+error[invalid-argument-type]: Argument to bound method `Extractor.write_empty_items_file` is incorrect
+   --> dlt/extract/extract.py:379:67
+    |
+379 | …                     json_extractor.write_empty_items_file(table["name"])
+    |                                                             ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/extractors.py:162:9
+    |
+162 |     def write_empty_items_file(self, table_name: str) -> None:
+    |         ^^^^^^^^^^^^^^^^^^^^^^       --------------- Parameter declared here
+    |
+
+error[invalid-context-manager]: Object of type `Collector` cannot be used with `with` because it does not correctly implement `__exit__`
+   --> dlt/extract/extract.py:407:14
+    |
+407 |         with collector(f"Extract {source.name}"):
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-context-manager]: Object of type `PipeIterator` cannot be used with `with` because it does not correctly implement `__exit__`
+   --> dlt/extract/extract.py:410:22
+    |
+410 |                   with PipeIterator.from_pipes(
+    |  ______________________^
+411 | |                     source.resources.selected_pipes,
+412 | |                     max_parallel_items=max_parallel_items,
+413 | |                     workers=workers,
+414 | |                 ) as pipes:
+    | |_________________^
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/extract.py:476:74
+    |
+476 |             Container().injectable_context(SourceSchemaInjectableContext(source.schema)),
+    |                                                                          ^^^^^^^^^^^^^ Expected `Exception`, found `Schema`
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/extract.py:477:68
+    |
+477 |             Container().injectable_context(SourceInjectableContext(source)),
+    |                                                                    ^^^^^^ Expected `Exception`, found `DltSource`
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["jsonl", "typed-jsonl", "insert_values", "parquet", "csv", "reference", "model"]`
+  --> dlt/extract/extractors.py:69:9
+   |
+69 |         file_format: TLoaderFileFormat = None,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `TResourceHints`
+  --> dlt/extract/extractors.py:70:9
+   |
+70 |         hints: TResourceHints = None,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `bool`
+  --> dlt/extract/extractors.py:71:9
+   |
+71 |         create_table_variant: bool = None,
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-argument-type]: Argument to `ImportFileMeta.__init__` is incorrect
+   --> dlt/extract/extractors.py:105:57
+    |
+105 |         ImportFileMeta(file_path, metrics, file_format, resource_hints, False), item
+    |                                                         ^^^^^^^^^^^^^^ Expected `TResourceHints`, found `TResourceHints | None`
+    |
+info: element `None` of union `TResourceHints | None` is not assignable to `TResourceHints`
+info: Method defined here
+  --> dlt/extract/extractors.py:65:9
+   |
+65 |     def __init__(
+   |         ^^^^^^^^
+66 |         self,
+67 |         file_path: str,
+68 |         metrics: DataWriterMetrics,
+69 |         file_format: TLoaderFileFormat = None,
+70 |         hints: TResourceHints = None,
+   |         ---------------------------- Parameter declared here
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `DestinationCapabilitiesContext`
+   --> dlt/extract/extractors.py:122:9
+    |
+122 |         _caps: DestinationCapabilitiesContext = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `DataItemStorage.write_empty_items_file` is incorrect
+   --> dlt/extract/extractors.py:164:94
+    |
+164 |         self.item_storage.write_empty_items_file(self.load_id, self.schema.name, table_name, None)
+    |                                                                                              ^^^^ Expected `dict[str, TColumnSchema]`, found `None`
+    |
+info: Method defined here
+  --> dlt/common/storages/data_item_storage.py:50:9
+   |
+50 |     def write_empty_items_file(
+   |         ^^^^^^^^^^^^^^^^^^^^^^
+51 |         self, load_id: str, schema_name: str, table_name: str, columns: TTableSchemaColumns
+   |                                                                ---------------------------- Parameter declared here
+   |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `dict[str, TColumnSchema]`
+   --> dlt/extract/extractors.py:185:9
+    |
+185 |         columns: TTableSchemaColumns = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `DltResourceHints.compute_nested_table_schemas` is incorrect
+   --> dlt/extract/extractors.py:253:13
+    |
+253 |             root_table_schema["name"], self.naming, items, meta
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/hints.py:306:9
+    |
+306 |     def compute_nested_table_schemas(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+307 |         self,
+308 |         root_table_name: str,
+    |         -------------------- Parameter declared here
+    |
+
+error[no-matching-overload]: No overload of bound method `MutableMapping.setdefault` matches arguments
+   --> dlt/extract/extractors.py:282:31
+    |
+282 |               schema_contract = self._table_contracts.setdefault(
+    |  _______________________________^
+283 | |                 table_name,
+284 | |                 self.schema.resolve_contract_settings_for_table(table_name, computed_table),
+285 | |             )
+    | |_____________^
+    |
+info: First overload defined here
+    --> stdlib/typing.pyi:1917:5
+     |
+1917 | /     @overload
+1918 | |     def setdefault(self: MutableMapping[_KT, _T | None], key: _KT, default: None = None, /) -> _T | None:
+1919 | |         """D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D"""
+     | |______________________________________________________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `setdefault`:
+info:   [_T](self: MutableMapping[_KT@MutableMapping, _T | None], key: _KT@MutableMapping, default: None = None, /) -> _T | None
+info:   (self, key: _KT@MutableMapping, default: _VT@MutableMapping, /) -> _VT@MutableMapping
+
+error[invalid-argument-type]: Argument to bound method `Schema.resolve_contract_settings_for_table` is incorrect
+   --> dlt/extract/extractors.py:284:65
+    |
+284 |                 self.schema.resolve_contract_settings_for_table(table_name, computed_table),
+    |                                                                 ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/common/schema/schema.py:331:9
+    |
+331 |     def resolve_contract_settings_for_table(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+332 |         self, table_name: str, new_table_schema: TTableSchema = None
+    |               --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `Schema.is_new_table` is incorrect
+   --> dlt/extract/extractors.py:288:84
+    |
+288 |             if schema_contract["columns"] != "evolve" and self.schema.is_new_table(table_name):
+    |                                                                                    ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/common/schema/schema.py:629:9
+    |
+629 |     def is_new_table(self, table_name: str) -> bool:
+    |         ^^^^^^^^^^^^       --------------- Parameter declared here
+    |
+
+error[no-matching-overload]: No overload of bound method `MutableMapping.setdefault` matches arguments
+   --> dlt/extract/extractors.py:311:44
+    |
+311 |                         filtered_columns = self._filtered_columns.setdefault(table_name, {})
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: First overload defined here
+    --> stdlib/typing.pyi:1917:5
+     |
+1917 | /     @overload
+1918 | |     def setdefault(self: MutableMapping[_KT, _T | None], key: _KT, default: None = None, /) -> _T | None:
+1919 | |         """D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D"""
+     | |______________________________________________________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `setdefault`:
+info:   [_T](self: MutableMapping[_KT@MutableMapping, _T | None], key: _KT@MutableMapping, default: None = None, /) -> _T | None
+info:   (self, key: _KT@MutableMapping, default: _VT@MutableMapping, /) -> _VT@MutableMapping
+
+error[unresolved-attribute]: Attribute `limit` is not defined on `list[Any]` in union `Any | list[Any]`
+   --> dlt/extract/extractors.py:344:20
+    |
+344 |             return items.limit(0)  # type: ignore[union-attr]
+    |                    ^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `sqlglot_expression` is not defined on `list[Any]` in union `Any | list[Any]`
+   --> dlt/extract/extractors.py:350:23
+    |
+350 |             selects = items.sqlglot_expression.selects  # type: ignore[union-attr]
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `select` is not defined on `list[Any]` in union `Any | list[Any]`
+   --> dlt/extract/extractors.py:355:25
+    |
+355 |                 items = items.select(*remaining)  # type: ignore[union-attr]
+    |                         ^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `dict[str, TColumnSchema]`
+   --> dlt/extract/extractors.py:446:9
+    |
+446 |         columns: TTableSchemaColumns = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Invalid subscript assignment with key of type `str | None` and value of type `TTableSchema` on object of type `dict[str, TTableSchema]`
+   --> dlt/extract/extractors.py:556:17
+    |
+556 |                 arrow_tables[computed_table["name"]] = arrow_table
+    |                 ^^^^^^^^^^^^^----------------------^^^^^^^^^^^^^^^
+    |                              |
+    |                              Expected key of type `str`, got `str | None`
+    |
+
+Found 40 diagnostics

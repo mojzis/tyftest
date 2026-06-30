@@ -1,0 +1,10 @@
+task_id:      dlt-103
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      033312d37
+prompt_file:  holdout/dlt-103/prompt.txt
+gold_files:   dlt/common/schema/utils.py,dlt/normalize/items_normalizers.py,dlt/normalize/normalize.py
+oracle_patch: holdout/dlt-103/oracle.patch
+oracle_tests: [tests/pipeline/test_import_export_schema.py::test_empty_column_later_becoming_child_table_removed]
+pass_to_pass: [tests/pipeline/test_import_export_schema.py::test_schemas_files_get_created]
+ty_status:    working

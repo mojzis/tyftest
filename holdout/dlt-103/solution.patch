@@ -1,0 +1,173 @@
+diff --git a/dlt/common/schema/utils.py b/dlt/common/schema/utils.py
+index fd5df15f9..0e5303137 100644
+--- a/dlt/common/schema/utils.py
++++ b/dlt/common/schema/utils.py
+@@ -696,6 +696,23 @@ def remove_processing_hints(tables: TSchemaTables) -> TSchemaTables:
+     return tables
+ 
+ 
++def has_seen_null_first_hint(column_schema: TColumnSchema) -> bool:
++    """Checks if `column_schema` has seen seen-null-first hint set to True in the x-normalizer hints."""
++    return bool(column_schema.get("x-normalizer", {}).get("seen-null-first"))
++
++
++def remove_seen_null_first_hint(column_schema: TColumnSchema) -> TColumnSchema:
++    """Removes seen-null-first hint from the x-normalizer hints in `column_schema` in place,
++    if the x-normalizer section becomes empty after removing the hint, it is also removed, returns the modified input
++    """
++    x_normalizer = column_schema.setdefault("x-normalizer", {})
++    if x_normalizer.get("seen-null-first"):
++        x_normalizer.pop("seen-null-first", None)
++    if not x_normalizer:
++        column_schema.pop("x-normalizer", None)
++    return column_schema
++
++
+ def get_processing_hints(
+     tables: TSchemaTables,
+ ) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, List[str]]]]:
+diff --git a/dlt/normalize/items_normalizers.py b/dlt/normalize/items_normalizers.py
+index b0f71be48..8acced9ac 100644
+--- a/dlt/normalize/items_normalizers.py
++++ b/dlt/normalize/items_normalizers.py
+@@ -17,7 +17,6 @@ from dlt.common.metrics import DataWriterMetrics
+ from dlt.common.normalizers.json.relational import DataItemNormalizer as RelationalNormalizer
+ from dlt.common.normalizers.json.helpers import get_root_row_id_type
+ from dlt.common.runtime import signals
+-from dlt.common.schema import utils
+ from dlt.common.schema.typing import (
+     C_DLT_ID,
+     C_DLT_LOAD_ID,
+@@ -32,7 +31,10 @@ from dlt.common.schema.utils import (
+     dlt_load_id_column,
+     has_table_seen_data,
+     normalize_table_identifiers,
++    is_nested_table,
++    has_seen_null_first_hint,
+ )
++from dlt.common.schema import utils
+ from dlt.common.schema.exceptions import CannotCoerceColumnException, CannotCoerceNullException
+ from dlt.common.time import normalize_timezone
+ from dlt.common.utils import read_dialect_and_sql
+@@ -469,6 +471,7 @@ class JsonLItemsNormalizer(ItemsNormalizer):
+                                 else parent_table or table_name
+                             ),  # parent_table, if present, exists in the schema
+                         )
++
+                         partial_table, filters = schema.apply_schema_contract(
+                             schema_contract, partial_table, data_item=row
+                         )
+@@ -520,8 +523,45 @@ class JsonLItemsNormalizer(ItemsNormalizer):
+                 pass
+             # kill job if signalled
+             signals.raise_if_signalled()
++
++        self._clean_seen_null_first_hint(schema_update)
++
+         return schema_update
+ 
++    def _clean_seen_null_first_hint(self, schema_update: TSchemaUpdate) -> None:
++        """
++        Performs schema and schema update cleanup related to `seen-null-first` hints by
++        removing entire columns with `seen-null-first` hints from parent tables
++        when those columns have been converted to nested tables.
++
++        NOTE: The `seen-null-first` hint is used during schema inference to track columns
++        that were first encountered with null values. In cases where subsequent
++        non-null values create a nested table, the entire
++        column with the `seen-null-first` hint in parent table becomes obsolete.
++
++        Args:
++            schema_update (TSchemaUpdate): Dictionary mapping table names to their table updates.
++        """
++        schema_update_copy = schema_update.copy()
++        for table_name, table_updates in schema_update_copy.items():
++            last_ident_path = self._full_ident_path_tracker.get(table_name)[-1]
++
++            for table_update in table_updates:
++                # Remove the entire column with hint from parent table if it was created as a nested table
++                if is_nested_table(table_update):
++                    parent_name = table_update.get("parent")
++                    parent_col_schemas = self.schema.get_table_columns(
++                        parent_name, include_incomplete=True
++                    )
++                    parent_col_schema = parent_col_schemas.get(last_ident_path)
++
++                    if parent_col_schema and has_seen_null_first_hint(parent_col_schema):
++                        parent_col_schemas.pop(last_ident_path)
++                        parent_updates = schema_update.get(parent_name, [])
++                        for j, parent_update in enumerate(parent_updates):
++                            if last_ident_path in parent_update["columns"]:
++                                schema_update[parent_name][j]["columns"].pop(last_ident_path)
++
+     def _coerce_row(
+         self, table_name: str, parent_table: str, row: StrAny
+     ) -> Tuple[DictStrAny, TPartialTableSchema]:
+diff --git a/dlt/normalize/normalize.py b/dlt/normalize/normalize.py
+index f12b71172..c3e28f3f2 100644
+--- a/dlt/normalize/normalize.py
++++ b/dlt/normalize/normalize.py
+@@ -13,7 +13,11 @@ from dlt.common.runners import TRunMetrics, Runnable, NullExecutor
+ from dlt.common.runtime import signals
+ from dlt.common.runtime.collector import Collector, NULL_COLLECTOR
+ from dlt.common.schema.typing import TStoredSchema, TTableSchema
+-from dlt.common.schema.utils import merge_schema_updates
++from dlt.common.schema.utils import (
++    merge_schema_updates,
++    has_seen_null_first_hint,
++    remove_seen_null_first_hint,
++)
+ from dlt.common.storages import (
+     NormalizeStorage,
+     SchemaStorage,
+@@ -159,7 +163,9 @@ class Normalize(Runnable[Executor], WithStepInfo[NormalizeMetrics, NormalizeInfo
+         )
+         return result
+ 
+-    def clean_x_normalizer(self, load_id: str, table_name: str, table_schema: TTableSchema) -> None:
++    def clean_x_normalizer(
++        self, load_id: str, table_name: str, table_schema: TTableSchema, path_separator: str
++    ) -> None:
+         x_normalizer = table_schema.setdefault("x-normalizer", {})
+         # drop evolve once for all tables that seen data
+         x_normalizer.pop("evolve-columns-once", None)
+@@ -170,14 +176,22 @@ class Normalize(Runnable[Executor], WithStepInfo[NormalizeMetrics, NormalizeInfo
+             )
+             x_normalizer["seen-data"] = True
+ 
+-        # Handle column-level x-normalizer
+-        # drop seen-null-first flag if data type was set
+-        for column in table_schema.get("columns", {}).values():
+-            col_x_normalizer = column.setdefault("x-normalizer", {})
+-            if col_x_normalizer.get("seen-null-first") and "data_type" in column:
+-                col_x_normalizer.pop("seen-null-first", None)
+-            if not col_x_normalizer:
+-                column.pop("x-normalizer", None)
++        # Handle column-level seen-null-first hint in x-normalizer hints
++        col_schemas = table_schema.get("columns", {})
++        for col_name, col_schema in list(col_schemas.items()):
++            if has_seen_null_first_hint(col_schema):
++                if "data_type" in col_schema:
++                    # 1. Remove seen-null-first hint if data type is set
++                    remove_seen_null_first_hint(col_schema)
++                else:
++                    # 2. Remove entire column if it was created as compound column(s)
++                    # TODO: use column ident paths (also in JsonLItemsNormalizer._coerce_null_value),
++                    # path separator is not reliable with shortened names
++                    if any(
++                        col.startswith(col_name + path_separator)
++                        for col in list(col_schemas.keys())
++                    ):
++                        table_schema["columns"].pop(col_name)
+ 
+     def spool_files(
+         self, load_id: str, schema: Schema, map_f: TMapFuncType, files: Sequence[str]
+@@ -196,7 +210,7 @@ class Normalize(Runnable[Executor], WithStepInfo[NormalizeMetrics, NormalizeInfo
+         for table_name in table_metrics:
+             table = schema.tables[table_name]
+             verify_normalized_table(schema, table, self.config.destination_capabilities)
+-            self.clean_x_normalizer(load_id, table_name, table)
++            self.clean_x_normalizer(load_id, table_name, table, schema.naming.PATH_SEPARATOR)
+         # schema is updated, save it to schema volume
+         if schema.is_modified:
+             logger.info(

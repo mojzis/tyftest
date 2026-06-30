@@ -9,8 +9,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
 
 TASKS=("$@"); [ ${#TASKS[@]} -eq 0 ] && mapfile -t TASKS < <(list_tasks)
 [ ${#TASKS[@]} -eq 0 ] && { echo "no tasks in holdout/"; exit 1; }
-OUT="$ROOT/results/results.jsonl"
-mkdir -p "$ROOT/results"
+OUT="${OUT:-$ROOT/results/results.jsonl}"     # override with OUT=... for a separate round
+mkdir -p "$(dirname "$OUT")"
 
 # build the cell list, then shuffle
 CELLS=()
@@ -31,8 +31,10 @@ for cell in "${CELLS[@]}"; do
 import json,sys
 row=json.loads(sys.argv[1]); cond=sys.argv[2]
 inv=row.get("tyf_invocations",0)
-if cond in ("B","C") and inv==0: print("WARN_NO_TYF")
-elif cond=="A" and inv>0:        print("WARN_TYF_IN_A")
+# A: no tyf available -> any use is a leak. B: binary but no snippet -> non-use expected.
+# C/D: snippet present -> non-use is an adherence miss worth flagging.
+if cond=="A" and inv>0:          print("WARN_TYF_IN_A")
+elif cond in ("C","D") and inv==0: print("WARN_NO_TYF")
 else:                            print("ok")
 PY
 )"

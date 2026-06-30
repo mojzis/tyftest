@@ -22,8 +22,8 @@ log "pinned $REPO_SLUG @ $SHA  -> $PIN_FILE"
 
 # --- out-of-tree venv ---
 if [ ! -d "$VENV" ]; then log "creating venv $VENV"; uv venv "$VENV"; fi
-log "installing ty (for tyf) into venv"
-VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" ty >/dev/null
+log "installing ty (for tyf) + duckdb (dlt's embedded default destination — offline) into venv"
+VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" ty duckdb >/dev/null
 
 log "installing target deps (editable, then drop the package so cwd source wins)"
 # Install dlt + its deps editable, then uninstall ONLY the package: this leaves

@@ -1,0 +1,1 @@
+tests/pipeline/test_import_export_schema.py::test_empty_column_later_becoming_child_table_removed

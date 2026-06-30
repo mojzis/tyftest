@@ -17,8 +17,13 @@ REPO_CORE="dlt"                         # core package dir for task mining
 PIN_FILE="$ROOT/repos/dlt.pin"          # written by setup_repo.sh
 [ -f "$PIN_FILE" ] && PIN_SHA="$(cat "$PIN_FILE")" || PIN_SHA="UNSET"
 
-# --- experiment matrix (pilot) ---
-CONDS=(A B C)
+# --- experiment matrix ---
+# Conditions are env-overridable: e.g. CONDS_OVERRIDE="A C D" for the opus round.
+#   A = no tyf, no snippet            (control)
+#   B = tyf present, no snippet       (binary-only; dropped after pilot — never used tyf)
+#   C = tyf + standard snippet        (claude-snippet.md)
+#   D = tyf + STRONG snippet          (claude-snippet-strong.md)
+read -r -a CONDS <<< "${CONDS_OVERRIDE:-A B C}"
 REPS="${REPS:-3}"
 # TASKS is discovered from holdout/ at run time:
 list_tasks() { ls "$ROOT/holdout" 2>/dev/null | sort; }
@@ -34,8 +39,9 @@ CLAUDE_COMMON=(--output-format stream-json --verbose
                --dangerously-skip-permissions
                --setting-sources project)  # ignore user/global CLAUDE.md+settings
 
-# C-condition snippet (verbatim from the tool repo @ pinned SHA)
-SNIPPET_SRC="$HOME/git/ty-find/docs/shared/claude-snippet.md"
+# condition snippets
+SNIPPET_SRC="$HOME/git/ty-find/docs/shared/claude-snippet.md"   # C: standard (verbatim from tool repo @ pinned SHA)
+SNIPPET_STRONG="$ROOT/harness/claude-snippet-strong.md"         # D: stronger wording to drive adoption
 
 # neutral CLAUDE.md handed to every condition (A/B; C = this + snippet)
 NEUTRAL_CLAUDE="$ROOT/harness/neutral_claude.md"

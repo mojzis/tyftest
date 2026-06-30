@@ -1,0 +1,21 @@
+Empty columns that later become nested tables are left behind in the parent schema.
+
+When a field is first seen as null and in later data becomes a nested object or
+list, dlt normalizes it into a child (nested) table. The problem: the original
+placeholder column for that field is not removed from the parent table's schema.
+It lingers as a partial column still carrying dlt's internal `seen-null-first`
+normalizer marker.
+
+This is visible in an exported schema — the parent table keeps a stray column
+for a field that is actually a child table now.
+
+Expected: once a field is materialized as a nested (child) table, its leftover
+placeholder column should be removed from the parent table's `columns`. This must
+also work when the field name is long enough that nested-table names get
+shortened — the placeholder still has to be traced back to and removed from the
+correct parent table.
+
+Repro shape: a resource yields a row where field `a` is a list of dicts (so it
+becomes a child table), and within it a field `b` is null in the first run; after
+running the pipeline, inspect the exported parent-table columns — the placeholder
+column wrongly remains.

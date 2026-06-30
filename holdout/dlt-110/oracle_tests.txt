@@ -1,0 +1,1 @@
+tests/extract/test_extract.py::test_materialize_table_schema_multi_table

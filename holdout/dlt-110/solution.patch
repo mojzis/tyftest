@@ -1,0 +1,98 @@
+diff --git a/dlt/extract/extract.py b/dlt/extract/extract.py
+index 9628e4aa9..11267e7b7 100644
+--- a/dlt/extract/extract.py
++++ b/dlt/extract/extract.py
+@@ -345,42 +345,30 @@ class Extract(WithStepInfo[ExtractMetrics, ExtractInfo]):
+     ) -> None:
+         schema = source.schema
+         json_extractor = extractors["object"]
+-        resources_with_items = set().union(*[e.resources_with_items for e in extractors.values()])
++        tables_with_items = set().union(*[e.tables_with_items for e in extractors.values()])
+         # find REPLACE resources that did not yield any pipe items and create empty jobs for them
+         # NOTE: do not include tables that have never seen data
+         data_tables = {t["name"]: t for t in schema.data_tables(seen_data_only=True)}
+         tables_by_resources = utils.group_tables_by_resource(data_tables)
+         for resource in source.resources.selected.values():
+-            if resource.write_disposition != "replace" or resource.name in resources_with_items:
+-                continue
+             if resource.name not in tables_by_resources:
+                 continue
+             for table in tables_by_resources[resource.name]:
++                write_disposition = table.get("write_disposition") or resource.write_disposition
++                if write_disposition != "replace" or table["name"] in tables_with_items:
++                    continue
+                 # we only need to write empty files for the root tables
+                 if not utils.is_nested_table(table):
+                     json_extractor.write_empty_items_file(table["name"])
+ 
+-        # collect resources that received empty materialized lists and had no items
+-        resources_with_empty = (
++        # collect tables that received empty materialized lists and had no items
++        tables_with_empty = (
+             set()
+-            .union(*[e.resources_with_empty for e in extractors.values()])
+-            .difference(resources_with_items)
++            .union(*[e.tables_with_empty for e in extractors.values()])
++            .difference(tables_with_items)
+         )
+-        # get all possible tables
+-        data_tables = {t["name"]: t for t in schema.data_tables()}
+-        tables_by_resources = utils.group_tables_by_resource(data_tables)
+-        for resource_name in resources_with_empty:
+-            if resource := source.resources.selected.get(resource_name):
+-                if tables := tables_by_resources.get("resource_name"):
+-                    # write empty tables
+-                    for table in tables:
+-                        # we only need to write empty files for the root tables
+-                        if not utils.is_nested_table(table):
+-                            json_extractor.write_empty_items_file(table["name"])
+-                else:
+-                    table_name = json_extractor._get_static_table_name(resource, None)
+-                    if table_name:
+-                        json_extractor.write_empty_items_file(table_name)
++        for table_name in tables_with_empty:
++            json_extractor.write_empty_items_file(table_name)
+ 
+     def _extract_single_source(
+         self,
+diff --git a/dlt/extract/extractors.py b/dlt/extract/extractors.py
+index 983ab9c21..3110cdd02 100644
+--- a/dlt/extract/extractors.py
++++ b/dlt/extract/extractors.py
+@@ -124,10 +124,10 @@ class Extractor:
+         self.schema = schema
+         self.naming = schema.naming
+         self.collector = collector
+-        self.resources_with_items: Set[str] = set()
+-        """Tracks resources that received items"""
+-        self.resources_with_empty: Set[str] = set()
+-        """Track resources that received empty materialized list"""
++        self.tables_with_items: Set[str] = set()
++        """Tracks tables that received items"""
++        self.tables_with_empty: Set[str] = set()
++        """Tracks tables that received empty materialized list"""
+         self.load_id = load_id
+         self.item_storage = item_storage
+         self._table_contracts: Dict[str, TSchemaContractDict] = {}
+@@ -190,10 +190,10 @@ class Extractor:
+         self.collector.update(table_name, inc=new_rows_count)
+         # if there were rows or item was empty arrow table
+         if new_rows_count > 0 or self.__class__ is ArrowExtractor:
+-            self.resources_with_items.add(resource_name)
++            self.tables_with_items.add(table_name)
+         else:
+             if isinstance(items, MaterializedEmptyList):
+-                self.resources_with_empty.add(resource_name)
++                self.tables_with_empty.add(table_name)
+ 
+     def _import_item(
+         self,
+@@ -210,7 +210,7 @@ class Extractor:
+             meta.file_format,
+         )
+         self.collector.update(table_name, inc=metrics.items_count)
+-        self.resources_with_items.add(resource_name)
++        self.tables_with_items.add(table_name)
+ 
+     def _write_to_dynamic_table(self, resource: DltResource, items: TDataItems, meta: Any) -> None:
+         if not isinstance(items, list):

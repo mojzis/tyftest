@@ -55,26 +55,33 @@ for (task, cond) in sorted(cells):
           f"{(cost or 0):>6.3f} {len(conv):>3}/{len(rs)}")
 
 print()
-print("## C vs B (instruction lines) and C vs A (whole package) — paired by task")
-print("   pass@1 sum and median input_tokens per cond, per task")
-hdr2 = f"{'task':9} | {'A pass':>6} {'A tok':>8} | {'B pass':>6} {'B tok':>8} | {'C pass':>6} {'C tok':>8} | {'C-A tok':>8} {'C-B tok':>8}"
+conds_present = [c for c in ("A", "B", "C", "D") if any(r["cond"] == c for r in rows)]
+print(f"## Per-cond comparison (conds present: {' '.join(conds_present)}) — paired by task")
+print("   pass@1 and median input_tokens per cond; token deltas vs A (negative = cheaper)")
+cols = "".join(f" {c+' pass':>6} {c+' tok':>9} |" for c in conds_present)
+deltas = "".join(f" {'Δ'+c+'-A':>8}" for c in conds_present if c != "A")
+hdr2 = f"{'task':9} |{cols}{deltas}"
 print(hdr2); print("-" * len(hdr2))
+def tok(x): return x[2] if x and x[2] else None
 for task in sorted({r["task"] for r in rows}):
     out = {}
-    for cond in ("A", "B", "C"):
+    for cond in conds_present:
         rs = [r for r in rows if r["task"] == task and r["cond"] == cond]
         conv = [r for r in rs if r.get("converged")]
         p = sum(1 for r in rs if r.get("oracle_pass"))
         m, *_ = med_iqr([r.get("input_tokens") for r in conv])
         out[cond] = (p, len(rs), m)
-    a, b, c = out.get("A"), out.get("B"), out.get("C")
-    def tok(x): return x[2] if x and x[2] else None
-    ca = (tok(c) - tok(a)) if tok(c) and tok(a) else None
-    cb = (tok(c) - tok(b)) if tok(c) and tok(b) else None
-    def f(x): return f"{x[0]}/{x[1]}" if x else "-"
-    def g(x): return f"{tok(x):.0f}" if tok(x) else "-"
-    print(f"{task:9} | {f(a):>6} {g(a):>8} | {f(b):>6} {g(b):>8} | {f(c):>6} {g(c):>8} "
-          f"| {(f'{ca:+.0f}' if ca is not None else '-'):>8} {(f'{cb:+.0f}' if cb is not None else '-'):>8}")
+    line = f"{task:9} |"
+    for c in conds_present:
+        x = out.get(c)
+        line += f" {(f'{x[0]}/{x[1]}' if x else '-'):>6} {(f'{tok(x):.0f}' if tok(x) else '-'):>9} |"
+    a = out.get("A")
+    for c in conds_present:
+        if c == "A":
+            continue
+        d = (tok(out.get(c)) - tok(a)) if tok(out.get(c)) and tok(a) else None
+        line += f" {(f'{d:+.0f}' if d is not None else '-'):>8}"
+    print(line)
 
 print()
 print("## Integrity / diagnostics")

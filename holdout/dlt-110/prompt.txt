@@ -1,0 +1,20 @@
+Empty table schemas aren't materialized for resources that produce multiple tables.
+
+A dlt resource can explicitly materialize a table's schema even when it yields no
+rows for that table, using `dlt.mark.materialize_table_schema()` together with
+table hints (and `create_table_variant=True`). This works for a single-table
+resource, but breaks for a resource that declares several tables.
+
+When a resource declares an empty-materialization for more than one table (e.g.
+`table_one` and `table_two`) and yields data for only a subset of them — or for
+none — the empty tables are not all materialized. After `pipeline.extract(...)`,
+the extracted load package contains jobs for only some of the declared tables
+instead of all of them.
+
+Expected: every table the resource marks for empty materialization should get a
+job in the extracted load package, whether or not any rows were yielded for it.
+
+Repro shape: a resource that materializes `table_one` and `table_two`, then
+conditionally yields a row for neither / only one / both; after
+`pipeline.extract(resource())`, both `table_one` and `table_two` should appear in
+`load_packages[0].jobs["new_jobs"]` in every case.
