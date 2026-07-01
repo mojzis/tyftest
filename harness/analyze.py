@@ -35,7 +35,7 @@ for r in rows:
     cells[cell_key(r)].append(r)
 
 print(f"# Pilot read-out — {len(rows)} runs from {PATH}")
-print(f"# model(s): {sorted({r.get('model') for r in rows})}")
+print(f"# model(s): {sorted({r.get('model') or '?' for r in rows})}")
 print()
 print("## Per-cell (task × cond): pass@1, input_tokens med[IQR], tool_calls, tyf, $")
 hdr = f"{'task':9} {'c':1} {'n':>2} {'pass@1':>6} {'in_tok med[Q1-Q3]':>22} {'tools':>5} {'tyf':>4} {'turns':>5} {'$med':>6} {'conv':>4}"

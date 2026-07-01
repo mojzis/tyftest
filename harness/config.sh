@@ -8,13 +8,72 @@ export ROOT
 # --- tool under test ---
 TYF_BIN="$ROOT/bin/tyf"
 
-# --- target repo (the pilot) ---
-REPO_SLUG="dlt-hub/dlt"
-REPO_URL="https://github.com/dlt-hub/dlt"
-REPO_SRC="$ROOT/repos/dlt-src"          # pristine pinned clone
-VENV="$ROOT/repos/dlt.venv"             # OUT-OF-TREE venv (survives per-run reset)
-REPO_CORE="dlt"                         # core package dir for task mining
-PIN_FILE="$ROOT/repos/dlt.pin"          # written by setup_repo.sh
+# --- target repo (selectable) ---
+# Pick the repo to operate on with REPO=dlt|feast|dagster (default dlt, the pilot).
+# Per-repo §0 facts (core dir, offline deps, test stack) live in the case block.
+# See docs/tyf-experiment-task-mining.md §0.
+REPO="${REPO:-dlt}"
+# upin() = uv pip into the out-of-tree venv. install_stack() (per repo) owns the
+# whole post-venv install so each repo's pinning mechanism stays self-contained.
+upin() { VIRTUAL_ENV="$VENV" uv pip "$@" --python "$VENV/bin/python"; }
+case "$REPO" in
+  dlt)
+    REPO_SLUG="dlt-hub/dlt"
+    REPO_URL="https://github.com/dlt-hub/dlt"
+    REPO_CORE="dlt"                     # core package dir for task mining
+    REPO_PKG="dlt"                      # import name (uninstalled so cwd source wins)
+    PY_VER=""                           # default interpreter is fine
+    OFFLINE_DEPS="duckdb"               # embedded/in-memory libs that still count as offline
+    install_stack() {
+        upin install ty $OFFLINE_DEPS >/dev/null
+        # editable WITH deps, then install the PINNED test stack (PEP-735 dev group;
+        # pytest<8 — latest breaks pytest-cases), then drop the pkg so cwd wins.
+        upin install -e "$REPO_SRC" || log "WARN: editable install failed"
+        ( cd "$REPO_SRC" && upin install --group dev >/dev/null 2>&1 ) \
+            || log "WARN: '--group dev' failed — inspect dependency-groups"
+        upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
+    }
+    ;;
+  feast)
+    REPO_SLUG="feast-dev/feast"
+    REPO_URL="https://github.com/feast-dev/feast"
+    REPO_CORE="sdk/python/feast"        # core package dir for task mining
+    REPO_PKG="feast"                    # import name
+    PY_VER="3.12"                       # pinned reqs cap at 3.12; system py3.14 is too new
+    OFFLINE_DEPS="duckdb"               # local provider's embedded offline store
+    # offline-testable = `local` provider (sqlite online + file/duckdb offline +
+    # local registry); offline test entry point = sdk/python/tests/unit (integration
+    # tests gated behind the --integration pytest flag). Pinned test stack = the
+    # hash-locked CI requirements; `uv pip sync` REPLACES the env, so it runs FIRST,
+    # then ty/duckdb + editable feast (--no-deps) are layered back on top.
+    install_stack() {
+        ( cd "$REPO_SRC" && upin sync --require-hashes \
+            "sdk/python/requirements/py$PY_VER-ci-requirements.txt" >/dev/null 2>&1 ) \
+            || log "WARN: pip sync of pinned CI requirements failed"
+        upin install ty $OFFLINE_DEPS >/dev/null
+        ( cd "$REPO_SRC" && upin install --no-deps -e . >/dev/null 2>&1 ) \
+            || log "WARN: editable feast install failed"
+        upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
+    }
+    ;;
+  dagster)
+    REPO_SLUG="dagster-io/dagster"
+    REPO_URL="https://github.com/dagster-io/dagster"
+    REPO_CORE="python_modules/dagster/dagster/_core"
+    REPO_PKG="dagster"
+    PY_VER=""
+    OFFLINE_DEPS=""                     # in-process executor + ephemeral instance; no extra
+    install_stack() {
+        upin install ty $OFFLINE_DEPS >/dev/null
+        upin install -e "$REPO_SRC[test]" || log "WARN: editable install failed"
+        upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
+    }
+    ;;
+  *) echo "unknown REPO=$REPO (want dlt|feast|dagster)" >&2; exit 1 ;;
+esac
+REPO_SRC="$ROOT/repos/$REPO-src"        # pristine pinned clone
+VENV="$ROOT/repos/$REPO.venv"           # OUT-OF-TREE venv (survives per-run reset)
+PIN_FILE="$ROOT/repos/$REPO.pin"        # written by setup_repo.sh
 [ -f "$PIN_FILE" ] && PIN_SHA="$(cat "$PIN_FILE")" || PIN_SHA="UNSET"
 
 # --- experiment matrix ---

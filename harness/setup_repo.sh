@@ -21,25 +21,18 @@ echo "$SHA" > "$PIN_FILE"
 log "pinned $REPO_SLUG @ $SHA  -> $PIN_FILE"
 
 # --- out-of-tree venv ---
-if [ ! -d "$VENV" ]; then log "creating venv $VENV"; uv venv "$VENV"; fi
-log "installing ty (for tyf) + duckdb (dlt's embedded default destination — offline) into venv"
-VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" ty duckdb >/dev/null
-
-log "installing target deps (editable, then drop the package so cwd source wins)"
-# Install dlt + its deps editable, then uninstall ONLY the package: this leaves
-# every dependency in site-packages but makes `import dlt` resolve from the
-# per-run working copy's cwd (RUN/dlt), so the agent's edits are what gets tested.
-VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" -e "$REPO_SRC" \
-    || log "WARN: editable install failed — inspect extras/deps manually"
-# install the repo's PINNED test stack (dev group) — NOT latest, which breaks
-# pytest-cases/pytest-asyncio against the repo's expected pytest<8.
-( cd "$REPO_SRC" && VIRTUAL_ENV="$VENV" uv pip install --python "$VENV/bin/python" \
-    --group dev >/dev/null 2>&1 ) \
-  || log "WARN: 'uv pip install --group dev' failed — inspect dependency-groups"
-VIRTUAL_ENV="$VENV" uv pip uninstall --python "$VENV/bin/python" dlt >/dev/null 2>&1 || true
+if [ ! -d "$VENV" ]; then
+    log "creating venv $VENV${PY_VER:+ (python $PY_VER)}"
+    uv venv ${PY_VER:+--python "$PY_VER"} "$VENV"
+fi
+# Per-repo install: pinned test stack + ty + offline deps + editable pkg, then
+# drop ONLY the package so `import $REPO_PKG` resolves from the per-run cwd (the
+# agent's edits get tested). The pinning mechanism differs per repo (config.sh).
+log "installing stack for $REPO (ty${OFFLINE_DEPS:+ + $OFFLINE_DEPS} + pinned test deps)"
+install_stack
 
 log "smoke: python + pytest + ty present?"
 "$VENV/bin/python" -c "import sys; print('py', sys.version.split()[0])"
 "$VENV/bin/python" -m pytest --version 2>/dev/null | head -1 || log "pytest missing!"
 "$VENV/bin/ty" --version 2>/dev/null || log "ty missing!"
-log "done. Verify deps with: cd $REPO_SRC && PATH=$VENV/bin:\$PATH python -c 'import dlt'"
+log "done. Verify deps with: cd $REPO_SRC && PATH=$VENV/bin:\$PATH python -c 'import $REPO_PKG'"
