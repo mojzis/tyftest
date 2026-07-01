@@ -2,7 +2,7 @@
 
 How tasks were actually found and filtered for the dlt pilot + round 2. This is
 the field guide: what to grep for, what to keep, what to throw away, and the traps
-that cost time. Mechanics live in `tyf-experiment-repo-prep.md`; this is the
+that cost time. Mechanics live in `../setup/tyf-experiment-repo-prep.md`; this is the
 judgement layer on top.
 
 > Rule of thumb: **construct ~2× the tasks you need.** Roughly half get dropped at

@@ -1,7 +1,7 @@
 # tyftest
 
 Controlled experiment: does the `tyf` CLAUDE.md snippet earn its keep? See
-`README.md` and `docs/tyf-experiment-protocol.md`.
+`README.md` and `docs/setup/tyf-experiment-protocol.md`.
 
 ## Conventions
 

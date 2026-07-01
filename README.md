@@ -4,8 +4,8 @@ A controlled A/B/C experiment measuring whether the `tyf` CLAUDE.md snippet
 (and the tyf binary itself) improves Claude Code task outcomes enough to justify
 its permanent context cost.
 
-- **Design / pre-registration:** `docs/tyf-experiment-protocol.md`
-- **Construction & run mechanics:** `docs/tyf-experiment-repo-prep.md`
+- **Design / pre-registration:** `docs/setup/tyf-experiment-protocol.md`
+- **Construction & run mechanics:** `docs/setup/tyf-experiment-repo-prep.md`
 - **Tested tool commit:** `TOOL_VERSION.md` (the thing being judged is tyf's SHA)
 
 ## Conditions
@@ -27,7 +27,8 @@ sees the pre-fix tree, never the verifier.
 ## Layout
 
 ```
-docs/        pre-registration (read first)
+docs/setup/     pre-registration + run mechanics (read first)
+docs/learnings/ post-hoc analysis: lessons, scaling, task mining, trajectory frames
 harness/     all scripts (build / setup / mine / make / launder / run / score / drive)
 holdout/     per-task record: prompt, solution.patch, oracle.patch, gold_files, manifest  [TRACKED]
 results/     results.jsonl (one row per run) + pilot-notes.md                              [TRACKED]
