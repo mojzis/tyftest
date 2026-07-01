@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Snapshot the laundered stage tree into the three condition fixtures (repo-prep
-# §5). A/B share an identical neutral CLAUDE.md; C = that + the tyf snippet.
+# Snapshot the laundered stage tree into the condition fixtures (repo-prep §5).
+# A/B share the repo's REAL CLAUDE.md verbatim (the within-project baseline);
+# C/D = that same file + the standard/strong tyf snippet appended.
 #   build_conditions.sh <task_id>
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/config.sh"

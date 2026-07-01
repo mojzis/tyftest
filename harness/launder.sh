@@ -16,10 +16,16 @@ grep -rInE 'fixe?[ds]|work[- ]?around|regression|issue ?#?[0-9]+|#[0-9]{3,}' \
 log "changelog/news files present (consider trimming the relevant entry):"
 find . -maxdepth 3 -iregex '.*\(changelog\|history\|news\|release\).*' 2>/dev/null | sed 's/^/   /' || true
 
-# 2. normalize the repo's own agent file -> ONE neutral CLAUDE.md (controls a confound)
-find . -maxdepth 2 \( -iname 'CLAUDE.md' -o -iname 'AGENTS.md' -o -iname '.cursorrules' \) -delete 2>/dev/null || true
-cp "$NEUTRAL_CLAUDE" "$STAGE/CLAUDE.md"
-log "installed neutral CLAUDE.md"
+# 2. KEEP the repo's own CLAUDE.md verbatim — the experiment is a within-project
+# A-vs-D contrast, so the real onboarding file IS the baseline (build_conditions.sh
+# appends the tyf snippet on top of it for C/D). Any uv/make guidance it carries
+# hits A and D symmetrically, so it does not confound the snippet contrast.
+if [ -f "$STAGE/CLAUDE.md" ]; then
+    log "kept repo CLAUDE.md verbatim ($(wc -l < "$STAGE/CLAUDE.md") lines) — baseline for A/D"
+else
+    cp "$NEUTRAL_CLAUDE" "$STAGE/CLAUDE.md"
+    log "repo shipped no CLAUDE.md — installed neutral stub as baseline"
+fi
 
 # 3. launder git: single neutral fixed-date commit (kills `git log` mining)
 rm -rf .git

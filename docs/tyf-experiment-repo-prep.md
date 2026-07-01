@@ -89,9 +89,13 @@ find . -maxdepth 3 -iregex '.*\(changelog\|history\|news\|release\).*'
 - Neutralize/remove comments, docstrings, changelog entries, and **other tests/fixtures** that encode the fixed behavior.
 - Confirm the oracle's fixed assertions are **not present anywhere** in the agent tree (pre-fix tests are fine; they lack the fix).
 
-**Normalize the repo's own agent file (controls a confound):**
-- Delete the repo's shipped `CLAUDE.md` / `AGENTS.md`.
-- Drop in **one fixed neutral `CLAUDE.md`**, identical for conditions A and B. (C is the same file + the tyf snippet — see §5.)
+**Keep the repo's own `CLAUDE.md` verbatim (the within-project baseline):**
+- The experiment is a within-project **A-vs-D** contrast, so the repo's real
+  onboarding file *is* the baseline — do **not** replace it with a neutral stub.
+- A/B get it verbatim; C/D are the same file **+ the tyf snippet appended** (see §5).
+- Any uv/make guidance the file carries hits A and D symmetrically, so it does
+  not confound the snippet contrast. Fall back to the neutral stub only if the
+  repo ships no `CLAUDE.md` at all.
 
 **Launder git (kills `git log` mining; absence of git is itself a tell):**
 ```bash
@@ -116,9 +120,10 @@ From the laundered tree, make three snapshots:
 
 | Cond | tyf binary on PATH | `.claude/settings.json` allow | CLAUDE.md |
 |------|--------------------|-------------------------------|-----------|
-| A | absent | — | neutral, no snippet |
-| B | present | `Bash(tyf:*)` | neutral, no snippet |
-| C | present | `Bash(tyf:*)` | neutral **+ tyf snippet** |
+| A | absent | — | repo CLAUDE.md verbatim, no snippet |
+| B | present | `Bash(tyf:*)` | repo CLAUDE.md verbatim, no snippet |
+| C | present | `Bash(tyf:*)` | repo CLAUDE.md **+ standard tyf snippet** |
+| D | present | `Bash(tyf:*)` | repo CLAUDE.md **+ strong tyf snippet** |
 
 - The `Bash(tyf:*)` allow in `.claude/settings.json` is **mandatory for B/C headless** — without it tyf won't execute and C silently collapses to B.
 - Snapshot each as a read-only reference: `fixtures/<task>/<cond>/`.
