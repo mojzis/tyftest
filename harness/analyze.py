@@ -3,15 +3,17 @@
 Median + IQR per cell, C-vs-A / C-vs-B paired by task, gate/convergence/ty split.
 Directional only — pilot N is for debugging + variance, NOT tight CIs.
 
-Usage: analyze.py [results.jsonl]
+Usage: analyze.py [results.jsonl ...]
+Multiple files are concatenated — per-invocation result files (each round-script
+start writes its own timestamped jsonl) merge by just listing them / globbing.
 """
 import json
 import statistics as st
 import sys
 from collections import defaultdict
 
-PATH = sys.argv[1] if len(sys.argv) > 1 else "results/results.jsonl"
-rows = [json.loads(l) for l in open(PATH) if l.strip()]
+PATHS = sys.argv[1:] or ["results/results.jsonl"]
+rows = [json.loads(l) for p in PATHS for l in open(p) if l.strip()]
 
 
 def med_iqr(xs):
@@ -34,7 +36,7 @@ cells = defaultdict(list)
 for r in rows:
     cells[cell_key(r)].append(r)
 
-print(f"# Pilot read-out — {len(rows)} runs from {PATH}")
+print(f"# Pilot read-out — {len(rows)} runs from {', '.join(PATHS)}")
 print(f"# model(s): {sorted({r.get('model') or '?' for r in rows})}")
 print()
 print("## Per-cell (task × cond): pass@1, input_tokens med[IQR], tool_calls, tyf, $")

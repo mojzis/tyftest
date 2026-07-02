@@ -1,0 +1,2 @@
+tests/extract/test_sources.py::test_add_transform_steps
+tests/load/pipeline/test_merge_disposition.py::test_merge_record_updates[delete-insert-duckdb-no-staging]

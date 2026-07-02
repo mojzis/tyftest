@@ -40,8 +40,10 @@ log "git laundered -> single 'Initial import' commit"
 # MUST point ty at the project venv (VIRTUAL_ENV) or it falls back to an unrelated
 # environment and reports bogus unresolved-imports. Platform-optional modules that
 # legitimately aren't installed on Linux are NOT a degradation (tyf still resolves
-# first-party symbols) — filter them out.
-OPTIONAL_MODS='win_precise_time|winreg|_winapi|pwd|grp'
+# first-party symbols) — filter them out. Same for optional-integration deps
+# whose imports are runtime-guarded (function-local try/except ->
+# MissingDependencyException): not having them installed is the normal state.
+OPTIONAL_MODS='win_precise_time|winreg|_winapi|pwd|grp|airflow|connectorx'
 TY_STATUS="working"
 if [ -s "$HOLD/gold_files.txt" ]; then
     VIRTUAL_ENV="$VENV" PATH="$VENV/bin:$PATH" "$VENV/bin/ty" check $(cat "$HOLD/gold_files.txt") \

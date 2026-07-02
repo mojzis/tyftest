@@ -1,0 +1,703 @@
+diff --git a/dlt/_workspace/mcp/tools/data_tools.py b/dlt/_workspace/mcp/tools/data_tools.py
+index b19e6ea97..d6906d363 100644
+--- a/dlt/_workspace/mcp/tools/data_tools.py
++++ b/dlt/_workspace/mcp/tools/data_tools.py
+@@ -76,7 +76,7 @@ def get_workspace_info() -> Dict[str, Any]:
+ @with_mcp_tool_telemetry()
+ def list_profiles() -> List[Dict[str, Any]]:
+     """List all available workspace profiles with status flags (current, pinned, configured)."""
+-    return fetch_profiles_list()  # type: ignore[return-value]
++    return fetch_profiles_list()
+ 
+ 
+ @with_mcp_tool_telemetry()
+@@ -312,7 +312,7 @@ def get_local_pipeline_state(
+     """Get pipeline state: incremental cursors, resource state, and source state."""
+     try:
+         pipeline = _attach(pipeline_name)
+-        return pipeline.state  # type: ignore[return-value]
++        return pipeline.state
+     except Exception as e:
+         raise ToolError(
+             "Tool `get_local_pipeline_state` failed. Verify `pipeline_name`. "
+diff --git a/dlt/common/configuration/specs/base_configuration.py b/dlt/common/configuration/specs/base_configuration.py
+index 754014b6f..9c61394bc 100644
+--- a/dlt/common/configuration/specs/base_configuration.py
++++ b/dlt/common/configuration/specs/base_configuration.py
+@@ -102,9 +102,9 @@ def is_credentials_inner_hint(inner_hint: Type[Any]) -> bool:
+     return is_subclass(inner_hint, CredentialsConfiguration)
+ 
+ 
+-def get_config_if_union_hint(hint: Type[Any]) -> Type[Any]:
++def get_config_if_union_hint(hint: Type[Any]) -> Optional[Type[Any]]:
+     if is_union_type(hint):
+-        return next((t for t in get_args(hint) if is_base_configuration_inner_hint(t)), None)
++        return next((t for t in get_args(hint) if is_base_configuration_inner_hint(t)), None)  # type: ignore[no-any-return]
+     return None
+ 
+ 
+@@ -286,7 +286,7 @@ def configspec(
+         # this is not visible in derived classes that must be always decorated with configspec
+         cls.__configspec__ = classlocal(True, cls)  # type: ignore[attr-defined]
+         # do not generate repr as it may contain secret values
+-        return dataclasses.dataclass(cls, init=synth_init, eq=False, repr=False)  # type: ignore
++        return dataclasses.dataclass(cls, init=synth_init, eq=False, repr=False)
+ 
+     # called with parenthesis
+     if cls is None:
+diff --git a/dlt/common/libs/deltalake.py b/dlt/common/libs/deltalake.py
+index 7a8ee67ca..2ca260b0a 100644
+--- a/dlt/common/libs/deltalake.py
++++ b/dlt/common/libs/deltalake.py
+@@ -180,7 +180,7 @@ def deltalake_storage_options(
+     """Returns dict that can be passed as `storage_options` in `deltalake` library."""
+     creds = {}
+     extra_options = {}
+-    if isinstance(credentials, WithObjectStoreRsCredentials):
++    if credentials is not None and isinstance(credentials, WithObjectStoreRsCredentials):
+         creds = credentials.to_object_store_rs_credentials()
+     if storage_options is not None:
+         extra_options = storage_options
+diff --git a/dlt/common/libs/pydantic.py b/dlt/common/libs/pydantic.py
+index 7b90f8b85..0c9c9ed79 100644
+--- a/dlt/common/libs/pydantic.py
++++ b/dlt/common/libs/pydantic.py
+@@ -229,7 +229,7 @@ def pydantic_to_table_schema_columns(
+             inner_type = extract_inner_type(first_argument_type)
+ 
+         if inner_type is Json:  # Same as `field: Json[Any]`
+-            inner_type = Any  # type: ignore[assignment]
++            inner_type = Any
+ 
+         if inner_type is Any:  # Any fields will be inferred from data
+             continue
+diff --git a/dlt/common/pipeline.py b/dlt/common/pipeline.py
+index 75fe8e6df..e6c9e207e 100644
+--- a/dlt/common/pipeline.py
++++ b/dlt/common/pipeline.py
+@@ -197,7 +197,7 @@ class _ExtractInfo(NamedTuple):
+     first_run: bool
+ 
+ 
+-class ExtractInfo(StepInfo[ExtractMetrics], _ExtractInfo):  # type: ignore[misc]
++class ExtractInfo(StepInfo[ExtractMetrics], _ExtractInfo):
+     """A tuple holding information on extracted data items. Returned by pipeline `extract` method."""
+ 
+     def asdict(self) -> DictStrAny:
+@@ -259,7 +259,7 @@ class _NormalizeInfo(NamedTuple):
+     first_run: bool
+ 
+ 
+-class NormalizeInfo(StepInfo[NormalizeMetrics], _NormalizeInfo):  # type: ignore[misc]
++class NormalizeInfo(StepInfo[NormalizeMetrics], _NormalizeInfo):
+     """A tuple holding information on normalized data items. Returned by pipeline `normalize` method."""
+ 
+     @property
+@@ -327,7 +327,7 @@ class _LoadInfo(NamedTuple):
+     first_run: bool
+ 
+ 
+-class LoadInfo(StepInfo[LoadMetrics], _LoadInfo):  # type: ignore[misc]
++class LoadInfo(StepInfo[LoadMetrics], _LoadInfo):
+     """A tuple holding the information on recently loaded packages. Returned by pipeline `run` and `load` methods"""
+ 
+     def asdict(self) -> DictStrAny:
+diff --git a/dlt/common/reflection/ref.py b/dlt/common/reflection/ref.py
+index 3cd1c78c9..a87bb6293 100644
+--- a/dlt/common/reflection/ref.py
++++ b/dlt/common/reflection/ref.py
+@@ -94,7 +94,7 @@ class ImportTrace(NamedTuple):
+ 
+ def callable_typechecker(o: TAny) -> TAny:
+     if callable(o):
+-        return o  # type: ignore[no-any-return]
++        return o
+     raise TypeErrorWithKnownTypes("attr", o, ["Callable"])
+ 
+ 
+diff --git a/dlt/common/schema/schema.py b/dlt/common/schema/schema.py
+index 8b7ba561b..6b90aab85 100644
+--- a/dlt/common/schema/schema.py
++++ b/dlt/common/schema/schema.py
+@@ -343,7 +343,7 @@ class Schema:
+             try:
+                 settings = utils.get_inherited_table_hint(tables, table_name, "schema_contract")
+             except ValueError:
+-                settings = self._settings.get("schema_contract", {})
++                settings = self._settings.get("schema_contract", settings)
+ 
+         # expand settings, empty settings will expand into default settings
+         return Schema.expand_schema_contract_settings(settings)
+@@ -685,13 +685,13 @@ class Schema:
+             # TODO more specific error handling than ValueError
+             try:
+                 parent_ref = utils.create_parent_child_reference(self.tables, table_name)
+-                all_references.append(cast(TTableReferenceStandalone, parent_ref))
++                all_references.append(parent_ref)
+             except ValueError:
+                 pass
+ 
+             try:
+                 root_ref = utils.create_root_child_reference(self.tables, table_name)
+-                all_references.append(cast(TTableReferenceStandalone, root_ref))
++                all_references.append(root_ref)
+             except ValueError:
+                 pass
+ 
+@@ -699,7 +699,7 @@ class Schema:
+                 load_table_ref = utils.create_load_table_reference(
+                     self.tables[table_name], naming=self.naming
+                 )
+-                all_references.append(cast(TTableReferenceStandalone, load_table_ref))
++                all_references.append(load_table_ref)
+             except ValueError:
+                 pass
+ 
+@@ -712,7 +712,7 @@ class Schema:
+                 if top_level_ref.get("table") is None:
+                     top_level_ref["table"] = table_name
+ 
+-                all_references.append(cast(TTableReferenceStandalone, top_level_ref))
++                all_references.append(top_level_ref)
+ 
+         # internal references with `_dlt_version` need to be extracted once
+         try:
+@@ -722,8 +722,8 @@ class Schema:
+             version_table_schema_name_ref = utils.create_version_and_loads_schema_name_reference(
+                 self.tables, naming=self.naming
+             )
+-            all_references.append(cast(TTableReferenceStandalone, version_table_hash_ref))
+-            all_references.append(cast(TTableReferenceStandalone, version_table_schema_name_ref))
++            all_references.append(version_table_hash_ref)
++            all_references.append(version_table_schema_name_ref)
+         except ValueError:
+             pass
+ 
+diff --git a/dlt/common/storages/fsspecs/google_drive.py b/dlt/common/storages/fsspecs/google_drive.py
+index 0511a26eb..18a789ef0 100644
+--- a/dlt/common/storages/fsspecs/google_drive.py
++++ b/dlt/common/storages/fsspecs/google_drive.py
+@@ -538,7 +538,7 @@ class GoogleDriveFile(AbstractBufferedFile):
+             body=json.dumps(body).encode("utf-8"),
+         )
+         assert int(head["status"]) < 400, "Init upload failed"
+-        self.location = head["location"]  # type: ignore
++        self.location = head["location"]
+ 
+     def discard(self) -> None:
+         """Cancel in-progress multi-upload."""
+diff --git a/dlt/common/typing.py b/dlt/common/typing.py
+index 1a2e29b31..fd74bd167 100644
+--- a/dlt/common/typing.py
++++ b/dlt/common/typing.py
+@@ -470,8 +470,8 @@ def get_generic_type_argument_from_instance(
+     if cls_:
+         orig_param_type = get_args(cls_)[0]
+     if orig_param_type in (Any, CallableAny) and sample_value is not None:
+-        orig_param_type = type(sample_value)  # type: ignore[assignment]
+-    return orig_param_type  # type: ignore
++        orig_param_type = type(sample_value)
++    return orig_param_type
+ 
+ 
+ TInputArgs = ParamSpec("TInputArgs")
+diff --git a/dlt/dataset/dataset.py b/dlt/dataset/dataset.py
+index f3dd4699a..e8365e6ef 100644
+--- a/dlt/dataset/dataset.py
++++ b/dlt/dataset/dataset.py
+@@ -290,7 +290,7 @@ class Dataset:
+                 if dlt_load_id_col in self.schema.tables[table]["columns"].keys()
+             ]
+ 
+-        union_all_expr = None
++        union_all_expr: Optional[sge.Query] = None
+ 
+         for table_name in selected_tables:
+             counts_expr = build_row_counts_expr(
+diff --git a/dlt/destinations/impl/clickhouse/clickhouse.py b/dlt/destinations/impl/clickhouse/clickhouse.py
+index 5d11542d5..9419ca655 100644
+--- a/dlt/destinations/impl/clickhouse/clickhouse.py
++++ b/dlt/destinations/impl/clickhouse/clickhouse.py
+@@ -270,7 +270,7 @@ class ClickHouseClient(SqlJobClientWithStagingDataset, SupportsStagingDestinatio
+         dataset_name, staging_dataset_name = SqlJobClientWithStagingDataset.create_dataset_names(
+             schema, config
+         )
+-        self.sql_client: ClickHouseSqlClient = ClickHouseSqlClient(
++        self.sql_client: ClickHouseSqlClient = ClickHouseSqlClient(  # type: ignore[override]
+             dataset_name,
+             staging_dataset_name,
+             list(schema.tables.keys()),
+diff --git a/dlt/destinations/impl/clickhouse/factory.py b/dlt/destinations/impl/clickhouse/factory.py
+index b72c11462..84779669a 100644
+--- a/dlt/destinations/impl/clickhouse/factory.py
++++ b/dlt/destinations/impl/clickhouse/factory.py
+@@ -106,9 +106,9 @@ class ClickHouseTypeMapper(TypeMapperImpl):
+         if decimal_match := re.match(
+             r"Decimal\((?P<precision>\d+)\s*(?:,\s*(?P<scale>\d+))?\)", db_type
+         ):
+-            precision, scale = decimal_match.groups()
+-            precision = int(precision)
+-            scale = int(scale) if scale else 0
++            precision_str, scale_str = decimal_match.groups()
++            precision = int(precision_str)
++            scale = int(scale_str) if scale_str else 0
+             db_type = "Decimal"
+ 
+         if db_type == "Decimal" and (precision, scale) == self.capabilities.wei_precision:
+diff --git a/dlt/destinations/impl/clickhouse/sql_client.py b/dlt/destinations/impl/clickhouse/sql_client.py
+index f3d7de410..d94611aa8 100644
+--- a/dlt/destinations/impl/clickhouse/sql_client.py
++++ b/dlt/destinations/impl/clickhouse/sql_client.py
+@@ -142,7 +142,7 @@ class ClickHouseSqlClient(
+         sentinel_table_name = self.make_qualified_table_name(
+             self.config.dataset_sentinel_table_name
+         )
+-        sentinel_table_type = cast(TTableEngineType, self.config.table_engine_type)
++        sentinel_table_type = self.config.table_engine_type
+         self.execute_sql(f"""
+             CREATE TABLE {sentinel_table_name}
+             (_dlt_id String NOT NULL)
+diff --git a/dlt/destinations/impl/databricks/databricks.py b/dlt/destinations/impl/databricks/databricks.py
+index f4afbc8c3..7c7139ef5 100644
+--- a/dlt/destinations/impl/databricks/databricks.py
++++ b/dlt/destinations/impl/databricks/databricks.py
+@@ -320,7 +320,7 @@ class DatabricksClient(SqlJobClientWithStagingDataset, SupportsStagingDestinatio
+         )
+         super().__init__(schema, config, sql_client)
+         self.config: DatabricksClientConfiguration = config
+-        self.sql_client: DatabricksSqlClient = sql_client  # type: ignore[assignment, unused-ignore]
++        self.sql_client: DatabricksSqlClient = sql_client  # type: ignore[override, unused-ignore]
+         self.type_mapper = self.capabilities.get_type_mapper()
+         # PK and FK are created in SQL fragments, not inline
+ 
+diff --git a/dlt/destinations/impl/lancedb/jobs.py b/dlt/destinations/impl/lancedb/jobs.py
+index 1e6480d3e..b037f3e1e 100644
+--- a/dlt/destinations/impl/lancedb/jobs.py
++++ b/dlt/destinations/impl/lancedb/jobs.py
+@@ -44,9 +44,7 @@ class LanceDBLoadJob(RunnableLoadJob, HasFollowupJobs):
+     def run(self) -> None:
+         db_client: DBConnection = self._job_client.db_client
+         fq_table_name: str = self._job_client.make_qualified_table_name(self._table_schema["name"])
+-        write_disposition: TWriteDisposition = cast(
+-            TWriteDisposition, self._load_table.get("write_disposition", "append")
+-        )
++        write_disposition: TWriteDisposition = self._load_table.get("write_disposition", "append")
+ 
+         merge_key: str = None
+         if write_disposition == "merge":
+diff --git a/dlt/destinations/impl/lancedb/sql_client.py b/dlt/destinations/impl/lancedb/sql_client.py
+index 3dc173878..af698c31a 100644
+--- a/dlt/destinations/impl/lancedb/sql_client.py
++++ b/dlt/destinations/impl/lancedb/sql_client.py
+@@ -105,8 +105,8 @@ class LanceDBSQLClient(DuckDbSqlClient):
+ 
+     @contextmanager
+     @raise_database_error
+-    def execute_query(
+-        self, query: str, *args: Any, **kwargs: Any  # type: ignore[override]
++    def execute_query(  # type: ignore[override]
++        self, query: str, *args: Any, **kwargs: Any
+     ) -> Iterator[DBApiCursor]:
+         # replace generic string placeholder by DuckDB placeholders
+         if args or kwargs:
+diff --git a/dlt/destinations/impl/postgres/postgres.py b/dlt/destinations/impl/postgres/postgres.py
+index e4207a563..3e22bc228 100644
+--- a/dlt/destinations/impl/postgres/postgres.py
++++ b/dlt/destinations/impl/postgres/postgres.py
+@@ -169,7 +169,7 @@ class PostgresClient(InsertValuesJobClient):
+         )
+         super().__init__(schema, config, sql_client)
+         self.config: PostgresClientConfiguration = config
+-        self.sql_client: Psycopg2SqlClient = sql_client
++        self.sql_client: Psycopg2SqlClient = sql_client  # type: ignore[override]
+         self.active_hints = HINT_TO_POSTGRES_ATTR if self.config.create_indexes else {}
+         self.type_mapper = self.capabilities.get_type_mapper()
+ 
+diff --git a/dlt/destinations/impl/sqlalchemy/merge_job.py b/dlt/destinations/impl/sqlalchemy/merge_job.py
+index 8f2871132..b12d49f7f 100644
+--- a/dlt/destinations/impl/sqlalchemy/merge_job.py
++++ b/dlt/destinations/impl/sqlalchemy/merge_job.py
+@@ -350,7 +350,7 @@ class SqlalchemyMergeFollowupJob(SqlMergeFollowupJob):
+         result = sa.cast(result, sa.String)
+         for col in columns[1:]:
+             result = operator.add(result, sa.cast(col, sa.String))
+-        return result
++        return result  # type: ignore[no-any-return]
+ 
+     @classmethod
+     def gen_scd2_sql(
+diff --git a/dlt/extract/concurrency.py b/dlt/extract/concurrency.py
+index c69bc3405..dc64669b3 100644
+--- a/dlt/extract/concurrency.py
++++ b/dlt/extract/concurrency.py
+@@ -6,7 +6,8 @@ from concurrent.futures import (
+ )
+ import contextvars
+ from threading import Thread
+-from typing import Awaitable, Dict, Optional
++from collections.abc import Coroutine
++from typing import Dict, Optional
+ 
+ from dlt.common import logger
+ from dlt.common.exceptions import PipelineException
+@@ -113,7 +114,7 @@ class FuturesPool:
+ 
+         # submit to thread pool or async pool
+         item = pipe_item.item
+-        if isinstance(item, Awaitable):
++        if isinstance(item, Coroutine):
+             future = asyncio.run_coroutine_threadsafe(item, self._ensure_async_pool())
+         elif callable(item):
+             # pass pipe context to thread pool, happens automatically for coroutines
+diff --git a/dlt/extract/extractors.py b/dlt/extract/extractors.py
+index e1635c235..d81d923e6 100644
+--- a/dlt/extract/extractors.py
++++ b/dlt/extract/extractors.py
+@@ -93,10 +93,13 @@ def with_file_import(
+     metrics = DataWriterMetrics(file_path, items_count, 0, 0, 0)
+     item: TDataItem = None
+     # if hints are dict assume that this is dlt schema, if not - that it is arrow table
++    resource_hints: Optional[TResourceHints] = hints
+     if not isinstance(hints, dict):
+         item = hints
+-        hints = None
+-    return DataItemWithMeta(ImportFileMeta(file_path, metrics, file_format, hints, False), item)
++        resource_hints = None
++    return DataItemWithMeta(
++        ImportFileMeta(file_path, metrics, file_format, resource_hints, False), item
++    )
+ 
+ 
+ class Extractor:
+diff --git a/dlt/extract/hints.py b/dlt/extract/hints.py
+index b81691c75..efff31d3e 100644
+--- a/dlt/extract/hints.py
++++ b/dlt/extract/hints.py
+@@ -780,14 +780,12 @@ class DltResourceHints:
+                     ):
+                         continue  # None is allowed for active_record_timestamp
+                     if ts in wd:
+-                        if wd[ts] is None:  # type: ignore[literal-required]
++                        if wd[ts] is None:
+                             continue
+                         try:
+-                            ensure_pendulum_datetime_utc(wd[ts])  # type: ignore[literal-required]
++                            ensure_pendulum_datetime_utc(wd[ts])
+                         except Exception:
+-                            raise ValueError(
+-                                f"could not parse `{ts}` value `{wd[ts]}`"  # type: ignore[literal-required]
+-                            )
++                            raise ValueError(f"could not parse `{ts}` value `{wd[ts]}`")
+ 
+     @staticmethod
+     def validate_reference_hint(template: TResourceHints) -> None:
+diff --git a/dlt/extract/incremental/__init__.py b/dlt/extract/incremental/__init__.py
+index 7b3608031..6c785a0a5 100644
+--- a/dlt/extract/incremental/__init__.py
++++ b/dlt/extract/incremental/__init__.py
+@@ -218,6 +218,8 @@ class Incremental(
+             "initial_unique_hashes_count": 0,
+             "final_unique_hashes_count": 0,
+         }
++        self._dedup_key_from_hints: Optional[bool] = False if primary_key is not None else None
++        """Tells if dedup key was set from resource hints, to prevent overrides of directly set values"""
+ 
+     @property
+     def primary_key(self) -> Optional[TTableHintTemplate[TColumnNames]]:
+@@ -225,8 +227,21 @@ class Incremental(
+ 
+     @primary_key.setter
+     def primary_key(self, value: str) -> None:
++        # set deduplication key directly
++        self.set_deduplication_key(value, from_hints=False)
++
++    def set_deduplication_key(
++        self, value: Optional[TTableHintTemplate[TColumnNames]], from_hints: bool
++    ) -> None:
++        """Set deduplication key. Manage priority with `from_hints` flag so values coming
++        from hints never overwrite values set directly"""
++        # do not allow to set primary key is it is being set from resource hints
++        # but was already set directly on incremental
++        if from_hints and self._dedup_key_from_hints is False:
++            return
+         # set key in incremental and data type transformers
+         self._primary_key = value
++        self._dedup_key_from_hints = from_hints
+         if self._transformers:
+             for transform in self._transformers.values():
+                 transform.primary_key = value
+@@ -253,12 +268,15 @@ class Incremental(
+         """
+         # func, resource name and primary key are not part of the dict
+         kwargs = dict(
+-            self, last_value_func=self.last_value_func, primary_key=self._primary_key, lag=self.lag
++            self,
++            last_value_func=self.last_value_func,
++            primary_key=self._primary_key,
++            lag=self.lag,
+         )
+         for key, value in dict(
+             other,
+             last_value_func=other.last_value_func,
+-            primary_key=other.primary_key,
++            primary_key=other._primary_key,
+             lag=other.lag,
+         ).items():
+             if value is not None:
+@@ -275,6 +293,8 @@ class Incremental(
+         merged.resource_name = self.resource_name
+         if other.resource_name:
+             merged.resource_name = other.resource_name
++        if other._dedup_key_from_hints is not None:
++            merged._dedup_key_from_hints = other._dedup_key_from_hints
+         # also pass if resolved
+         merged.__is_resolved__ = other.__is_resolved__
+         merged.__exception__ = other.__exception__
+@@ -667,24 +687,40 @@ class IncrementalResourceWrapper(ItemTransform[TDataItem, IncrementalCustomMetri
+     _incremental: Optional[Incremental[Any]] = None
+     """Keeps the injectable incremental"""
+     _from_hints: bool = False
+-    """If True, incremental was set explicitly from_hints"""
++    """If True, incremental was set explicitly from hints"""
+     _resource_name: str = None
+ 
+-    def __init__(self, primary_key: Optional[TTableHintTemplate[TColumnNames]] = None) -> None:
++    def __init__(self) -> None:
+         """Creates a wrapper over a resource function that accepts Incremental instance in its argument to perform incremental loading.
+ 
+         The wrapper delays instantiation of the Incremental to the moment of actual execution and is currently used by `dlt.resource` decorator.
+         The wrapper explicitly (via `resource_name`) parameter binds the Incremental state to a resource state.
+         Note that wrapper implements `FilterItem` transform interface and functions as a processing step in the before-mentioned resource pipe.
+-
+-        Args:
+-            primary_key (TTableHintTemplate[TColumnKey], optional): A primary key to be passed to Incremental Instance at execution. Defaults to None.
+         """
+-        self.primary_key = primary_key
++        self._primary_key: Optional[TTableHintTemplate[TColumnNames]] = None
+         self.incremental_state: IncrementalColumnState = None
+         self._allow_external_schedulers: bool = None
+         self._bound_pipe: SupportsPipe = None
+ 
++    @property
++    def primary_key(self) -> Optional[TTableHintTemplate[TColumnNames]]:
++        return self._primary_key
++
++    @primary_key.setter
++    def primary_key(self, value: Optional[TTableHintTemplate[TColumnNames]]) -> None:
++        if self._incremental is not None:
++            self._incremental.set_deduplication_key(value, from_hints=True)
++            self._primary_key = self._incremental.primary_key
++        else:
++            self._primary_key = value
++
++    def set_deduplication_key(
++        self, value: Optional[TTableHintTemplate[TColumnNames]], from_hints: Literal[True]
++    ) -> None:
++        """Set deduplication key, wrapper is always called from resource so from_hints must be always True"""
++        assert from_hints is True
++        self.primary_key = value
++
+     @staticmethod
+     def should_wrap(sig: inspect.Signature) -> bool:
+         return IncrementalResourceWrapper.get_incremental_arg(sig) is not None
+@@ -810,6 +846,12 @@ class IncrementalResourceWrapper(ItemTransform[TDataItem, IncrementalCustomMetri
+             incremental = Incremental.ensure_instance(incremental)
+         self._from_hints = from_hints
+         self._incremental = incremental
++        # sync primary_key between wrapper and inner incremental
++        if incremental is not None:
++            if self._primary_key is not None:
++                incremental.set_deduplication_key(self._primary_key, from_hints=True)
++            if incremental._primary_key is not None:
++                self._primary_key = incremental.primary_key
+ 
+     @property
+     def allow_external_schedulers(self) -> bool:
+@@ -845,11 +887,6 @@ class IncrementalResourceWrapper(ItemTransform[TDataItem, IncrementalCustomMetri
+     def __call__(self, item: TDataItems, meta: Any = None) -> Optional[TDataItems]:
+         if not self._incremental:
+             return item
+-        if self._incremental.primary_key is None:
+-            self._incremental.primary_key = self.primary_key
+-        elif self.primary_key is None:
+-            # propagate from incremental
+-            self.primary_key = self._incremental.primary_key
+         return self._incremental(item, meta)
+ 
+ 
+diff --git a/dlt/extract/incremental/transform.py b/dlt/extract/incremental/transform.py
+index 634897bcb..840bd4bf0 100644
+--- a/dlt/extract/incremental/transform.py
++++ b/dlt/extract/incremental/transform.py
+@@ -201,7 +201,7 @@ class IncrementalTransform:
+         return self._primary_key
+ 
+     @primary_key.setter
+-    def primary_key(self, value: str) -> None:
++    def primary_key(self, value: Optional[TTableHintTemplate[TColumnNames]]) -> None:
+         self._primary_key = value
+         self.boundary_deduplication = not self.compute_deduplication_disabled()
+ 
+diff --git a/dlt/extract/pipe.py b/dlt/extract/pipe.py
+index 383c77a7d..6ad03a67d 100644
+--- a/dlt/extract/pipe.py
++++ b/dlt/extract/pipe.py
+@@ -137,9 +137,9 @@ class Pipe(SupportsPipe):
+         """Finds all steps with object of type `step_type`"""
+         return [i for i, v in enumerate(self._steps) if isinstance(v, step_type)]
+ 
+-    def get_by_type(self, *step_type: AnyType) -> TPipeStep:
++    def get_by_type(self, *step_type: AnyType) -> Optional[TPipeStep]:
+         """Gets first step found with object of type `step_type`"""
+-        return next((v for v in self._steps if isinstance(v, step_type)), None)
++        return next((v for v in self._steps if isinstance(v, step_type)), None)  # type: ignore[no-any-return]
+ 
+     def remove_by_type(self, *step_type: AnyType) -> int:
+         """Deletes first step found with object of type `step_type`, returns previous index"""
+diff --git a/dlt/extract/resource.py b/dlt/extract/resource.py
+index b5782137f..1f3f9d9cf 100644
+--- a/dlt/extract/resource.py
++++ b/dlt/extract/resource.py
+@@ -474,9 +474,7 @@ class DltResource(Iterable[TDataItem], DltResourceHints):
+         self._pipe.remove_by_type(Incremental, IncrementalResourceWrapper)
+ 
+     def set_incremental(
+-        self,
+-        new_incremental: Union[Incremental[Any], IncrementalResourceWrapper],
+-        from_hints: bool = False,
++        self, new_incremental: Union[Incremental[Any], IncrementalResourceWrapper]
+     ) -> Optional[Union[Incremental[Any], IncrementalResourceWrapper]]:
+         """Set/replace the incremental transform for the resource.
+ 
+@@ -486,6 +484,10 @@ class DltResource(Iterable[TDataItem], DltResourceHints):
+         """
+         if new_incremental is Incremental.EMPTY:
+             new_incremental = None
++        if new_incremental:
++            # set primary key as dedup key on new incremental
++            if resource_primary_key := self._hints.get("primary_key"):
++                new_incremental.set_deduplication_key(resource_primary_key, from_hints=True)
+         incremental = self.incremental
+         if incremental is not None:
+             # if isinstance(new_incremental, Mapping):
+@@ -496,7 +498,7 @@ class DltResource(Iterable[TDataItem], DltResourceHints):
+                 self._remove_incremental_step()
+                 self.add_step(new_incremental)
+             elif isinstance(incremental, IncrementalResourceWrapper):
+-                incremental.set_incremental(new_incremental, from_hints=from_hints)
++                incremental.set_incremental(new_incremental, from_hints=True)
+             else:
+                 self._remove_incremental_step()
+                 # re-add the step
+@@ -517,16 +519,12 @@ class DltResource(Iterable[TDataItem], DltResourceHints):
+         if not create_table_variant:
+             # try to late assign incremental
+             if table_schema_template.get("incremental") is not None:
+-                incremental = self.set_incremental(
+-                    table_schema_template["incremental"], from_hints=True
+-                )
+-            else:
+-                incremental = self.incremental
+-
+-            if incremental:
+-                primary_key = table_schema_template.get("primary_key", incremental.primary_key)
+-                if primary_key is not None:
+-                    incremental.primary_key = primary_key
++                self.set_incremental(table_schema_template["incremental"])
++            elif incremental := self.incremental:
++                # set primary key as dedup key on new incremental
++                resource_primary_key = self._hints.get("primary_key")
++                if resource_primary_key is not None:
++                    incremental.set_deduplication_key(resource_primary_key, from_hints=True)
+ 
+             if table_schema_template.get("validator") is not None:
+                 self.validator = table_schema_template["validator"]
+@@ -714,7 +712,7 @@ class DltResource(Iterable[TDataItem], DltResourceHints):
+         incremental: IncrementalResourceWrapper = None
+         sig = inspect.signature(gen)
+         if IncrementalResourceWrapper.should_wrap(sig):
+-            incremental = IncrementalResourceWrapper(self._hints.get("primary_key"))
++            incremental = IncrementalResourceWrapper()
+             if incr_hint := self._hints.get("incremental"):
+                 incremental.set_incremental(
+                     incr_hint,
+diff --git a/dlt/extract/utils.py b/dlt/extract/utils.py
+index 215735c40..6de3c9409 100644
+--- a/dlt/extract/utils.py
++++ b/dlt/extract/utils.py
+@@ -138,9 +138,7 @@ def ensure_table_schema_columns_hint(
+     if callable(columns) and not isinstance(columns, type):
+ 
+         def wrapper(item: TDataItem) -> TTableSchemaColumns:
+-            return ensure_table_schema_columns(
+-                cast(TFunHintTemplate[TAnySchemaColumns], columns)(item)
+-            )
++            return ensure_table_schema_columns(columns(item))
+ 
+         return wrapper
+ 
+diff --git a/dlt/helpers/dbml.py b/dlt/helpers/dbml.py
+index 50d383259..14955fd93 100644
+--- a/dlt/helpers/dbml.py
++++ b/dlt/helpers/dbml.py
+@@ -122,7 +122,7 @@ def _from_dbml_column(column: Column) -> TColumnSchema:
+             **_destringify_dict(column.properties),
+         },
+     )
+-    return cast(TColumnSchema, remove_column_defaults(hints))
++    return remove_column_defaults(hints)
+ 
+ 
+ def _to_dbml_table(table_hints: TTableSchema) -> Table:
+diff --git a/dlt/sources/rest_api/config_setup.py b/dlt/sources/rest_api/config_setup.py
+index 0721abeb7..8f2b18eb4 100644
+--- a/dlt/sources/rest_api/config_setup.py
++++ b/dlt/sources/rest_api/config_setup.py
+@@ -582,7 +582,6 @@ def _handle_response_action(
+     if callable(action):
+         custom_hooks = [action]
+     else:
+-        action = cast(ResponseActionDict, action)
+         status_code = action.get("status_code")
+         content_substr = action.get("content")
+         response_action = action.get("action")
+diff --git a/dlt/sources/sql_database/helpers.py b/dlt/sources/sql_database/helpers.py
+index 43e464d48..a0eb4f2c6 100644
+--- a/dlt/sources/sql_database/helpers.py
++++ b/dlt/sources/sql_database/helpers.py
+@@ -487,13 +487,6 @@ def table_rows(
+             resolve_foreign_keys=resolve_foreign_keys,
+         )
+ 
+-        # set the primary_key in the incremental
+-        # TODO: check for primary key in resource._hints
+-        if incremental and incremental.primary_key is None:
+-            primary_key = hints["primary_key"]
+-            if primary_key is not None:
+-                incremental.primary_key = primary_key
+-
+         # Merge resource hints with reflection hints before yielding
+         if resource and hints.get("columns") and not callable(resource.columns):
+             hints["columns"] = merge_columns(hints["columns"], resource.columns)
+diff --git a/tests/sources/rest_api/configurations/source_configs.py b/tests/sources/rest_api/configurations/source_configs.py
+index 4e6559d0f..3e069f834 100644
+--- a/tests/sources/rest_api/configurations/source_configs.py
++++ b/tests/sources/rest_api/configurations/source_configs.py
+@@ -252,7 +252,7 @@ VALID_CONFIGS: List[RESTAPIConfig] = [
+         "client": {
+             "base_url": "https://example.com",
+             "paginator": CustomPaginator(),
+-            "auth": CustomOAuthAuth(access_token=cast(TSecretStrValue, "X")),
++            "auth": CustomOAuthAuth(access_token="X"),
+         },
+         "resource_defaults": {
+             "table_name": lambda event: event["type"],
+@@ -275,7 +275,7 @@ VALID_CONFIGS: List[RESTAPIConfig] = [
+         "client": {
+             "base_url": "https://example.com",
+             "paginator": "header_link",
+-            "auth": HttpBasicAuth("my-secret", cast(TSecretStrValue, "")),
++            "auth": HttpBasicAuth("my-secret", ""),
+         },
+         "resources": ["users"],
+     },

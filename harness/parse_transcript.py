@@ -45,8 +45,11 @@ def main():
     bytes_read = 0
 
     result = None
+    session_id = None
     for ev in events:
         t = ev.get("type")
+        if session_id is None and ev.get("session_id"):
+            session_id = ev["session_id"]
         if t == "assistant":
             for blk in ev.get("message", {}).get("content", []):
                 if blk.get("type") != "tool_use":
@@ -81,6 +84,7 @@ def main():
 
     out = {
         "parsed_ok": result is not None,
+        "session_id": session_id,
         "tool_counts": tool_counts,
         "tool_calls_total": sum(tool_counts.values()),
         "tyf_invocations": tyf_invocations,

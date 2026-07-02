@@ -1,0 +1,180 @@
+diff --git a/dlt/common/normalizers/json/__init__.py b/dlt/common/normalizers/json/__init__.py
+index ae5e06fe2..80d6a6c69 100644
+--- a/dlt/common/normalizers/json/__init__.py
++++ b/dlt/common/normalizers/json/__init__.py
+@@ -10,8 +10,10 @@ else:
+ 
+ # type definitions for json normalization function
+ 
+-# iterator of form ((table_name, parent_table), dict) must be returned from normalization function
+-TNormalizedRowIterator = Generator[Tuple[Tuple[str, str], StrAny], bool, None]
++# iterator of form ((table_name, parent_path, ident_path), dict) must be returned from normalization function
++TNormalizedRowIterator = Generator[
++    Tuple[Tuple[str, Tuple[str, ...], Tuple[str, ...]], StrAny], bool, None
++]
+ 
+ # type var for data item normalizer config
+ TNormalizerConfig = TypeVar("TNormalizerConfig", bound=Any)
+diff --git a/dlt/common/normalizers/json/relational.py b/dlt/common/normalizers/json/relational.py
+index b5cc91442..791cbf4fc 100644
+--- a/dlt/common/normalizers/json/relational.py
++++ b/dlt/common/normalizers/json/relational.py
+@@ -247,7 +247,7 @@ class DataItemNormalizer(DataItemNormalizerBase[RelationalNormalizerConfig]):
+                 wrap_v = wrap_in_dict(self.c_value, v)
+                 DataItemNormalizer._extend_row(extend, wrap_v)
+                 self._add_row_id(table, wrap_v, wrap_v, parent_row_id, idx, is_root)
+-                yield (table, self._shorten_fragments(*parent_path)), wrap_v
++                yield (table, parent_path, ident_path), wrap_v
+ 
+     def _normalize_row(
+         self,
+@@ -279,10 +279,7 @@ class DataItemNormalizer(DataItemNormalizerBase[RelationalNormalizerConfig]):
+         extend.update(self._get_propagated_values(table, flattened_row, is_root))
+ 
+         # yield parent table first
+-        should_descend = yield (
+-            (table, self._shorten_fragments(*parent_path)),
+-            flattened_row,
+-        )
++        should_descend = yield (table, parent_path, ident_path), flattened_row
+         if should_descend is False:
+             return
+ 
+diff --git a/dlt/common/schema/utils.py b/dlt/common/schema/utils.py
+index 88336a92d..e237e5fb1 100644
+--- a/dlt/common/schema/utils.py
++++ b/dlt/common/schema/utils.py
+@@ -900,19 +900,44 @@ def get_root_table(tables: TSchemaTables, table_name: str) -> TTableSchema:
+     return table
+ 
+ 
+-def get_nested_tables(tables: TSchemaTables, table_name: str) -> List[TTableSchema]:
++def get_nested_tables(
++    tables: TSchemaTables,
++    table_name: str,
++    max_nesting: Optional[int] = None,
++    include_self: Optional[bool] = True,
++) -> List[TTableSchema]:
+     """Get nested tables for table name and return a list of tables ordered by ancestry so the nested tables are always after their parents
+ 
+     Note that this function follows only NESTED TABLE reference typically expressed on _dlt_parent_id (PARENT_KEY) to _dlt_id (ROW_KEY).
++
++    Args:
++        tables (TSchemaTables): A mapping of table names to their table schema definitions. This is used to look up the root table
++            and to recursively find its nested child tables by following their "parent" references.
++        table_name (str): The name of the root table from which to collect nested tables.
++        max_nesting (Optional[int]): If specified, limits the depth of nesting. 0 = only the root table, 1 = root + direct children, etc.
++        include_self (Optional[bool]): If False, the root table itself is excluded from the returned list.
++
++    Returns:
++        List[TTableSchema]: A list of nested tables.
+     """
++    if table_name not in tables:
++        return []
++
+     chain: List[TTableSchema] = []
+ 
+-    def _child(t: TTableSchema) -> None:
++    def _child(t: TTableSchema, current_level: int = 0) -> None:
+         name = t["name"]
+-        chain.append(t)
++
++        if include_self or current_level > 0:
++            chain.append(t)
++
++        # Stop recursion if we've reached max nesting level
++        if max_nesting is not None and current_level >= max_nesting:
++            return
++
+         for candidate in tables.values():
+             if is_nested_table(candidate) and candidate.get("parent") == name:
+-                _child(candidate)
++                _child(candidate, current_level + 1)
+ 
+     _child(tables[table_name])
+     return chain
+diff --git a/dlt/normalize/items_normalizers.py b/dlt/normalize/items_normalizers.py
+index 45061920e..68460b11d 100644
+--- a/dlt/normalize/items_normalizers.py
++++ b/dlt/normalize/items_normalizers.py
+@@ -1,6 +1,7 @@
+ from copy import copy
+ from typing import List, Dict, Sequence, Set, Any, Optional, Tuple
+ from abc import abstractmethod
++from functools import lru_cache
+ 
+ import sqlglot
+ 
+@@ -387,6 +388,9 @@ class JsonLItemsNormalizer(ItemsNormalizer):
+         self._filtered_tables_columns: Dict[str, Dict[str, TSchemaEvolutionMode]] = {}
+         # quick access to column schema for writers below
+         self._column_schemas: Dict[str, TTableSchemaColumns] = {}
++        self._full_ident_path_tracker: Dict[str, Tuple[str, ...]] = {}
++        self._shorten_fragments = lru_cache(maxsize=None)(self.schema.naming.shorten_fragments)
++        self._check_table_exists = lru_cache(maxsize=None)(self._check_if_table_exists_impl)
+ 
+     def _filter_columns(
+         self, filtered_columns: Dict[str, TSchemaEvolutionMode], row: DictStrAny
+@@ -415,7 +419,13 @@ class JsonLItemsNormalizer(ItemsNormalizer):
+                 # use send to prevent descending into child rows when row was discarded
+                 while row_info := items_gen.send(should_descend):
+                     should_descend = True
+-                    (table_name, parent_table), row = row_info
++                    (table_name, parent_path, ident_path), row = row_info
++
++                    # track full ident paths of tables
++                    if table_name not in self._full_ident_path_tracker:
++                        self._full_ident_path_tracker[table_name] = parent_path + ident_path
++
++                    parent_table = self._shorten_fragments(*parent_path)
+ 
+                     # rows belonging to filtered out tables are skipped
+                     if table_name in self._filtered_tables:
+@@ -590,11 +600,37 @@ class JsonLItemsNormalizer(ItemsNormalizer):
+             column_schema["variant"] = is_variant
+         return column_schema
+ 
++    def _check_if_table_exists_impl(self, ident_path: Tuple[str, ...], col_name: str) -> bool:
++        """Check if the combination of ident_path and col_name represents an existing table.
++
++        This method performs the expensive operations of:
++        1. Calling shorten_fragments to compute the possible table name
++        2. Looking up the table in schema._schema_tables
++
++        Results are cached via _check_table_exists to avoid repeated computation
++        for the same ident_path + col_name combinations during normalization.
++
++        Args:
++            ident_path (Tuple[str, ...]): Tuple of normalized path fragments leading to the column
++            col_name (str): Name of the column to check
++
++        Returns:
++            bool: True if a table exists for this path combination, False otherwise
++        """
++        possible_table_name = self._shorten_fragments(*ident_path, col_name)
++        return possible_table_name in self.schema._schema_tables
++
+     def _coerce_null_value(
+         self, table_columns: TTableSchemaColumns, table_name: str, col_name: str
+     ) -> Optional[TColumnSchema]:
+         """Raises when column is explicitly not nullable or creates unbounded column"""
+         existing_column = table_columns.get(col_name)
++        # If it exists as a direct child table, don't infer
++        if not existing_column:
++            # Use cached table existence check to avoid expensive repeated lookups
++            full_ident_path = self._full_ident_path_tracker.get(table_name)
++            if full_ident_path and self._check_table_exists(full_ident_path, col_name):
++                return None
+         if existing_column and utils.is_complete_column(existing_column):
+             if not utils.is_nullable_column(existing_column):
+                 raise CannotCoerceNullException(self.schema.name, table_name, col_name)
+diff --git a/tests/common/normalizers/custom_normalizers.py b/tests/common/normalizers/custom_normalizers.py
+index 4a0f456ee..02069133f 100644
+--- a/tests/common/normalizers/custom_normalizers.py
++++ b/tests/common/normalizers/custom_normalizers.py
+@@ -27,4 +27,4 @@ class DataItemNormalizer(RelationalNormalizer):
+     def normalize_data_item(
+         self, source_event: TDataItem, load_id: str, table_name
+     ) -> TNormalizedRowIterator:
+-        yield (table_name, None), source_event
++        yield (table_name, (), ()), source_event

@@ -1,0 +1,6 @@
+tests/extract/test_incremental.py::test_incremental_dedup_key_survives_resource_pk[dedup_key0-object]
+tests/extract/test_incremental.py::test_incremental_dedup_key_survives_resource_pk[alt_id-object]
+tests/extract/test_incremental.py::test_decorator_incremental_pk_not_overridden[object]
+tests/extract/test_incremental.py::test_non_aware_resource_incremental_pk_not_overridden[object]
+tests/extract/test_incremental.py::test_apply_hints_primary_key_does_not_override_incremental_empty_tuple[object]
+tests/extract/test_incremental.py::test_apply_hints_primary_key_does_not_override_incremental_empty_tuple[arrow-table]

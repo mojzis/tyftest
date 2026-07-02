@@ -1,0 +1,10 @@
+task_id:      dlt-140
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      a2e09f28d
+prompt_file:  holdout/dlt-140/prompt.txt
+gold_files:   dlt/extract/incremental/__init__.py,dlt/extract/incremental/transform.py,dlt/extract/resource.py,dlt/sources/sql_database/helpers.py
+oracle_patch: holdout/dlt-140/oracle.patch
+oracle_tests: [tests/extract/test_incremental.py::test_incremental_dedup_key_survives_resource_pk[dedup_key0-object], tests/extract/test_incremental.py::test_incremental_dedup_key_survives_resource_pk[alt_id-object], tests/extract/test_incremental.py::test_decorator_incremental_pk_not_overridden[object], tests/extract/test_incremental.py::test_non_aware_resource_incremental_pk_not_overridden[object], tests/extract/test_incremental.py::test_apply_hints_primary_key_does_not_override_incremental_empty_tuple[object], tests/extract/test_incremental.py::test_apply_hints_primary_key_does_not_override_incremental_empty_tuple[arrow-table]]
+pass_to_pass: [tests/extract/test_incremental.py::test_incremental_explicit_disable_unique_check[object], tests/extract/test_incremental.py::test_apply_hints_incremental[object]]
+ty_status:    working

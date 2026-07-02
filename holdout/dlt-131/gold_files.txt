@@ -1,0 +1,8 @@
+dlt/common/schema/schema.py
+dlt/common/schema/typing.py
+dlt/common/schema/utils.py
+dlt/destinations/impl/clickhouse/clickhouse_adapter.py
+dlt/extract/extractors.py
+dlt/extract/hints.py
+dlt/sources/rest_api/config_setup.py
+docs/website/docs/general-usage/snippets/schema-snippets.py

@@ -1,0 +1,10 @@
+task_id:      dlt-131
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      97b3e2e44
+prompt_file:  holdout/dlt-131/prompt.txt
+gold_files:   dlt/common/schema/schema.py,dlt/common/schema/typing.py,dlt/common/schema/utils.py,dlt/destinations/impl/clickhouse/clickhouse_adapter.py,dlt/extract/extractors.py,dlt/extract/hints.py,dlt/sources/rest_api/config_setup.py,docs/website/docs/general-usage/snippets/schema-snippets.py
+oracle_patch: holdout/dlt-131/oracle.patch
+oracle_tests: [tests/extract/test_sources.py::test_apply_hints, tests/extract/test_sources.py::test_apply_hints_keys[primary_key], tests/extract/test_sources.py::test_apply_hints_keys[merge_key], tests/load/pipeline/test_merge_disposition.py::test_replacing_merge_key[duckdb-no-staging]]
+pass_to_pass: [tests/extract/test_sources.py::test_add_transform_steps, tests/load/pipeline/test_merge_disposition.py::test_merge_record_updates[delete-insert-duckdb-no-staging]]
+ty_status:    working

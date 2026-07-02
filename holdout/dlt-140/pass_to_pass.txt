@@ -1,0 +1,2 @@
+tests/extract/test_incremental.py::test_incremental_explicit_disable_unique_check[object]
+tests/extract/test_incremental.py::test_apply_hints_incremental[object]

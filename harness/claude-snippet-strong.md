@@ -1,29 +1,21 @@
-### MANDATORY: use `tyf` for every Python symbol lookup
+### `tyf` — Python symbol lookup
 
-This project ships **`tyf`**, a type-aware navigation tool backed by a real LSP
-(ty). For ANY question about a Python symbol — where it is defined, its
-signature, who calls it, what a class exposes, or what a file contains — `tyf`
-is the correct and required tool. **Use it before Grep, ripgrep, or opening a
-file to search.** Reaching for grep/Read to locate or inspect a Python symbol
-when `tyf` is available is a mistake: grep matches raw text (comments, strings,
-unrelated names) and then forces you to read files to confirm, while `tyf`
-resolves the actual symbol through the type system and returns the precise
-definition, signature, and every real reference in a single call — faster, more
-accurate, and far cheaper in tokens.
+`tyf` resolves Python symbols through the type system (ty LSP). One call
+returns the exact definition, signature, and every real reference — the
+answer, not text matches you still have to open files to verify. For symbol
+questions it's faster, more accurate, and cheaper in tokens than grep.
 
-**Do this before editing anything:**
+Catch yourself before running `grep "def X"` / `grep "class X"` or opening a
+file to find a symbol — that's a `tyf` call:
 
-- Locate a symbol → `tyf find Name` — do **not** grep for `def Name` / `class Name`.
-- Understand a function/method → `tyf show name` (signature; add `-d` docs,
-  `-r` refs, `-t` test refs, or `--all`) instead of opening the file to read it.
-- Before you change, rename, or delete a symbol → `tyf refs name` to see every
-  call site. Grep will miss dynamic uses and over-match unrelated text; `tyf`
-  gives the real reference set, so you won't break callers.
-- A class's public API → `tyf members ClassName`.
-- A file's outline → `tyf list path/to/file.py`.
+- `tyf find Name` — definition location
+- `tyf show name` — signature (`-d` docs, `-r` refs, `-t` test refs, `--all`)
+- `tyf refs name` — every call site; check before changing, renaming, or
+  deleting anything, so you don't break callers grep can't see
+- `tyf members Class` — public API
+- `tyf list file.py` — file outline
 
-Every command accepts multiple symbols — **batch them in one call** to save round
-trips. Run `tyf <cmd> --help` for options.
+Every command takes multiple symbols — batch them in one call.
 
-Only fall back to Grep for genuinely non-symbol text: string literals, config
-keys, TODOs, log messages, and non-Python files.
+grep is for non-symbols: string literals, config keys, log messages,
+non-Python files.

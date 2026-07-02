@@ -1,0 +1,4 @@
+tests/extract/test_sources.py::test_apply_hints
+tests/extract/test_sources.py::test_apply_hints_keys[primary_key]
+tests/extract/test_sources.py::test_apply_hints_keys[merge_key]
+tests/load/pipeline/test_merge_disposition.py::test_replacing_merge_key[duckdb-no-staging]

@@ -23,7 +23,12 @@ case "$REPO" in
     REPO_CORE="dlt"                     # core package dir for task mining
     REPO_PKG="dlt"                      # import name (uninstalled so cwd source wins)
     PY_VER=""                           # default interpreter is fine
-    OFFLINE_DEPS="duckdb"               # embedded/in-memory libs that still count as offline
+    OFFLINE_DEPS="duckdb hexbytes pyarrow pandas botocore pydantic"
+                                        # embedded/in-memory libs that still count as offline
+                                        # (hexbytes: hard import in dlt<1.28 trees, e.g. dlt-120's pre-fix tree)
+                                        # (pyarrow/pandas/botocore: module-level imports on dlt-131's
+                                        #  oracle path in tests/load/pipeline; pydantic: optional dlt dep,
+                                        #  without it ty flags a false unresolved-import in schema/typing.py)
     install_stack() {
         upin install ty $OFFLINE_DEPS >/dev/null
         # editable WITH deps, then install the PINNED test stack (PEP-735 dev group;
@@ -89,6 +94,11 @@ list_tasks() { ls "$ROOT/holdout" 2>/dev/null | sort; }
 
 # --- run discipline ---
 MODEL="${MODEL:-sonnet}"                 # pinned; actual id recorded per row
+# Session naming: joins introspect/session searches to result rows. RUN_TAG
+# disambiguates rounds (set it in run_*.sh round scripts); name is display-only
+# metadata, NOT injected into model context, so no condition leak.
+RUN_TAG="${RUN_TAG:-adhoc}"
+session_name() { printf '%s-%s-%s-rep%s' "$RUN_TAG" "$1" "$2" "$3"; }  # <task> <cond> <rep>
 # NO visible budget/turn cap on the agent — a cap induces "token fear" and
 # degrades behavior, biasing the experiment. The ONLY backstop is an invisible
 # wall-clock `timeout` the agent never sees; a timeout kill = failure-to-converge.

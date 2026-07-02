@@ -1,0 +1,1918 @@
+error[invalid-assignment]: Object of type `(item) -> Literal[False]` is not assignable to `def is_arrow_item(item: Any) -> bool`
+  --> dlt/extract/incremental/__init__.py:70:5
+   |
+70 |     is_arrow_item = lambda item: False
+   |     -------------   ^^^^^^^^^^^^^^^^^^ Incompatible value of type `(item) -> Literal[False]`
+   |     |
+   |     Declared type `def is_arrow_item(item: Any) -> bool`
+   |
+info: Implicit shadowing of function `is_arrow_item`. Add an annotation to make it explicit if this is intentional
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'pandas'>`
+  --> dlt/extract/incremental/__init__.py:75:5
+   |
+75 |     pandas = None
+   |     ------   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'pandas'>`
+   |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `str`
+   --> dlt/extract/incremental/__init__.py:137:18
+    |
+137 |     cursor_path: str = None
+    |                  ---   ^^^^ Incompatible value of type `None`
+    |                  |
+    |                  Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `Incremental[Any]`
+   --> dlt/extract/incremental/__init__.py:150:12
+    |
+150 |     EMPTY: ClassVar["Incremental[Any]"] = None
+    |            ----------------------------   ^^^^ Incompatible value of type `None`
+    |            |
+    |            Declared type
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/incremental/__init__.py:155:9
+    |
+155 |         cursor_path: str = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `IncrementalColumnState`
+   --> dlt/extract/incremental/__init__.py:199:29
+    |
+199 |         self._cached_state: IncrementalColumnState = None
+    |                             ----------------------   ^^^^ Incompatible value of type `None`
+    |                             |
+    |                             Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `SupportsPipe`
+   --> dlt/extract/incremental/__init__.py:211:27
+    |
+211 |         self._bound_pipe: SupportsPipe = None
+    |                           ------------   ^^^^ Incompatible value of type `None`
+    |                           |
+    |                           Declared type
+    |
+
+warning[unused-type-ignore-comment]: Unused blanket `type: ignore` directive
+   --> dlt/extract/incremental/__init__.py:281:24
+    |
+281 |         return merged  # type: ignore
+    |                        ^^^^^^^^^^^^^^
+    |
+help: Remove the unused suppression comment
+    |
+280 |         merged.__exception__ = other.__exception__
+    -         return merged  # type: ignore
+281 +         return merged
+282 |
+    |
+
+error[call-non-callable]: Object of type `None` is not callable
+   --> dlt/extract/incremental/__init__.py:302:21
+    |
+302 |                 and self.last_value_func([self.end_value, self.initial_value]) != self.end_value
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: Union variant `None` is incompatible with this call site
+info: Attempted to call union type `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/incremental/__init__.py:302:42
+    |
+302 |                 and self.last_value_func([self.end_value, self.initial_value]) != self.end_value
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Sequence[TCursorValue@Incremental]`, found `list[Any | None]`
+    |
+info: element `None` of union `Any | None` is not assignable to `TCursorValue@Incremental`
+info: Union variant `(Sequence[TCursorValue@Incremental], /) -> Any` is incompatible with this call site
+info: Attempted to call union type `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+
+error[unresolved-attribute]: Attribute `__name__` is not defined on `((Sequence[TCursorValue@Incremental], /) -> Any) & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]) & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2])`, `None` in union `(((Sequence[TCursorValue@Incremental], /) -> Any) & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]) & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2])) | None | (Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2] & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]) & ~(Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]))`
+   --> dlt/extract/incremental/__init__.py:316:30
+    |
+316 |                         f" `{self.last_value_func.__name__}([end_value, initial_value])` must equal"
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `Any | None` is not assignable to `TCursorValue@Incremental`
+   --> dlt/extract/incremental/__init__.py:401:21
+    |
+401 |         last_value: TCursorValue = s["last_value"]
+    |                     ------------   ^^^^^^^^^^^^^^^ Incompatible value of type `Any | None`
+    |                     |
+    |                     Declared type
+    |
+info: element `None` of union `Any | None` is not assignable to `TCursorValue@Incremental`
+
+error[invalid-assignment]: Object of type `Any | None | (TCursorValue@Incremental & ~None)` is not assignable to `TCursorValue@Incremental`
+   --> dlt/extract/incremental/__init__.py:415:17
+    |
+415 |                   last_value = apply_lag(
+    |  _________________----------___^
+    | |                 |
+    | |                 Declared type `TCursorValue@Incremental`
+416 | |                     self.lag, self.initial_value, last_value, self.last_value_func
+417 | |                 )
+    | |_________________^ Incompatible value of type `Any | None | (TCursorValue@Incremental & ~None)`
+    |
+info: element `None` of union `Any | None | (TCursorValue@Incremental & ~None)` is not assignable to `TCursorValue@Incremental`
+
+error[invalid-argument-type]: Argument to function `apply_lag` is incorrect
+   --> dlt/extract/incremental/__init__.py:416:63
+    |
+416 |                     self.lag, self.initial_value, last_value, self.last_value_func
+    |                                                               ^^^^^^^^^^^^^^^^^^^^ Expected `(Sequence[Any | None | (TCursorValue@Incremental & ~None)], /) -> Any`, found `((Sequence[TCursorValue@Incremental], /) -> Any) | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+    |
+info: element `(Sequence[TCursorValue@Incremental], /) -> Any` of union `((Sequence[TCursorValue@Incremental], /) -> Any) | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]` is not assignable to `(Sequence[Any | None | (TCursorValue@Incremental & ~None)], /) -> Any`
+info: └── the first parameter has an incompatible type: `Sequence[Any | None | (TCursorValue@Incremental & ~None)]` is not assignable to `Sequence[TCursorValue@Incremental]`
+info:     └── element `None` of union `Any | None | (TCursorValue@Incremental & ~None)` is not assignable to `TCursorValue@Incremental`
+info: Function defined here
+  --> dlt/extract/incremental/lag.py:77:5
+   |
+77 | def apply_lag(
+   |     ^^^^^^^^^
+78 |     lag: float,
+79 |     initial_value: TCursorValue,
+80 |     last_value: TCursorValue,
+81 |     last_value_func: LastValueFunc[TCursorValue],
+   |     -------------------------------------------- Parameter declared here
+   |
+
+error[unresolved-import]: Cannot resolve imported module `airflow.operators.python`
+   --> dlt/extract/incremental/__init__.py:476:18
+    |
+476 |             from airflow.operators.python import get_current_context  # noqa
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: Searched in the following paths during module resolution:
+info:   1. /home/matous/git/tyftest/repos/stage-dlt-140 (first-party code)
+info:   2. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   3. /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages (site-packages)
+info:   4. /home/matous/git/tyftest/runs/dlt-131/A/rep3 (editable install)
+info:   5. /home/matous/git/tyftest/repos/dlt.venv/lib64/python3.13/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+error[invalid-argument-type]: Argument to `IncrementalCursorPathMissing.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:512:59
+    |
+512 |             raise IncrementalCursorPathMissing(pipe.name, None, None)
+    |                                                           ^^^^ Expected `str`, found `None`
+    |
+info: Method defined here
+ --> dlt/extract/incremental/exceptions.py:8:9
+  |
+8 |     def __init__(
+  |         ^^^^^^^^
+9 |         self, pipe_name: str, json_path: str, item: TDataItem = None, msg: str = None
+  |                               -------------- Parameter declared here
+  |
+
+error[unresolved-attribute]: Attribute `__name__` is not defined on `(Sequence[TCursorValue@Incremental], /) -> Any`, `None` in union `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+   --> dlt/extract/incremental/__init__.py:523:17
+    |
+523 |             f" {self.last_value_func.__name__}, row_order: {self.row_order}, on_missing:"
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:552:20
+    |
+552 |         return cls(**value)
+    |                    ^^^^^^^ Expected `Literal["open", "closed"]`, found `Literal["open", "closed"] | None`
+    |
+info: element `None` of union `Literal["open", "closed"] | None` is not assignable to `Literal["open", "closed"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:164:9
+    |
+164 |         range_start: TIncrementalRange = "closed",
+    |         ----------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:552:20
+    |
+552 |         return cls(**value)
+    |                    ^^^^^^^ Expected `Literal["open", "closed"]`, found `Literal["open", "closed"] | None`
+    |
+info: element `None` of union `Literal["open", "closed"] | None` is not assignable to `Literal["open", "closed"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:165:9
+    |
+165 |         range_end: TIncrementalRange = "open",
+    |         ------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:552:20
+    |
+552 |         return cls(**value)
+    |                    ^^^^^^^ Expected `Literal["raise", "include", "exclude"]`, found `Literal["raise", "include", "exclude"] | None`
+    |
+info: element `None` of union `Literal["raise", "include", "exclude"] | None` is not assignable to `Literal["raise", "include", "exclude"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:162:9
+    |
+162 |         on_cursor_value_missing: OnCursorValueMissing = "raise",
+    |         ------------------------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:552:20
+    |
+552 |         return cls(**value)
+    |                    ^^^^^^^ Expected `bool`, found `bool | None`
+    |
+info: element `None` of union `bool | None` is not assignable to `bool`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:161:9
+    |
+161 |         allow_external_schedulers: bool = False,
+    |         --------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `IncrementalTransform.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:565:13
+    |
+565 |             self.resource_name,
+    |             ^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/extract/incremental/transform.py:59:9
+   |
+59 |     def __init__(
+   |         ^^^^^^^^
+60 |         self,
+61 |         resource_name: str,
+   |         ------------------ Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `IncrementalTransform.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:565:13
+    |
+565 |             self.resource_name,
+    |             ^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/extract/incremental/transform.py:59:9
+   |
+59 |     def __init__(
+   |         ^^^^^^^^
+60 |         self,
+61 |         resource_name: str,
+   |         ------------------ Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `IncrementalTransform.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:570:13
+    |
+570 |             self.last_value_func,
+    |             ^^^^^^^^^^^^^^^^^^^^ Expected `(Sequence[Any], /) -> Any`, found `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+    |
+info: element `None` of union `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]` is not assignable to `(Sequence[Any], /) -> Any`
+info: Method defined here
+  --> dlt/extract/incremental/transform.py:59:9
+   |
+59 |     def __init__(
+   |         ^^^^^^^^
+   |
+  ::: dlt/extract/incremental/transform.py:66:9
+   |
+66 |         last_value_func: LastValueFunc[TCursorValue],
+   |         -------------------------------------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `IncrementalTransform.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:570:13
+    |
+570 |             self.last_value_func,
+    |             ^^^^^^^^^^^^^^^^^^^^ Expected `(Sequence[Any], /) -> Any`, found `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+    |
+info: element `None` of union `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]` is not assignable to `(Sequence[Any], /) -> Any`
+info: Method defined here
+  --> dlt/extract/incremental/transform.py:59:9
+   |
+59 |     def __init__(
+   |         ^^^^^^^^
+   |
+  ::: dlt/extract/incremental/transform.py:66:9
+   |
+66 |         last_value_func: LastValueFunc[TCursorValue],
+   |         -------------------------------------------- Parameter declared here
+   |
+
+error[invalid-method-override]: Invalid override of method `__call__`
+   --> dlt/extract/incremental/__init__.py:591:9
+    |
+591 |     def __call__(self, rows: TDataItems, meta: Any = None) -> Optional[TDataItems]:
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Definition is incompatible with `ItemTransform.__call__`
+    |
+   ::: dlt/extract/items_transform.py:72:9
+    |
+ 72 |     def __call__(self, item: TDataItems, meta: Any = None) -> Optional[TDataItems]:
+    |         -------------------------------------------------------------------------- `ItemTransform.__call__` defined here
+    |
+info: the parameter named `rows` does not match `item` (and can be used as a keyword parameter)
+info: This violates the Liskov Substitution Principle
+
+error[call-non-callable]: Object of type `None` is not callable
+   --> dlt/extract/incremental/__init__.py:616:38
+    |
+616 |               transformer.last_value = self.last_value_func(
+    |  ______________________________________^
+617 | |                 (transformer.last_value, cached_last_value)
+618 | |             )
+    | |_____________^
+    |
+info: Union variant `None` is incompatible with this call site
+info: Attempted to call union type `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/incremental/__init__.py:617:17
+    |
+617 |                 (transformer.last_value, cached_last_value)
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Sequence[TCursorValue@Incremental]`, found `tuple[TCursorValue@__init__ | None, Any & ~AlwaysFalsy]`
+    |
+info: element `None` of union `TCursorValue@__init__ | None | (Any & ~AlwaysFalsy)` is not assignable to `TCursorValue@Incremental`
+info: Union variant `(Sequence[TCursorValue@Incremental], /) -> Any` is incompatible with this call site
+info: Attempted to call union type `((Sequence[TCursorValue@Incremental], /) -> Any) | None | Overload[[SupportsRichComparisonT](arg1: SupportsRichComparisonT, arg2: SupportsRichComparisonT, /, *_args: SupportsRichComparisonT, *, key: None = None) -> SupportsRichComparisonT, [_T](arg1: _T, arg2: _T, /, *_args: _T, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None) -> SupportsRichComparisonT, [_T](iterable: Iterable[_T], /, *, key: (_T, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any]) -> _T, [SupportsRichComparisonT, _T](iterable: Iterable[SupportsRichComparisonT], /, *, key: None = None, default: _T) -> SupportsRichComparisonT | _T, [_T1, _T2](iterable: Iterable[_T1], /, *, key: (_T1, /) -> SupportsDunderLT[Any] | SupportsDunderGT[Any], default: _T2) -> _T1 | _T2]`
+
+error[invalid-assignment]: Object of type `None` is not assignable to `str`
+   --> dlt/extract/incremental/__init__.py:671:21
+    |
+671 |     _resource_name: str = None
+    |                     ---   ^^^^ Incompatible value of type `None`
+    |                     |
+    |                     Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `IncrementalColumnState`
+   --> dlt/extract/incremental/__init__.py:684:33
+    |
+684 |         self.incremental_state: IncrementalColumnState = None
+    |                                 ----------------------   ^^^^ Incompatible value of type `None`
+    |                                 |
+    |                                 Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `bool`
+   --> dlt/extract/incremental/__init__.py:685:42
+    |
+685 |         self._allow_external_schedulers: bool = None
+    |                                          ----   ^^^^ Incompatible value of type `None`
+    |                                          |
+    |                                          Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `SupportsPipe`
+   --> dlt/extract/incremental/__init__.py:686:27
+    |
+686 |         self._bound_pipe: SupportsPipe = None
+    |                           ------------   ^^^^ Incompatible value of type `None`
+    |                           |
+    |                           Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `Incremental[Any]`
+   --> dlt/extract/incremental/__init__.py:741:30
+    |
+741 |             new_incremental: Incremental[Any] = None
+    |                              ----------------   ^^^^ Incompatible value of type `None`
+    |                              |
+    |                              Declared type
+    |
+
+error[unresolved-attribute]: Attribute `is_resolved` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/extract/incremental/__init__.py:786:20
+    |
+786 |             if not self._incremental.is_resolved():
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `resolve` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/extract/incremental/__init__.py:787:17
+    |
+787 |                 self._incremental.resolve()
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `IncrementalResourceWrapper.bind` is incorrect
+   --> dlt/extract/incremental/__init__.py:792:27
+    |
+792 |                 self.bind(None)
+    |                           ^^^^ Expected `SupportsPipe`, found `None`
+    |
+info: type `None` is not assignable to protocol `SupportsPipe`
+info: └── protocol member `__getitem__` is not defined on type `None`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:834:9
+    |
+834 |     def bind(self, pipe: SupportsPipe) -> "IncrementalResourceWrapper":
+    |         ^^^^       ------------------ Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `Sequence[str] | ((Any, /) -> Sequence[str]) | None` is not assignable to attribute `primary_key` on type `Incremental[Any] & ~AlwaysFalsy`
+   --> dlt/extract/incremental/__init__.py:849:13
+    |
+849 |             self._incremental.primary_key = self.primary_key
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:859:24
+    |
+859 |     return Incremental(**cfg)
+    |                        ^^^^^ Expected `Literal["open", "closed"]`, found `Literal["open", "closed"] | None`
+    |
+info: element `None` of union `Literal["open", "closed"] | None` is not assignable to `Literal["open", "closed"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:165:9
+    |
+165 |         range_end: TIncrementalRange = "open",
+    |         ------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:859:24
+    |
+859 |     return Incremental(**cfg)
+    |                        ^^^^^ Expected `Literal["open", "closed"]`, found `Literal["open", "closed"] | None`
+    |
+info: element `None` of union `Literal["open", "closed"] | None` is not assignable to `Literal["open", "closed"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:164:9
+    |
+164 |         range_start: TIncrementalRange = "closed",
+    |         ----------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:859:24
+    |
+859 |     return Incremental(**cfg)
+    |                        ^^^^^ Expected `Literal["raise", "include", "exclude"]`, found `Literal["raise", "include", "exclude"] | None`
+    |
+info: element `None` of union `Literal["raise", "include", "exclude"] | None` is not assignable to `Literal["raise", "include", "exclude"]`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:162:9
+    |
+162 |         on_cursor_value_missing: OnCursorValueMissing = "raise",
+    |         ------------------------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Incremental.__init__` is incorrect
+   --> dlt/extract/incremental/__init__.py:859:24
+    |
+859 |     return Incremental(**cfg)
+    |                        ^^^^^ Expected `bool`, found `bool | None`
+    |
+info: element `None` of union `bool | None` is not assignable to `bool`
+info: Method defined here
+   --> dlt/extract/incremental/__init__.py:153:9
+    |
+153 |     def __init__(
+    |         ^^^^^^^^
+    |
+   ::: dlt/extract/incremental/__init__.py:161:9
+    |
+161 |         allow_external_schedulers: bool = False,
+    |         --------------------------------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'pyarrow'>`
+  --> dlt/extract/incremental/transform.py:33:5
+   |
+33 |     pa = None
+   |     --   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'pyarrow'>`
+   |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'dlt.common.libs.pyarrow'>`
+  --> dlt/extract/incremental/transform.py:34:5
+   |
+34 |     pyarrow = None
+   |     -------   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'dlt.common.libs.pyarrow'>`
+   |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'numpy'>`
+  --> dlt/extract/incremental/transform.py:39:5
+   |
+39 |     numpy = None
+   |     -----   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'numpy'>`
+   |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'pandas'>`
+  --> dlt/extract/incremental/transform.py:45:5
+   |
+45 |     pandas = None
+   |     ------   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'pandas'>`
+   |
+
+error[invalid-assignment]: Invalid assignment to data descriptor attribute `primary_key` on type `Self@__init__` with custom `__set__` method
+  --> dlt/extract/incremental/transform.py:93:9
+   |
+93 |         self.primary_key = primary_key
+   |         ^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/extract/incremental/transform.py:115:24
+    |
+115 |                 return None
+    |                        ^^^^ expected `str`, found `None`
+    |
+   ::: dlt/extract/incremental/transform.py:108:10
+    |
+108 |     ) -> str:
+    |          --- Expected `str` because of return type
+    |
+
+error[empty-body]: Function always implicitly returns `None`, which is not assignable to return type `tuple[bool, bool, bool]`
+   --> dlt/extract/incremental/transform.py:122:10
+    |
+122 |     ) -> Tuple[bool, bool, bool]: ...
+    |          ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: Consider changing the return annotation to `-> None` or adding a `return` statement
+info: Functions with empty bodies and non-`None` return types are only permitted:
+info:  - in stub files
+info:  - in `if TYPE_CHECKING` blocks
+info:  - as methods on protocol classes
+info:  - or as `@abstractmethod`-decorated methods on abstract classes
+
+error[invalid-argument-type]: Argument to function `create_dt` is incorrect
+   --> dlt/extract/incremental/transform.py:164:25
+    |
+164 |                         tz=cursor_value.tzinfo,
+    |                         ^^^^^^^^^^^^^^^^^^^^^^ Expected `tzinfo`, found `tzinfo | None`
+    |
+info: element `None` of union `tzinfo | None` is not assignable to `tzinfo`
+info: Function defined here
+  --> dlt/common/pendulum.py:37:5
+   |
+37 | def create_dt(
+   |     ^^^^^^^^^
+   |
+  ::: dlt/common/pendulum.py:45:5
+   |
+45 |     tz: tzinfo = None,
+   |     ----------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to function `create_dt` is incorrect
+   --> dlt/extract/incremental/transform.py:179:21
+    |
+179 |                     tz=cursor_value.tzinfo,
+    |                     ^^^^^^^^^^^^^^^^^^^^^^ Expected `tzinfo`, found `tzinfo | None`
+    |
+info: element `None` of union `tzinfo | None` is not assignable to `tzinfo`
+info: Function defined here
+  --> dlt/common/pendulum.py:37:5
+   |
+37 | def create_dt(
+   |     ^^^^^^^^^
+   |
+  ::: dlt/common/pendulum.py:45:5
+   |
+45 |     tz: tzinfo = None,
+   |     ----------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to bound method `DateTime.in_tz` is incorrect
+   --> dlt/extract/incremental/transform.py:182:21
+    |
+182 |                     row_value.tzinfo  # type: ignore[arg-type]
+    |                     ^^^^^^^^^^^^^^^^ Expected `str | Timezone | FixedTimezone`, found `tzinfo`
+    |
+info: Method defined here
+   --> /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages/pendulum/datetime.py:357:9
+    |
+357 |     def in_tz(self, tz: str | Timezone | FixedTimezone) -> Self:
+    |         ^^^^^       ---------------------------------- Parameter declared here
+    |
+
+error[invalid-method-override]: Invalid override of method `__call__`
+   --> dlt/extract/incremental/transform.py:249:9
+    |
+249 |       def __call__(
+    |  _________^
+250 | |         self,
+251 | |         row: TDataItem,
+252 | |     ) -> Tuple[Optional[TDataItem], bool, bool]:
+    | |_______________________________________________^ Definition is incompatible with `IncrementalTransform.__call__`
+    |
+   ::: dlt/extract/incremental/transform.py:119:9
+    |
+119 |       def __call__(
+    |  _________-
+120 | |         self,
+121 | |         row: TDataItem,
+122 | |     ) -> Tuple[bool, bool, bool]: ...
+    | |________________________________- `IncrementalTransform.__call__` defined here
+    |
+info: incompatible return types: `tuple[Any | None, bool, bool]` is not assignable to `tuple[bool, bool, bool]`
+info: └── the first tuple element is not compatible: `Any | None` is not assignable to `bool`
+info:     └── element `None` of union `Any | None` is not assignable to `bool`
+info: This violates the Liskov Substitution Principle
+
+error[invalid-argument-type]: Argument to function `IncrementalTransform._adapt_timezone` is incorrect
+   --> dlt/extract/incremental/transform.py:273:28
+    |
+273 |                 row_value, last_value, "last_value", self.resource_name
+    |                            ^^^^^^^^^^ Expected `datetime`, found `Any | TCursorValue@__init__ | None`
+    |
+info: element `None` of union `Any | TCursorValue@__init__ | None` is not assignable to `datetime`
+info: Function defined here
+   --> dlt/extract/incremental/transform.py:125:9
+    |
+125 |     def _adapt_timezone(
+    |         ^^^^^^^^^^^^^^^
+126 |         row_value: datetime, cursor_value: datetime, cursor_value_name: str, resource_name: str
+    |                              ---------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `IncrementalTransform._adapt_timezone` is incorrect
+   --> dlt/extract/incremental/transform.py:273:28
+    |
+273 |                 row_value, last_value, "last_value", self.resource_name
+    |                            ^^^^^^^^^^ Expected `datetime`, found `Any | TCursorValue@__init__ | None`
+    |
+info: element `None` of union `Any | TCursorValue@__init__ | None` is not assignable to `datetime`
+info: Function defined here
+   --> dlt/extract/incremental/transform.py:125:9
+    |
+125 |     def _adapt_timezone(
+    |         ^^^^^^^^^^^^^^^
+126 |         row_value: datetime, cursor_value: datetime, cursor_value_name: str, resource_name: str
+    |                              ---------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `IncrementalTransform._adapt_timezone` is incorrect
+   --> dlt/extract/incremental/transform.py:273:28
+    |
+273 |                 row_value, last_value, "last_value", self.resource_name
+    |                            ^^^^^^^^^^ Expected `datetime`, found `Any | TCursorValue@__init__ | None`
+    |
+info: element `None` of union `Any | TCursorValue@__init__ | None` is not assignable to `datetime`
+info: Function defined here
+   --> dlt/extract/incremental/transform.py:125:9
+    |
+125 |     def _adapt_timezone(
+    |         ^^^^^^^^^^^^^^^
+126 |         row_value: datetime, cursor_value: datetime, cursor_value_name: str, resource_name: str
+    |                              ---------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `max`
+   --> dlt/extract/incremental/transform.py:373:28
+    |
+373 |             self.compute = pa.compute.max
+    |                            ^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `less`
+   --> dlt/extract/incremental/transform.py:375:17
+    |
+375 |                 pa.compute.less if self.range_end == "open" else pa.compute.less_equal
+    |                 ^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `less_equal`
+   --> dlt/extract/incremental/transform.py:375:66
+    |
+375 |                 pa.compute.less if self.range_end == "open" else pa.compute.less_equal
+    |                                                                  ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `greater_equal`
+   --> dlt/extract/incremental/transform.py:378:17
+    |
+378 |                 pa.compute.greater_equal if self.range_start == "closed" else pa.compute.greater
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `greater`
+   --> dlt/extract/incremental/transform.py:378:79
+    |
+378 |                 pa.compute.greater_equal if self.range_start == "closed" else pa.compute.greater
+    |                                                                               ^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `greater`
+   --> dlt/extract/incremental/transform.py:380:38
+    |
+380 |             self.new_value_compare = pa.compute.greater
+    |                                      ^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `min`
+   --> dlt/extract/incremental/transform.py:382:28
+    |
+382 |             self.compute = pa.compute.min
+    |                            ^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `greater`
+   --> dlt/extract/incremental/transform.py:384:17
+    |
+384 |                 pa.compute.greater if self.range_end == "open" else pa.compute.greater_equal
+    |                 ^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `greater_equal`
+   --> dlt/extract/incremental/transform.py:384:69
+    |
+384 |                 pa.compute.greater if self.range_end == "open" else pa.compute.greater_equal
+    |                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `less_equal`
+   --> dlt/extract/incremental/transform.py:387:17
+    |
+387 |                 pa.compute.less_equal if self.range_start == "closed" else pa.compute.less
+    |                 ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `less`
+   --> dlt/extract/incremental/transform.py:387:76
+    |
+387 |                 pa.compute.less_equal if self.range_start == "closed" else pa.compute.less
+    |                                                                            ^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `less`
+   --> dlt/extract/incremental/transform.py:389:38
+    |
+389 |             self.new_value_compare = pa.compute.less
+    |                                      ^^^^^^^^^^^^^^^
+    |
+
+error[invalid-method-override]: Invalid override of method `__call__`
+   --> dlt/extract/incremental/transform.py:422:9
+    |
+422 |       def __call__(
+    |  _________^
+423 | |         self,
+424 | |         tbl: "TAnyArrowItem",
+425 | |     ) -> Tuple[TDataItem, bool, bool]:
+    | |_____________________________________^ Definition is incompatible with `IncrementalTransform.__call__`
+    |
+   ::: dlt/extract/incremental/transform.py:119:9
+    |
+119 |       def __call__(
+    |  _________-
+120 | |         self,
+121 | |         row: TDataItem,
+122 | |     ) -> Tuple[bool, bool, bool]: ...
+    | |________________________________- `IncrementalTransform.__call__` defined here
+    |
+info: the parameter named `tbl` does not match `row` (and can be used as a keyword parameter)
+info: This violates the Liskov Substitution Principle
+
+error[call-top-callable]: Object of type `Top[(...) -> object]` is not safe to call; its signature is not known
+   --> dlt/extract/incremental/transform.py:430:23
+    |
+430 |         primary_key = self._primary_key(tbl) if callable(self._primary_key) else self._primary_key
+    |                       ^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: This type includes all possible callables, so it cannot safely be called because there is no valid set of arguments for it
+info: Intersection element `Top[(...) -> object]` is incompatible with this call site
+info: Attempted to call intersection type `str & Top[(...) -> object]`
+
+error[invalid-argument-type]: Argument to `list.__init__` is incorrect
+   --> dlt/extract/incremental/transform.py:436:39
+    |
+436 |                 unique_columns = list(primary_key)
+    |                                       ^^^^^^^^^^^ Expected `Iterable[Unknown]`, found `~AlwaysFalsy & ~str`
+    |
+info: Matching overload defined here
+    --> stdlib/builtins.pyi:2973:9
+     |
+2973 |     def __init__(self, iterable: Iterable[_T], /) -> None: ...
+     |         ^^^^^^^^       ---------------------- Parameter declared here
+     |
+info: Non-matching overloads for bound method `__init__`:
+info:   (self) -> None
+
+error[invalid-argument-type]: Argument to `IncrementalPrimaryKeyMissing.__init__` is incorrect
+   --> dlt/extract/incremental/transform.py:440:76
+    |
+440 |                     raise IncrementalPrimaryKeyMissing(self.resource_name, pk, tbl)
+    |                                                                            ^^ Expected `str`, found `str | _T@list`
+    |
+info: element `_T@list` of union `str | _T@list` is not assignable to `str`
+info: Method defined here
+  --> dlt/extract/incremental/exceptions.py:58:9
+   |
+58 |     def __init__(self, pipe_name: str, primary_key_column: str, item: TDataItem) -> None:
+   |         ^^^^^^^^                       ----------------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to function `IncrementalTransform._adapt_timezone` is incorrect
+   --> dlt/extract/incremental/transform.py:473:28
+    |
+473 |                 row_value, self.last_value, "last_value", self.resource_name
+    |                            ^^^^^^^^^^^^^^^ Expected `datetime`, found `Any | TCursorValue@__init__ | None`
+    |
+info: element `None` of union `Any | TCursorValue@__init__ | None` is not assignable to `datetime`
+info: Function defined here
+   --> dlt/extract/incremental/transform.py:125:9
+    |
+125 |     def _adapt_timezone(
+    |         ^^^^^^^^^^^^^^^
+126 |         row_value: datetime, cursor_value: datetime, cursor_value_name: str, resource_name: str
+    |                              ---------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `IncrementalTransform._adapt_timezone` is incorrect
+   --> dlt/extract/incremental/transform.py:473:28
+    |
+473 |                 row_value, self.last_value, "last_value", self.resource_name
+    |                            ^^^^^^^^^^^^^^^ Expected `datetime`, found `Any | TCursorValue@__init__ | None`
+    |
+info: element `None` of union `Any | TCursorValue@__init__ | None` is not assignable to `datetime`
+info: Function defined here
+   --> dlt/extract/incremental/transform.py:125:9
+    |
+125 |     def _adapt_timezone(
+    |         ^^^^^^^^^^^^^^^
+126 |         row_value: datetime, cursor_value: datetime, cursor_value_name: str, resource_name: str
+    |                              ---------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `any`
+   --> dlt/extract/incremental/transform.py:533:39
+    |
+533 |             start_out_of_range = bool(pa.compute.any(pa.compute.invert(keep_filter)).as_py())
+    |                                       ^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `invert`
+   --> dlt/extract/incremental/transform.py:533:54
+    |
+533 |             start_out_of_range = bool(pa.compute.any(pa.compute.invert(keep_filter)).as_py())
+    |                                                      ^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `equal`
+   --> dlt/extract/incremental/transform.py:539:38
+    |
+539 |                 eq_rows = tbl.filter(pa.compute.equal(tbl[cursor_path], start_value_scalar))
+    |                                      ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `ArrowIncremental.compute_unique_values_with_index` is incorrect
+   --> dlt/extract/incremental/transform.py:541:86
+    |
+541 |                 unique_values_index = self.compute_unique_values_with_index(eq_rows, unique_columns)
+    |                                                                                      ^^^^^^^^^^^^^^ Expected `list[str]`, found `list[str] | list[_T@list] | Any`
+    |
+info: element `list[_T@list]` of union `list[str] | list[_T@list] | Any` is not assignable to `list[str]`
+info: Method defined here
+   --> dlt/extract/incremental/transform.py:401:9
+    |
+401 |     def compute_unique_values_with_index(
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+402 |         self, item: "TAnyArrowItem", unique_columns: List[str]
+    |                                      ------------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `invert`
+   --> dlt/extract/incremental/transform.py:551:25
+    |
+551 |                         pa.compute.invert(pa.compute.is_in(tbl[self._dlt_index], remove_idx))
+    |                         ^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `is_in`
+   --> dlt/extract/incremental/transform.py:551:43
+    |
+551 |                         pa.compute.invert(pa.compute.is_in(tbl[self._dlt_index], remove_idx))
+    |                                           ^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `equal`
+   --> dlt/extract/incremental/transform.py:565:36
+    |
+565 |                         tbl.filter(pa.compute.equal(tbl[cursor_path], row_value_scalar)),
+    |                                    ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `ArrowIncremental.compute_unique_values` is incorrect
+   --> dlt/extract/incremental/transform.py:566:25
+    |
+566 |                         unique_columns,
+    |                         ^^^^^^^^^^^^^^ Expected `list[str]`, found `list[str] | list[_T@list] | Any`
+    |
+info: element `list[_T@list]` of union `list[str] | list[_T@list] | Any` is not assignable to `list[str]`
+info: Method defined here
+   --> dlt/extract/incremental/transform.py:395:9
+    |
+395 |     def compute_unique_values(self, item: "TAnyArrowItem", unique_columns: List[str]) -> List[str]:
+    |         ^^^^^^^^^^^^^^^^^^^^^                              ------------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `equal`
+   --> dlt/extract/incremental/transform.py:574:36
+    |
+574 |                         tbl.filter(pa.compute.equal(tbl[cursor_path], row_value_scalar)),
+    |                                    ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `ArrowIncremental.compute_unique_values` is incorrect
+   --> dlt/extract/incremental/transform.py:575:25
+    |
+575 |                         unique_columns,
+    |                         ^^^^^^^^^^^^^^ Expected `list[str]`, found `list[str] | list[_T@list] | Any`
+    |
+info: element `list[_T@list]` of union `list[str] | list[_T@list] | Any` is not assignable to `list[str]`
+info: Method defined here
+   --> dlt/extract/incremental/transform.py:395:9
+    |
+395 |     def compute_unique_values(self, item: "TAnyArrowItem", unique_columns: List[str]) -> List[str]:
+    |         ^^^^^^^^^^^^^^^^^^^^^                              ------------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `is_valid`
+   --> dlt/extract/incremental/transform.py:599:16
+    |
+599 |         mask = pa.compute.is_valid(tbl[self.cursor_path])
+    |                ^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `invert`
+   --> dlt/extract/incremental/transform.py:601:37
+    |
+601 |         rows_with_null = tbl.filter(pa.compute.invert(mask))
+    |                                     ^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `TResourceHints`
+   --> dlt/extract/resource.py:100:5
+    |
+100 |     hints: TResourceHints = None,
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `DltResource`
+   --> dlt/extract/resource.py:119:12
+    |
+119 |     Empty: ClassVar["DltResource"] = None
+    |            -----------------------   ^^^^ Incompatible value of type `None`
+    |            |
+    |            Declared type
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:133:9
+    |
+133 |         section: str = None,
+    |         ^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `dict[str, Any]`
+   --> dlt/extract/resource.py:140:30
+    |
+140 |         self._explicit_args: DictStrAny = None
+    |                              ----------   ^^^^ Incompatible value of type `None`
+    |                              |
+    |                              Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to attribute `source_name` of type `str`
+   --> dlt/extract/resource.py:141:9
+    |
+141 |         self.source_name = None
+    |         ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `DltResource`
+   --> dlt/extract/resource.py:142:23
+    |
+142 |         self._parent: DltResource = None
+    |                       -----------   ^^^^ Incompatible value of type `None`
+    |                       |
+    |                       Declared type
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:151:9
+    |
+151 |         name: str = None,
+    |         ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:152:9
+    |
+152 |         section: str = None,
+    |         ^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `TResourceHints`
+   --> dlt/extract/resource.py:153:9
+    |
+153 |         hints: TResourceHints = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `DltResource`
+   --> dlt/extract/resource.py:155:9
+    |
+155 |         data_from: "DltResource" = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `str | None` is not assignable to `str`
+   --> dlt/extract/resource.py:177:17
+    |
+177 |                 name = name or get_callable_name(data)
+    |                 ----   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `str | None`
+    |                 |
+    |                 Declared type `str`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:235:40
+    |
+235 |     def with_name(self, new_name: str, new_section: str = None) -> Self:
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `DltResource.add_step` is incorrect
+   --> dlt/extract/resource.py:276:38
+    |
+276 |             self.add_step(validator, insert_at=step_no if step_no >= 0 else None)
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `int`, found `int | None`
+    |
+info: element `None` of union `int | None` is not assignable to `int`
+info: Method defined here
+   --> dlt/extract/resource.py:462:9
+    |
+462 |     def add_step(
+    |         ^^^^^^^^
+463 |         self,
+464 |         item_transform: ItemTransformFunctionWithMeta[TDataItems],
+465 |         insert_at: int = None,
+    |         --------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `TResourceHints | None`
+   --> dlt/extract/resource.py:281:23
+    |
+281 |         max_nesting = self._hints.get("x-normalizer", {}).get("max_nesting")  # type: ignore[attr-defined]
+    |                       ^^^^^^^^^^^^^^^
+    |
+
+error[no-matching-overload]: No overload matches arguments
+   --> dlt/extract/resource.py:286:22
+    |
+286 |         normalizer = self._hints.setdefault("x-normalizer", {})  # type: ignore[typeddict-item]
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `setdefault` is not defined on `None` in union `TResourceHints | None`
+   --> dlt/extract/resource.py:286:22
+    |
+286 |         normalizer = self._hints.setdefault("x-normalizer", {})  # type: ignore[typeddict-item]
+    |                      ^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/extract/resource.py:318:59
+    |
+318 |         def _filter(item: TDataItem, meta: Any = None) -> bool:
+    |                                                           ---- Expected `bool` because of return type
+319 |             is_in_meta = isinstance(meta, TableNameMeta) and meta.table_name in table_names
+320 |             is_in_dyn = self._table_name_hint_fun and self._table_name_hint_fun(item) in table_names
+321 |             return is_in_meta or is_in_dyn
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `bool | (((Any, /) -> str) & ~AlwaysTruthy) | None`
+    |
+info: element `((Any, /) -> str) & ~AlwaysTruthy` of union `bool | (((Any, /) -> str) & ~AlwaysTruthy) | None` is not assignable to `bool`
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+   --> dlt/extract/resource.py:328:55
+    |
+328 |         self, item_map: ItemTransformFunc[TDataItem], insert_at: int = None
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+   --> dlt/extract/resource.py:348:51
+    |
+348 |         self, metrics_f: MetricsFunctionWithMeta, insert_at: int = None
+    |                                                   ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+   --> dlt/extract/resource.py:370:9
+    |
+370 |         insert_at: int = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+   --> dlt/extract/resource.py:391:53
+    |
+391 |         self, item_filter: ItemTransformFunc[bool], insert_at: int = None
+    |                                                     ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to `LimitItem.__init__` is incorrect
+   --> dlt/extract/resource.py:443:77
+    |
+443 |             self.add_step(LimitItem(max_items=max_items, max_time=max_time, count_rows=count_rows))
+    |                                                                             ^^^^^^^^^^^^^^^^^^^^^ Expected `bool`, found `bool | None`
+    |
+info: element `None` of union `bool | None` is not assignable to `bool`
+info: Method defined here
+   --> dlt/extract/items_transform.py:177:9
+    |
+177 |     def __init__(
+    |         ^^^^^^^^
+178 |         self, max_items: Optional[int], max_time: Optional[float], count_rows: bool
+    |                                                                    ---------------- Parameter declared here
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+   --> dlt/extract/resource.py:465:9
+    |
+465 |         insert_at: int = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `Pipe.insert_step` is incorrect
+   --> dlt/extract/resource.py:470:36
+    |
+470 |             self._pipe.insert_step(item_transform, insert_at)
+    |                                    ^^^^^^^^^^^^^^ Expected `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]] | ((Any | list[Any], Any | None, /) -> Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]) | ((Any | list[Any], Any | None, /) -> Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]) | ... omitted 4 union elements`, found `(Any, str, /) -> Any | list[Any]`
+    |
+info: type `(Any, str, /) -> Any | list[Any]` is not assignable to any element of the union `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]] | ((Any | list[Any], Any | None, /) -> Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]) | ((Any | list[Any], Any | None, /) -> Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]) | ... omitted 4 union elements`
+info: ├── type `(Any, str, /) -> Any | list[Any]` is not assignable to protocol `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: │   └── protocol member `__iter__` is not defined on type `(Any, str, /) -> Any | list[Any]`
+info: ├── the second parameter has an incompatible type: `Any | None` is not assignable to `str`
+info: │   └── element `None` of union `Any | None` is not assignable to `str`
+info: ├── incompatible return types: `Any | list[Any]` is not assignable to `Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: │   └── element `list[Any]` of union `Any | list[Any]` is not assignable to `Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: │       └── type `list[Any]` is not assignable to protocol `Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: │           └── protocol member `__next__` is not defined on type `list[Any]`
+info: ├── incompatible return types: `Any | list[Any]` is not assignable to `Iterator[ResolvablePipeItem]`
+info: │   └── element `list[Any]` of union `Any | list[Any]` is not assignable to `Iterator[ResolvablePipeItem]`
+info: │       └── type `list[Any]` is not assignable to protocol `Iterator[ResolvablePipeItem]`
+info: │           └── protocol member `__next__` is not defined on type `list[Any]`
+info: ├── unexpected extra parameter
+info: ├── incompatible return types: `Any | list[Any]` is not assignable to `Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: │   └── element `list[Any]` of union `Any | list[Any]` is not assignable to `Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]`
+info: └── incompatible return types: `Any | list[Any]` is not assignable to `Iterator[ResolvablePipeItem]`
+info:     └── element `list[Any]` of union `Any | list[Any]` is not assignable to `Iterator[ResolvablePipeItem]`
+info: Method defined here
+   --> dlt/extract/pipe.py:196:9
+    |
+196 |     def insert_step(self, step: TPipeStep, index: int) -> "Pipe":
+    |         ^^^^^^^^^^^       --------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `Incremental[Any] | IncrementalResourceWrapper`
+   --> dlt/extract/resource.py:488:13
+    |
+488 |             new_incremental = None
+    |             ---------------   ^^^^ Incompatible value of type `None`
+    |             |
+    |             Declared type `Incremental[Any] | IncrementalResourceWrapper`
+    |
+
+error[invalid-method-override]: Invalid override of method `_set_hints`
+   --> dlt/extract/resource.py:512:9
+    |
+512 |       def _set_hints(
+    |  _________^
+513 | |         self, table_schema_template: TResourceHints, create_table_variant: bool = False
+514 | |     ) -> None:
+    | |_____________^ Definition is incompatible with `DltResourceHints._set_hints`
+    |
+   ::: dlt/extract/hints.py:557:9
+    |
+557 |       def _set_hints(
+    |  _________-
+558 | |         self, hints_template: TResourceHints, create_table_variant: bool = False
+559 | |     ) -> None:
+    | |_____________- `DltResourceHints._set_hints` defined here
+    |
+info: the parameter named `table_schema_template` does not match `hints_template` (and can be used as a keyword parameter)
+info: This violates the Liskov Substitution Principle
+
+error[invalid-argument-type]: Argument to bound method `DltResource.set_incremental` is incorrect
+   --> dlt/extract/resource.py:521:21
+    |
+521 |                     table_schema_template["incremental"], from_hints=True
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Incremental[Any] | IncrementalResourceWrapper`, found `Incremental[Any] | None`
+    |
+info: element `None` of union `Incremental[Any] | None` is not assignable to `Incremental[Any] | IncrementalResourceWrapper`
+info: Method defined here
+   --> dlt/extract/resource.py:476:9
+    |
+476 |     def set_incremental(
+    |         ^^^^^^^^^^^^^^^
+477 |         self,
+478 |         new_incremental: Union[Incremental[Any], IncrementalResourceWrapper],
+    |         -------------------------------------------------------------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `Sequence[str] | ((Any, /) -> Sequence[str])` is not assignable to attribute `primary_key` on type `(Incremental[Any] & ~AlwaysFalsy) | (IncrementalResourceWrapper & ~AlwaysFalsy)`
+   --> dlt/extract/resource.py:529:21
+    |
+529 |                     incremental.primary_key = primary_key
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unsupported-operator]: Unsupported `not in` operation
+   --> dlt/extract/resource.py:538:28
+    |
+538 |         if incremental and "incremental" not in self._hints:
+    |                            -------------^^^^^^^^-----------
+    |                            |                    |
+    |                            |                    Has type `TResourceHints | None`
+    |                            Has type `Literal["incremental"]`
+    |
+info: Operation fails because operator `not in` is not supported between objects of type `Literal["incremental"]` and `None`
+
+error[invalid-assignment]: Cannot assign to a subscript on an object of type `None`
+   --> dlt/extract/resource.py:542:21
+    |
+542 |                     self._hints["incremental"] = incremental
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: The full type of the subscripted object is `TResourceHints | None`
+info: `None` does not have a `__setitem__` method.
+
+error[unresolved-attribute]: Attribute `arguments` is not defined on `None` in union `None | BoundArguments`
+   --> dlt/extract/resource.py:613:30
+    |
+613 |         new_name = self.name(bound_args.arguments) if isinstance(self.name, dynstr) else None
+    |                              ^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `arguments` is not defined on `None` in union `None | BoundArguments`
+   --> dlt/extract/resource.py:615:26
+    |
+615 |             self.section(bound_args.arguments) if isinstance(self.section, dynstr) else None
+    |                          ^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `DltResource._clone` is incorrect
+   --> dlt/extract/resource.py:618:25
+    |
+618 |         r = self._clone(new_name=new_name, new_section=new_section)
+    |                         ^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/resource.py:750:9
+    |
+750 |     def _clone(
+    |         ^^^^^^
+751 |         self, *, new_name: str = None, new_section: str = None, with_parent: bool = False
+    |                  -------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `DltResource._clone` is incorrect
+   --> dlt/extract/resource.py:618:44
+    |
+618 |         r = self._clone(new_name=new_name, new_section=new_section)
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/resource.py:750:9
+    |
+750 |     def _clone(
+    |         ^^^^^^
+751 |         self, *, new_name: str = None, new_section: str = None, with_parent: bool = False
+    |                                        ----------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/resource.py:665:50
+    |
+665 |         source_context = SourceInjectableContext(source)
+    |                                                  ^^^^^^ Expected `Exception`, found `_DltSingleSource`
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/extract/resource.py:666:56
+    |
+666 |         schema_context = SourceSchemaInjectableContext(source.discover_schema())
+    |                                                        ^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Exception`, found `Schema`
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Signature`
+   --> dlt/extract/resource.py:682:26
+    |
+682 |         self, f: AnyFun, sig: inspect.Signature = None, *args: Any, **kwargs: Any
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `IncrementalResourceWrapper`
+   --> dlt/extract/resource.py:714:22
+    |
+714 |         incremental: IncrementalResourceWrapper = None
+    |                      --------------------------   ^^^^ Incompatible value of type `None`
+    |                      |
+    |                      Declared type
+    |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `TResourceHints | None`
+   --> dlt/extract/resource.py:717:54
+    |
+717 |             incremental = IncrementalResourceWrapper(self._hints.get("primary_key"))
+    |                                                      ^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `TResourceHints | None`
+   --> dlt/extract/resource.py:718:29
+    |
+718 |             if incr_hint := self._hints.get("incremental"):
+    |                             ^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:751:18
+    |
+751 |         self, *, new_name: str = None, new_section: str = None, with_parent: bool = False
+    |                  ^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/extract/resource.py:751:40
+    |
+751 |         self, *, new_name: str = None, new_section: str = None, with_parent: bool = False
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to `DltResource.__init__` is incorrect
+   --> dlt/extract/resource.py:770:13
+    |
+770 |             self._clone_hints(self._hints),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `TResourceHints`, found `TResourceHints | None`
+    |
+info: element `None` of union `TResourceHints | None` is not assignable to `TResourceHints`
+info: Method defined here
+   --> dlt/extract/resource.py:127:9
+    |
+127 |     def __init__(
+    |         ^^^^^^^^
+128 |         self,
+129 |         pipe: Pipe,
+130 |         hints: TResourceHints,
+    |         --------------------- Parameter declared here
+    |
+
+error[unresolved-attribute]: Attribute `pipeline_name` is not defined on `None` in union `None | SupportsPipeline`
+   --> dlt/extract/resource.py:826:65
+    |
+826 |             default_schema_name = make_schema_with_default_name(pipeline.pipeline_name)
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]] | ((Any | list[Any], Any | None, /) -> Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]) | ((Any | list[Any], Any | None, /) -> Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]) | ... omitted 4 union elements` is not assignable to `LimitItem`
+   --> dlt/extract/resource.py:854:19
+    |
+854 |             step: LimitItem = self._pipe.steps[step_id]  # type: ignore[assignment]
+    |                   ---------   ^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]] | ((Any | list[Any], Any | None, /) -> Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]) | ((Any | list[Any], Any | None, /) -> Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]) | ... omitted 4 union elements`
+    |                   |
+    |                   Declared type
+    |
+info: element `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]` of union `Iterable[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]] | ((Any | list[Any], Any | None, /) -> Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]) | ((Any | list[Any], Any | None, /) -> Iterator[Any | list[Any] | (() -> Any | list[Any]) | Awaitable[Any | list[Any]]]) | ... omitted 4 union elements` is not assignable to `LimitItem`
+
+error[invalid-argument-type]: Argument to `InvalidTransformerGeneratorFunction.__init__` is incorrect
+   --> dlt/extract/resource.py:930:27
+    |
+930 |                     name, get_callable_name(data), inspect.signature(data), valid_code
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/exceptions.py:193:9
+    |
+193 |     def __init__(self, resource_name: str, func_name: str, sig: Signature, code: int) -> None:
+    |         ^^^^^^^^                           -------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `InvalidParentResourceIsAFunction.__init__` is incorrect
+   --> dlt/extract/resource.py:942:62
+    |
+942 |                 raise InvalidParentResourceIsAFunction(name, get_callable_name(data_from))
+    |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/extract/exceptions.py:255:9
+    |
+255 |     def __init__(self, resource_name: str, func_name: str) -> None:
+    |         ^^^^^^^^                           -------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `Pipe.__init__` is incorrect
+   --> dlt/extract/resource.py:966:38
+    |
+966 | DltResource.Empty = DltResource(Pipe(None), None, False)
+    |                                      ^^^^ Expected `str`, found `None`
+    |
+info: Method defined here
+  --> dlt/extract/pipe.py:81:9
+   |
+81 |     def __init__(self, name: str, steps: List[TPipeStep] = None, parent: "Pipe" = None) -> None:
+   |         ^^^^^^^^       --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `DltResource.__init__` is incorrect
+   --> dlt/extract/resource.py:966:45
+    |
+966 | DltResource.Empty = DltResource(Pipe(None), None, False)
+    |                                             ^^^^ Expected `TResourceHints`, found `None`
+    |
+info: Method defined here
+   --> dlt/extract/resource.py:127:9
+    |
+127 |     def __init__(
+    |         ^^^^^^^^
+128 |         self,
+129 |         pipe: Pipe,
+130 |         hints: TResourceHints,
+    |         --------------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `Literal["asc", "desc"] | None` is not assignable to `Literal["asc", "desc"]`
+   --> dlt/sources/sql_database/helpers.py:144:29
+    |
+144 |             self.row_order: TSortOrder = self.incremental.row_order
+    |                             ----------   ^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `Literal["asc", "desc"] | None`
+    |                             |
+    |                             Declared type
+    |
+
+error[unresolved-attribute]: Attribute `row_order` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/sources/sql_database/helpers.py:144:42
+    |
+144 |             self.row_order: TSortOrder = self.incremental.row_order
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `on_cursor_value_missing` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/sources/sql_database/helpers.py:145:44
+    |
+145 |             self.on_cursor_value_missing = self.incremental.on_cursor_value_missing
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `range_start` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/sources/sql_database/helpers.py:146:32
+    |
+146 |             self.range_start = self.incremental.range_start
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `range_end` is not defined on `None` in union `Incremental[Any] | None`
+   --> dlt/sources/sql_database/helpers.py:147:30
+    |
+147 |             self.range_end = self.incremental.range_end
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to attribute `row_order` of type `Literal["asc", "desc"]`
+   --> dlt/sources/sql_database/helpers.py:152:13
+    |
+152 |             self.row_order = None
+    |             ^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to function `ge` is incorrect
+   --> dlt/sources/sql_database/helpers.py:184:38
+    |
+184 |             where_clause = filter_op(self.cursor_column, self.last_value)
+    |                                      ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:82:5
+   |
+82 | def ge(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `gt` is incorrect
+   --> dlt/sources/sql_database/helpers.py:184:38
+    |
+184 |             where_clause = filter_op(self.cursor_column, self.last_value)
+    |                                      ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:85:5
+   |
+85 | def gt(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `le` is incorrect
+   --> dlt/sources/sql_database/helpers.py:184:38
+    |
+184 |             where_clause = filter_op(self.cursor_column, self.last_value)
+    |                                      ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:73:5
+   |
+73 | def le(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `lt` is incorrect
+   --> dlt/sources/sql_database/helpers.py:184:38
+    |
+184 |             where_clause = filter_op(self.cursor_column, self.last_value)
+    |                                      ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:70:5
+   |
+70 | def lt(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `ge` is incorrect
+   --> dlt/sources/sql_database/helpers.py:187:49
+    |
+187 |                     where_clause, filter_op_end(self.cursor_column, self.end_value)
+    |                                                 ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:82:5
+   |
+82 | def ge(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `gt` is incorrect
+   --> dlt/sources/sql_database/helpers.py:187:49
+    |
+187 |                     where_clause, filter_op_end(self.cursor_column, self.end_value)
+    |                                                 ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:85:5
+   |
+85 | def gt(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `le` is incorrect
+   --> dlt/sources/sql_database/helpers.py:187:49
+    |
+187 |                     where_clause, filter_op_end(self.cursor_column, self.end_value)
+    |                                                 ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:73:5
+   |
+73 | def le(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[invalid-argument-type]: Argument to function `lt` is incorrect
+   --> dlt/sources/sql_database/helpers.py:187:49
+    |
+187 |                     where_clause, filter_op_end(self.cursor_column, self.end_value)
+    |                                                 ^^^^^^^^^^^^^^^^^^ Expected `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`, found `Unknown | None`
+    |
+info: element `None` of union `Unknown | None` is not assignable to `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info: └── type `None` is not assignable to any element of the union `_SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderLE`
+info:     │   └── protocol member `__le__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGE`
+info:     │   └── protocol member `__ge__` is not defined on type `None`
+info:     ├── type `None` is not assignable to protocol `_SupportsDunderGT`
+info:     │   └── protocol member `__gt__` is not defined on type `None`
+info:     └── type `None` is not assignable to protocol `_SupportsDunderLT`
+info:         └── protocol member `__lt__` is not defined on type `None`
+info: Function defined here
+  --> stdlib/_operator.pyi:70:5
+   |
+70 | def lt(a: _SupportsComparison, b: _SupportsComparison, /) -> Any:
+   |     ^^ ---------------------- Parameter declared here
+   |
+info: Union variant `def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any` is incompatible with this call site
+info: Attempted to call union type `(def lt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def le(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def gt(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any) | (def ge(a: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, b: _SupportsDunderLE | _SupportsDunderGE | _SupportsDunderGT | _SupportsDunderLT, /) -> Any)`
+
+error[unresolved-attribute]: Attribute `is_` is not defined on `None` in union `Unknown | None`
+   --> dlt/sources/sql_database/helpers.py:191:53
+    |
+191 |                 where_clause = sa.or_(where_clause, self.cursor_column.is_(None))
+    |                                                     ^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `isnot` is not defined on `None` in union `Unknown | None`
+   --> dlt/sources/sql_database/helpers.py:193:50
+    |
+193 |             where_clause = sa.and_(where_clause, self.cursor_column.isnot(None))
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `asc` is not defined on `None` in union `Unknown | None`
+   --> dlt/sources/sql_database/helpers.py:203:24
+    |
+203 |             order_by = self.cursor_column.asc()
+    |                        ^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `desc` is not defined on `None` in union `Unknown | None`
+   --> dlt/sources/sql_database/helpers.py:207:24
+    |
+207 |             order_by = self.cursor_column.desc()
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/sources/sql_database/helpers.py:217:53
+    |
+217 |                     self._make_query(), self.table, self.incremental, self.engine
+    |                                                     ^^^^^^^^^^^^^^^^ Expected `Incremental[Any]`, found `Incremental[Any] | None`
+    |
+info: element `None` of union `Incremental[Any] | None` is not assignable to `Incremental[Any]`
+info: Union variant `(Unknown, Table, Incremental[Any], Engine, /) -> Unknown | TextClause` is incompatible with this call site
+info: Attempted to call union type `(((Unknown, Table, /) -> Unknown | TextClause) & ~AlwaysFalsy) | (((Unknown, Table, Incremental[Any], Engine, /) -> Unknown | TextClause) & ~AlwaysFalsy)`
+
+error[too-many-positional-arguments]: Too many positional arguments: expected 2, got 4
+   --> dlt/sources/sql_database/helpers.py:217:53
+    |
+217 |                     self._make_query(), self.table, self.incremental, self.engine
+    |                                                     ^^^^^^^^^^^^^^^^
+    |
+info: Union variant `(Unknown, Table, /) -> Unknown | TextClause` is incompatible with this call site
+info: Attempted to call union type `(((Unknown, Table, /) -> Unknown | TextClause) & ~AlwaysFalsy) | (((Unknown, Table, Incremental[Any], Engine, /) -> Unknown | TextClause) & ~AlwaysFalsy)`
+
+error[missing-argument]: No arguments provided for required parameters 3, 4
+   --> dlt/sources/sql_database/helpers.py:222:24
+    |
+222 |                   return self.query_adapter_callback(  # type: ignore[call-arg]
+    |  ________________________^
+223 | |                     self._make_query(), self.table
+224 | |                 )
+    | |_________________^
+    |
+info: Union variant `(Unknown, Table, Incremental[Any], Engine, /) -> Unknown | TextClause` is incompatible with this call site
+info: Attempted to call union type `(((Unknown, Table, /) -> Unknown | TextClause) & ~AlwaysFalsy) | (((Unknown, Table, Incremental[Any], Engine, /) -> Unknown | TextClause) & ~AlwaysFalsy)`
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `dict[str, Any]`
+   --> dlt/sources/sql_database/helpers.py:257:25
+    |
+257 |     def load_rows(self, backend_kwargs: Dict[str, Any] = None) -> Iterator[TDataItem]:
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `dict[str, Any]`
+   --> dlt/sources/sql_database/helpers.py:279:25
+    |
+279 |     def load_rows(self, backend_kwargs: Dict[str, Any] = None) -> Iterator[TDataItem]:
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to function `_wrap_result` is incorrect
+   --> dlt/sources/sql_database/helpers.py:323:21
+    |
+323 |                     **{"dtype_backend": "pyarrow", **backend_kwargs},
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Literal["pyarrow", "numpy_nullable", "numpy"]`, found `str | Any`
+    |
+info: element `str` of union `str | Any` is not assignable to `Literal["pyarrow", "numpy_nullable", "numpy"]`
+info: Function defined here
+   --> /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages/pandas/io/sql.py:195:5
+    |
+195 | def _wrap_result(
+    |     ^^^^^^^^^^^^
+    |
+   ::: /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages/pandas/io/sql.py:202:5
+    |
+202 |     dtype_backend: DtypeBackend | Literal["numpy"] = "numpy",
+    |     -------------------------------------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `_wrap_result` is incorrect
+   --> dlt/sources/sql_database/helpers.py:323:21
+    |
+323 |                     **{"dtype_backend": "pyarrow", **backend_kwargs},
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `bool`, found `str | Any`
+    |
+info: element `str` of union `str | Any` is not assignable to `bool`
+info: Function defined here
+   --> /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages/pandas/io/sql.py:195:5
+    |
+195 | def _wrap_result(
+    |     ^^^^^^^^^^^^
+196 |     data,
+197 |     columns,
+198 |     index_col=None,
+199 |     coerce_float: bool = True,
+    |     ------------------------- Parameter declared here
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `dict[str, Any]`
+   --> dlt/sources/sql_database/helpers.py:346:25
+    |
+346 |     def load_rows(self, backend_kwargs: Dict[str, Any] = None) -> Iterator[TDataItem]:
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-import]: Cannot resolve imported module `connectorx`
+   --> dlt/sources/sql_database/helpers.py:356:20
+    |
+356 |             import connectorx as cx
+    |                    ^^^^^^^^^^^^^^^^
+    |
+info: Searched in the following paths during module resolution:
+info:   1. /home/matous/git/tyftest/repos/stage-dlt-140 (first-party code)
+info:   2. vendored://stdlib (stdlib typeshed stubs vendored by ty)
+info:   3. /home/matous/git/tyftest/repos/dlt.venv/lib/python3.13/site-packages (site-packages)
+info:   4. /home/matous/git/tyftest/runs/dlt-131/A/rep3 (editable install)
+info:   5. /home/matous/git/tyftest/repos/dlt.venv/lib64/python3.13/site-packages (site-packages)
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+error[invalid-assignment]: Object of type `list[str]` is not assignable to attribute `primary_key` on type `Incremental[Any] & ~AlwaysFalsy`
+   --> dlt/sources/sql_database/helpers.py:495:17
+    |
+495 |                 incremental.primary_key = primary_key
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `replace_with_mask`
+   --> dlt/sources/sql_database/helpers.py:593:18
+    |
+593 |         column = pc.replace_with_mask(
+    |                  ^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[unresolved-attribute]: Module `pyarrow.compute` has no member `equal`
+   --> dlt/sources/sql_database/helpers.py:595:13
+    |
+595 |             pc.equal(column, "null").combine_chunks(),
+    |             ^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `ConnectionStringCredentials | Engine | str`
+   --> dlt/sources/sql_database/helpers.py:650:18
+    |
+650 |     credentials: Union[ConnectionStringCredentials, Engine, str] = None
+    |                  -----------------------------------------------   ^^^^ Incompatible value of type `None`
+    |                  |
+    |                  Declared type
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `str`
+   --> dlt/sources/sql_database/helpers.py:651:12
+    |
+651 |     table: str = None
+    |            ---   ^^^^ Incompatible value of type `None`
+    |            |
+    |            Declared type
+    |
+
+warning[possibly-missing-submodule]: Submodule `event` might not have been imported
+   --> dlt/sources/sql_database/helpers.py:699:9
+    |
+699 |         sa.event.listen(metadata, "column_reflect", _oracle_column_reflect_listener)
+    |         ^^^^^^^^
+    |
+help: Consider explicitly importing `sqlalchemy.event`
+
+Found 167 diagnostics

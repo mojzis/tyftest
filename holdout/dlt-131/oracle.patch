@@ -1,0 +1,916 @@
+diff --git a/tests/common/schema/test_merges.py b/tests/common/schema/test_merges.py
+index 3334ec4a0..25c586818 100644
+--- a/tests/common/schema/test_merges.py
++++ b/tests/common/schema/test_merges.py
+@@ -7,7 +7,14 @@ from dlt.common.schema.exceptions import (
+     CannotCoerceColumnException,
+     TablePropertiesConflictException,
+ )
+-from dlt.common.schema.typing import TColumnSchemaBase, TStoredSchema, TTableSchema, TColumnSchema
++from dlt.common.schema.typing import (
++    TColumnSchemaBase,
++    TStoredSchema,
++    TTableSchema,
++    TColumnSchema,
++    ColumnPropInfos,
++    TTableSchemaColumns,
++)
+ 
+ 
+ COL_1_HINTS: TColumnSchema = {  # type: ignore[typeddict-unknown-key]
+@@ -36,6 +43,19 @@ COL_1_HINTS_NO_DEFAULTS: TColumnSchema = {  # type: ignore[typeddict-unknown-key
+ COL_2_HINTS: TColumnSchema = {"nullable": True, "name": "test_2", "primary_key": False}
+ 
+ 
++COL_3_HINTS: TColumnSchema = {
++    "name": "test_3",
++    "merge_key": True,
++    "nullable": False,
++}
++
++COL_4_HINTS: TColumnSchema = {
++    "name": "test_4",
++    "merge_key": True,
++    "nullable": False,
++}
++
++
+ @pytest.mark.parametrize(
+     "prop,value,is_default",
+     (
+@@ -226,19 +246,113 @@ def test_merge_columns() -> None:
+     assert columns["test"] == COL_1_HINTS
+     assert columns["test_2"] == COL_2_HINTS
+ 
+-    # replace test with new test
+     columns = utils.merge_columns(
+-        {"test": deepcopy(COL_1_HINTS)}, {"test": COL_1_HINTS_NO_DEFAULTS}, merge_columns=False
++        {"test": deepcopy(COL_1_HINTS)}, {"test": COL_1_HINTS_NO_DEFAULTS}
+     )
+     assert list(columns.keys()) == ["test"]
+-    assert columns["test"] == COL_1_HINTS_NO_DEFAULTS
++    assert columns["test"] == utils.merge_column(deepcopy(COL_1_HINTS), COL_1_HINTS_NO_DEFAULTS)
+ 
+-    # merge
+-    columns = utils.merge_columns(
+-        {"test": deepcopy(COL_1_HINTS)}, {"test": COL_1_HINTS_NO_DEFAULTS}, merge_columns=True
++
++@pytest.mark.parametrize(
++    "prop",
++    [prop for prop, info in ColumnPropInfos.items() if info.compound] + ["unknown", "data_type"],
++)
++def test_is_compound_prop(prop: str) -> None:
++    """Test the functionality of is_compound_prop"""
++    is_compound = utils.is_compound_prop(prop)
++    if prop in ["unknown", "data_type"]:
++        assert is_compound is False
++    else:
++        assert is_compound is True
++
++
++def test_remove_compound_props() -> None:
++    """Test the removal of compound props."""
++
++    columns: TTableSchemaColumns = {
++        "col1": deepcopy(COL_1_HINTS),
++        "col3": deepcopy(COL_3_HINTS),
++        "col4": deepcopy(COL_4_HINTS),
++    }
++
++    result = utils.remove_compound_props(columns, {"cluster", "merge_key", "data_type"})
++
++    # ensure specified properties are removed from all columns
++    assert all("cluster" not in col_schema for col_schema in result.values())
++    assert all("merge_key" not in col_schema for col_schema in result.values())
++
++    # in col3 and col4, nullable should not be reset
++    assert columns["col3"]["nullable"] is False
++    assert columns["col4"]["nullable"] is False
++
++    # the function is a generic property remover, validation of whether
++    # properties are actually compound should be handled upstream
++    assert all("data_type" not in col_schema for col_schema in result.values())
++
++    # it modifies in place (returns same object)
++    assert result is columns
++
++
++@pytest.mark.parametrize(
++    "prop",
++    [prop for prop, info in ColumnPropInfos.items() if info.compound] + ["unknown", "data_type"],
++)
++def test_collect_and_remove_compound_props(prop: str) -> None:
++    """Test collection and removal of compound props."""
++
++    col_1: TTableSchemaColumns = {"test_1": {"name": "test_1", prop: True}}  # type: ignore[misc]
++    col_2: TTableSchemaColumns = {"test_2": {"name": "test_2", prop: True}}  # type: ignore[misc]
++    utils._collect_and_remove_compound_props(col_1, col_2)
++    if prop in ["unknown", "data_type"]:
++        # "unknown" is not a recognized prop, "data_type" is not compound
++        # both should be ignored by the helper
++        assert col_2["test_2"].get(prop) is True
++    else:
++        assert not col_2["test_2"].get(prop)
++
++    col_3: TTableSchemaColumns = {"test_3": {"name": "test_3", prop: False}}  # type: ignore[misc]
++    col_4: TTableSchemaColumns = {"test_4": {"name": "test_4", prop: True}}  # type: ignore[misc]
++    utils._collect_and_remove_compound_props(col_3, col_4)
++    assert col_4["test_4"].get(prop) is True
++
++    col_5: TTableSchemaColumns = {"test_5": {"name": "test_5", prop: None}}  # type: ignore[misc]
++    col_6: TTableSchemaColumns = {"test_6": {"name": "test_6", prop: True}}  # type: ignore[misc]
++    utils._collect_and_remove_compound_props(col_5, col_6)
++    assert col_6["test_6"].get(prop) is True
++
++
++@pytest.mark.parametrize(
++    "merge_compound_props",
++    [True, False],
++    ids=["merge_compound_props", "replace_compound_props"],
++)
++def test_merge_columns_compound_props(merge_compound_props: bool) -> None:
++    """Test that compound props are replaced if the config is set so in merge_columns."""
++
++    compound_props = {prop for prop, info in ColumnPropInfos.items() if info.compound}
++    assert compound_props == {"merge_key", "primary_key", "cluster", "partition"}
++
++    columns_a: TTableSchemaColumns = {
++        "col1": {"name": "col1", **{prop: True for prop in compound_props}},  # type: ignore[typeddict-item]
++    }
++
++    columns_b: TTableSchemaColumns = {
++        "col2": {"name": "col2", **{prop: True for prop in compound_props}},  # type: ignore[typeddict-item]
++    }
++
++    result = utils.merge_columns(
++        deepcopy(columns_a), columns_b, merge_compound_props=merge_compound_props
+     )
+-    assert list(columns.keys()) == ["test"]
+-    assert columns["test"] == utils.merge_column(deepcopy(COL_1_HINTS), COL_1_HINTS_NO_DEFAULTS)
++
++    if merge_compound_props:
++        for prop in compound_props:
++            assert result["col1"].get(prop) is True
++            assert result["col2"].get(prop) is True
++
++    else:
++        for prop in compound_props:
++            assert result["col1"].get(prop) is None
++            assert result["col2"].get(prop) is True
+ 
+ 
+ def test_merge_incomplete_columns() -> None:
+@@ -262,13 +376,12 @@ def test_merge_incomplete_columns() -> None:
+         {"test": COL_1_HINTS_NO_DEFAULTS},
+     )
+     assert list(columns.keys()) == ["test_2", "test"]
+-    assert columns["test"] == COL_1_HINTS_NO_DEFAULTS
++    assert columns["test"] == COL_1_HINTS
+     assert columns["test_2"] == COL_2_HINTS
+ 
+     columns = utils.merge_columns(
+         {"test": deepcopy(incomplete_col_1), "test_2": COL_2_HINTS},
+         {"test": COL_1_HINTS_NO_DEFAULTS},
+-        merge_columns=True,
+     )
+     assert list(columns.keys()) == ["test_2", "test"]
+     assert columns["test"] == utils.merge_column(deepcopy(COL_1_HINTS), COL_1_HINTS_NO_DEFAULTS)
+@@ -278,11 +391,16 @@ def test_merge_incomplete_columns() -> None:
+         {"test": deepcopy(incomplete_col_1), "test_2": COL_2_HINTS}, {"test": incomplete_col_1_nd}
+     )
+     assert list(columns.keys()) == ["test", "test_2"]
+-    assert columns["test"] == incomplete_col_1_nd
++    assert columns["test"] == incomplete_col_1
+     assert columns["test_2"] == COL_2_HINTS
+ 
+ 
+-def test_diff_tables() -> None:
++@pytest.mark.parametrize(
++    "merge_compound_props",
++    [True, False],
++    ids=["merge_compound_props", "replace_compound_props"],
++)
++def test_diff_tables(merge_compound_props: bool) -> None:
+     table: TTableSchema = {  # type: ignore[typeddict-unknown-key]
+         "name": "table",
+         "description": "description",
+@@ -293,10 +411,10 @@ def test_diff_tables() -> None:
+     empty = utils.new_table("table")
+     del empty["resource"]
+     print(empty)
+-    partial = utils.diff_table("schema", empty, deepcopy(table))
++    partial = utils.diff_table("schema", empty, deepcopy(table), merge_compound_props)
+     # partial is simply table
+     assert partial == table
+-    partial = utils.diff_table("schema", deepcopy(table), empty)
++    partial = utils.diff_table("schema", deepcopy(table), empty, merge_compound_props)
+     # partial is empty
+     assert partial == empty
+ 
+@@ -307,7 +425,7 @@ def test_diff_tables() -> None:
+     # names must be identical
+     renamed_table = deepcopy(table)
+     renamed_table["name"] = "new name"
+-    partial = utils.diff_table("schema", renamed_table, changed)
++    partial = utils.diff_table("schema", renamed_table, changed, merge_compound_props)
+     print(partial)
+     assert partial == {"name": "new name", "description": "new description", "columns": {}}
+ 
+@@ -315,7 +433,7 @@ def test_diff_tables() -> None:
+     existing = deepcopy(renamed_table)
+     changed["write_disposition"] = "append"
+     changed["schema_contract"] = "freeze"
+-    partial = utils.diff_table("schema", deepcopy(existing), changed)
++    partial = utils.diff_table("schema", deepcopy(existing), changed, merge_compound_props)
+     assert partial == {
+         "name": "new name",
+         "description": "new description",
+@@ -325,14 +443,14 @@ def test_diff_tables() -> None:
+     }
+     existing["write_disposition"] = "append"
+     existing["schema_contract"] = "freeze"
+-    partial = utils.diff_table("schema", deepcopy(existing), changed)
++    partial = utils.diff_table("schema", deepcopy(existing), changed, merge_compound_props)
+     assert partial == {"name": "new name", "description": "new description", "columns": {}}
+ 
+     # detect changed column
+     existing = deepcopy(table)
+     changed = deepcopy(table)
+     changed["columns"]["test"]["cluster"] = True
+-    partial = utils.diff_table("schema", existing, changed)
++    partial = utils.diff_table("schema", existing, changed, merge_compound_props)
+     assert "test" in partial["columns"]
+     assert "test_2" not in partial["columns"]
+     assert existing["columns"]["test"] == table["columns"]["test"] != partial["columns"]["test"]
+@@ -341,7 +459,7 @@ def test_diff_tables() -> None:
+     existing = deepcopy(table)
+     changed = deepcopy(table)
+     changed["columns"]["test"]["parent_key"] = False
+-    partial = utils.diff_table("schema", existing, changed)
++    partial = utils.diff_table("schema", existing, changed, merge_compound_props)
+     assert "test" in partial["columns"]
+ 
+     # even if not present in tab_a at all
+@@ -349,9 +467,32 @@ def test_diff_tables() -> None:
+     changed = deepcopy(table)
+     changed["columns"]["test"]["parent_key"] = False
+     del existing["columns"]["test"]["parent_key"]
+-    partial = utils.diff_table("schema", existing, changed)
++    partial = utils.diff_table("schema", existing, changed, merge_compound_props)
+     assert "test" in partial["columns"]
+ 
++    existing = deepcopy(table)
++    existing["columns"]["test"]["primary_key"] = True
++    changed = deepcopy(table)
++    changed["columns"]["test_2"]["primary_key"] = True
++    partial = utils.diff_table("schema", existing, changed, merge_compound_props)
++    assert partial["columns"] == {
++        "test_2": {"nullable": True, "name": "test_2", "primary_key": True}
++    }
++
++    # if replace_compound_props, compound_props in changed are authoritative
++    existing = deepcopy(table)
++    existing["columns"]["test"]["primary_key"] = True
++    existing["columns"]["test_2"]["primary_key"] = True
++    changed = deepcopy(table)
++    changed["columns"]["test_2"]["primary_key"] = True
++    partial = utils.diff_table("schema", existing, changed, merge_compound_props)
++    if merge_compound_props:
++        assert partial["columns"] == {}
++    else:
++        assert partial["columns"] == {
++            "test_2": {"nullable": True, "name": "test_2", "primary_key": True}
++        }
++
+ 
+ def test_tables_conflicts() -> None:
+     # conflict on parents
+diff --git a/tests/extract/test_sources.py b/tests/extract/test_sources.py
+index 039466cc4..71f74cb17 100644
+--- a/tests/extract/test_sources.py
++++ b/tests/extract/test_sources.py
+@@ -1767,12 +1767,13 @@ def test_apply_hints() -> None:
+         "validator": None,
+         "write_disposition": "append",
+         "original_columns": {},
++        "merge_key": "",
++        "primary_key": [],
+     }
++    empty_keys_table_schema = empty_table_schema
++    empty_keys_table_schema["columns"] = {}
+     table = empty_r.compute_table_schema()
+-    assert table["name"] == "empty_gen"
+-    assert "parent" not in table
+-    assert table["columns"] == {}
+-    assert empty_r.compute_table_schema() == empty_table_schema
++    assert table == empty_keys_table_schema
+ 
+     # combine columns with primary key
+     empty_r = empty()
+@@ -2032,15 +2033,14 @@ def test_apply_hints_keys(key_prop: TColumnProp) -> None:
+     assert set(actual_keys) == {"id_1"}
+ 
+     # apply key via schema
+-    key_columns_3 = ["id_2", "id_1", "id_3"]
+     id_2_col[key_prop] = True
+ 
+     empty = DltResource.from_data(empty_gen)
+     empty.apply_hints(**{key_prop: key_columns_2}, columns=[id_2_col])  # type: ignore
+     table = empty.compute_table_schema()
+-    # all 3 columns have the compound key. we do not prevent setting keys via schema
++    # only 2 columns specified via the direct key hint are set so
+     actual_keys = utils.get_columns_names_with_prop(table, key_prop, include_incomplete=True)
+-    assert actual_keys == key_columns_3
++    assert actual_keys == key_columns_2
+     actual_keys = utils.get_columns_names_with_prop(table, "nullable", include_incomplete=True)
+     assert actual_keys == key_columns_2
+ 
+diff --git a/tests/load/lancedb/test_pipeline.py b/tests/load/lancedb/test_pipeline.py
+index 23c5ada16..53be8e6bc 100644
+--- a/tests/load/lancedb/test_pipeline.py
++++ b/tests/load/lancedb/test_pipeline.py
+@@ -70,6 +70,51 @@ def test_adapter_and_hints() -> None:
+     assert some_data.compute_table_schema()["columns"]["content"]["merge_key"] is True
+ 
+ 
++def test_changing_merge_key() -> None:
++    @dlt.resource
++    def some_data():
++        yield {"id": 1, "other_id": 2, "content": "random"}
++
++    # Initially "id" is set as key
++    lancedb_adapter(
++        some_data,
++        embed=["random"],
++        merge_key="id",
++    )
++
++    pipeline = dlt.pipeline(
++        pipeline_name="test_changing_merge_key",
++        destination="lancedb",
++        dataset_name=f"test_changing_merge_key{uniq_id()}",
++    )
++    info = pipeline.run(
++        some_data(),
++    )
++    assert_load_info(info)
++
++    assert pipeline.default_schema.tables["some_data"]["columns"]["id"]["merge_key"] is True
++    assert pipeline.default_schema.tables["some_data"]["columns"]["id"]["nullable"] is False
++
++    # We change key to "other_id"
++    lancedb_adapter(
++        some_data,
++        embed=["random"],
++        merge_key="other_id",
++    )
++    info = pipeline.run(
++        some_data(),
++    )
++    assert_load_info(info)
++
++    # "id" should no longer be key
++    assert not pipeline.default_schema.tables["some_data"]["columns"]["id"].get("merge_key")
++    assert pipeline.default_schema.tables["some_data"]["columns"]["id"]["nullable"] is False
++    assert (
++        pipeline.default_schema.tables["some_data"]["columns"]["other_id"].get("merge_key") is True
++    )
++    assert pipeline.default_schema.tables["some_data"]["columns"]["other_id"]["nullable"] is False
++
++
+ def test_basic_state_and_schema() -> None:
+     generator_instance1 = sequence_generator()
+ 
+diff --git a/tests/load/pipeline/test_merge_disposition.py b/tests/load/pipeline/test_merge_disposition.py
+index 7e053ed75..a8237a8b5 100644
+--- a/tests/load/pipeline/test_merge_disposition.py
++++ b/tests/load/pipeline/test_merge_disposition.py
+@@ -18,7 +18,7 @@ from dlt.common.schema.exceptions import (
+ )
+ from dlt.common.schema.typing import TLoaderMergeStrategy, TTableFormat
+ from dlt.common.typing import StrAny
+-from dlt.common.utils import digest128
++from dlt.common.utils import digest128, uniq_id
+ from dlt.common.destination import DestinationCapabilitiesContext
+ from dlt.common.destination.exceptions import DestinationCapabilitiesException
+ from dlt.common.libs.pyarrow import row_tuples_to_arrow
+@@ -1760,3 +1760,62 @@ def test_merge_arrow(
+             {"id": 2, "name": "updated bar"},
+         ],
+     )
++
++
++@pytest.mark.parametrize(
++    "destination_config",
++    destinations_configs(default_sql_configs=True, supports_merge=True),
++    ids=lambda x: x.name,
++)
++def test_replacing_merge_key(destination_config: DestinationTestConfiguration) -> None:
++    """Test that changing merge_key properly deletes records based on the NEW key.
++    Records matching the new merge_key in incoming data should replace old ones.
++    """
++    p = destination_config.setup_pipeline("test_replacing_merge_key")
++
++    # load initial data with merge_key "time_off_date"
++    @dlt.resource(
++        write_disposition={
++            "disposition": "merge",
++            "strategy": "delete-insert",
++        },
++        merge_key=["time_off_date"],
++    )
++    def people(data):
++        yield from data
++
++    initial_data = [
++        {"email": "user_1@example.com", "time_off_date": "25.07.2025", "month_key": "2025-07"},
++        {"email": "user_2@example.com", "time_off_date": "18.08.2025", "month_key": "2025-08"},
++    ]
++
++    info = p.run(people(initial_data), **destination_config.run_kwargs)
++    assert_load_info(info)
++
++    observed = [
++        {"email": row[0], "time_off_date": row[1], "month_key": row[2]}
++        for row in select_data(p, "SELECT email, time_off_date, month_key FROM people")
++    ]
++
++    assert sorted(observed, key=lambda d: d["email"]) == initial_data
++
++    # change merge_key to "month_key"
++    people.apply_hints(merge_key=["month_key"])
++
++    # new data has month_key "2025-08" which exists in old data
++    # should delete the old 2025-08 record (18.08.2025) and insert new one (19.08.2025)
++    new_data = [
++        {"email": "user_2@example.com", "time_off_date": "19.08.2025", "month_key": "2025-08"},
++        {"email": "user_2@example.com", "time_off_date": "20.09.2025", "month_key": "2025-09"},
++    ]
++
++    info = p.run(people(new_data), **destination_config.run_kwargs)
++
++    observed = [
++        {"email": row[0], "time_off_date": row[1], "month_key": row[2]}
++        for row in select_data(p, "SELECT email, time_off_date, month_key FROM people")
++    ]
++
++    expected = [initial_data[0]] + new_data
++
++    assert sorted(observed, key=lambda d: d["email"]) == expected
+diff --git a/tests/pipeline/test_schema_updates.py b/tests/pipeline/test_schema_updates.py
+index 03821e664..bc52c7ee0 100644
+--- a/tests/pipeline/test_schema_updates.py
++++ b/tests/pipeline/test_schema_updates.py
+@@ -1,6 +1,15 @@
++from typing import Union, Any, Dict
+ import os
++import pytest
+ 
+ import dlt
++from dlt.common.schema import Schema
++from dlt.common.schema.typing import ColumnPropInfos
++from dlt.extract.resource import DltResource
++from tests.utils import TestDataItemFormat, ALL_TEST_DATA_ITEM_FORMATS
++
++import pandas as pd
++import pyarrow as pa
+ 
+ 
+ def test_schema_updates() -> None:
+@@ -71,3 +80,436 @@ def test_schema_updates() -> None:
+         },
+         "max_nesting": 50,
+     }
++
++
++def _get_item_with_format(
++    item: Dict[str, Any], item_format: TestDataItemFormat
++) -> Union[Dict[str, Any], pd.DataFrame, pa.Table, pa.RecordBatch]:
++    if item_format == "object":
++        return item
++    elif item_format == "pandas":
++        return pd.DataFrame({k: [v] for k, v in item.items()})
++    elif item_format == "arrow-table":
++        return pa.table({k: [v] for k, v in item.items()})
++    else:  # arrow-batch
++        return pa.RecordBatch.from_pydict({k: [v] for k, v in item.items()})
++
++
++def _get_resource(with_apply_hints: bool, data: Dict[str, Any], **hints: Any) -> DltResource:
++    if with_apply_hints:
++
++        @dlt.resource
++        def get_resource():
++            yield data
++
++        my_resource = get_resource().apply_hints(**hints)
++    else:
++
++        @dlt.resource(**hints)
++        def get_resource():
++            yield data
++
++        my_resource = get_resource()
++
++    return my_resource
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize(
++    "key_hint_as_list", [True, False], ids=["key_hint_as_list", "key_hint_as_string"]
++)
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_key_replaces_column_hints(
++    key_hint: str,
++    with_apply_hints: bool,
++    key_hint_as_list: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Ensure that key hints on table level take precedence over hints on column level when both are set."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_changing_merge_key_between_runs", destination="dummy")
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        columns={"other_id": {key_hint: True}},
++        **{key_hint: ["id"] if key_hint_as_list else "id"},
++    )
++
++    # Initially hints are set as is:
++    # - "other_id" receives key hint on column level
++    # - "id" is set as key hint on table level
++    assert my_resource.columns == {"other_id": {key_hint: True, "name": "other_id"}}
++    assert my_resource._hints["columns"] == my_resource.columns
++    assert my_resource._hints.get(key_hint) == ["id"] if key_hint_as_list else "id"
++
++    # Table level key hint takes precedence during schema computation:
++    # - "other_id" is not key
++    # - "id" is key
++    expected = {
++        "other_id": {"name": "other_id"},
++        "id": {"name": "id", "nullable": False, key_hint: True},
++    }
++    table_schema = my_resource.compute_table_schema()
++    assert table_schema["columns"] == expected
++
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is False
++    assert not p.default_schema.tables["get_resource"]["columns"]["other_id"].get(key_hint)
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"]["nullable"] is True
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("empty_value", ["", []], ids=["empty_string", "empty_list"])
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_empty_value_as_key(
++    key_hint: str,
++    empty_value: Union[str, None],
++    with_apply_hints: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that empty value key hints aren't propagated."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_empty_key_replaces_column_hints", destination="dummy")
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        **{key_hint: empty_value},
++    )
++
++    assert my_resource.columns == {}
++    assert my_resource._hints["columns"] == my_resource.columns
++    assert not my_resource._hints.get(key_hint)
++
++    table_schema = my_resource.compute_table_schema()
++    assert table_schema["columns"] == {}
++
++    p.run(my_resource)
++    assert all(
++        not column.get(key_hint)
++        for column in p.default_schema.tables["get_resource"]["columns"].values()
++    )
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("empty_value", ["", []], ids=["empty_string", "empty_list"])
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_empty_value_as_key_replace_column_hints(
++    key_hint: str,
++    empty_value: Union[str, None],
++    with_apply_hints: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Ensure that empty value key hints on table level take precedence over hints on column level when both are set."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(
++        pipeline_name="test_empty_value_as_key_replace_column_hints", destination="dummy"
++    )
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        columns={"other_id": {key_hint: True}},
++        **{key_hint: empty_value},
++    )
++
++    # Initially hints are set as is:
++    # - "other_id" receives key hint on column level
++    # - empty value is set as key hint on table level
++    assert my_resource.columns == {"other_id": {key_hint: True, "name": "other_id"}}
++    assert my_resource._hints["columns"] == my_resource.columns
++    assert my_resource._hints.get(key_hint) == empty_value
++
++    # Table level key hint takes precedence during schema computation:
++    # - "other_id" is not key
++    # - empty value is key, meaning no keys
++    table_schema = my_resource.compute_table_schema()
++    assert table_schema["columns"] == {"other_id": {"name": "other_id"}}
++
++    p.run(my_resource)
++    assert not p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint)
++    assert not p.default_schema.tables["get_resource"]["columns"]["other_id"].get(key_hint)
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize(
++    "key_hint_as_list", [True, False], ids=["key_hint_as_list", "key_hint_as_string"]
++)
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_new_key_hints_replace_previous_keys(
++    key_hint: str,
++    key_hint_as_list: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that redefining key hints on existing resource replaces previous ones."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_new_key_hints_replace_previous_keys", destination="dummy")
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    # Initially "id" is set as key
++    @dlt.resource(**{key_hint: "id"})  # type: ignore[call-overload]
++    def get_resource():
++        yield item
++
++    p.run(get_resource())
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is False
++
++    # We change key to "other_id"
++    my_resource = _get_resource(
++        with_apply_hints=False,
++        data=item,
++        **{key_hint: ["other_id"] if key_hint_as_list else "other_id"},
++    )
++
++    p.run(my_resource)
++
++    # "id" should no longer be key
++    assert not p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint)
++    # NOTE: Due to the following two reasons:
++    #   1. Removal of compound does not automatically resets nullable to True.
++    #   2. Arrow formats re-infer nullable from the data schema, while the default json
++    #      format preserves the nullable setting from the schema
++    # There's inconsistent behavior: json format objects retain nullable=False
++    # (orphaned NOT NULL constraint from when it was a key), whereas Arrow/pandas
++    # formats have nullable=True (re-inferred from data).
++    if item_format == "object":
++        assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is False
++    else:
++        assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(key_hint) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"]["nullable"] is False
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_explicit_schema(
++    key_hint: str,
++    with_apply_hints: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Test that resource-level key hints override explicit schema definitions.
++
++    When a schema explicitly sets "id" as key, but the resource defines "other_id"
++    as key, the resource hint should win and properly update the schema.
++    """
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_new_key_hints_replace_previous_keys", destination="dummy")
++
++    schema = Schema("test_schema")
++    schema.update_table(
++        {
++            "name": "get_resource",
++            "columns": {
++                "id": {"data_type": "bigint", "name": "id", key_hint: True, "nullable": False}  # type: ignore[misc]
++            },
++        }
++    )
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        **{key_hint: "other_id"},
++    )
++
++    @dlt.source(schema=schema)
++    def my_source():
++        return my_resource
++
++    # NOTE: Due to the following two reasons:
++    #   1. Removal of compound does not automatically resets nullable to True.
++    #   2. Arrow formats re-infer nullable from the data schema, while the default json
++    #      format preserves the nullable setting from the schema
++    # There's inconsistent behavior: json format objects retain nullable=False
++    # (orphaned NOT NULL constraint from when it was a key), whereas Arrow/pandas
++    # formats have nullable=True (re-inferred from data).
++    p.run(my_source())
++    assert not p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint)
++    if item_format == "object":
++        assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is False
++    else:
++        assert p.default_schema.tables["get_resource"]["columns"]["id"]["nullable"] is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(key_hint) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"]["nullable"] is False
++
++
++@pytest.mark.parametrize(
++    "compound_prop",
++    [
++        prop
++        for prop, info in ColumnPropInfos.items()
++        if info.compound
++        if prop not in ["primary_key", "merge_key"]
++    ],
++)
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_new_compound_prop_hints_replace_previous_compound_props(
++    compound_prop: str,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that redefining compound prop hints on existing resource replaces previous ones."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(
++        pipeline_name="test_new_compound_prop_hints_replace_previous_compound_props",
++        destination="dummy",
++    )
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    # Initially "id" and "other_id" are set with compound_prop
++    my_resource = _get_resource(
++        with_apply_hints=False,
++        data=item,
++        columns={"other_id": {compound_prop: True}, "id": {compound_prop: True}},
++    )
++
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(compound_prop) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(compound_prop) is True
++
++    # We change to "other_id" only
++    my_resource = _get_resource(
++        with_apply_hints=False,
++        data=item,
++        columns={"other_id": {compound_prop: True}},
++    )
++    p.run(my_resource)
++    # "id" should no longer be key
++    assert not p.default_schema.tables["get_resource"]["columns"]["id"].get(compound_prop)
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(compound_prop) is True
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("empty_value", ["", []], ids=["empty_string", "empty_list"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_empty_value_as_key_does_not_replace_previous_key(
++    key_hint: str,
++    empty_value: Union[str, None],
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that empty value key hints on existing resource CURRENTLY do nothing."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(
++        pipeline_name="test_empty_value_as_key_does_not_replaces_previous_key", destination="dummy"
++    )
++
++    # Initially "id" is set as key
++    @dlt.resource(**{key_hint: "id"})  # type: ignore[call-overload]
++    def get_resource():
++        yield {"id": 1, "other_id": 2}
++
++    p.run(get_resource())
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint) is True
++
++    item = _get_item_with_format({"id": 1, "other_id": 2}, item_format)
++
++    # We try to remove the key with empty_value
++    my_resource = _get_resource(with_apply_hints=False, data=item, **{key_hint: empty_value})
++
++    # "id" is still key
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint) is True
++
++
++@pytest.mark.parametrize(
++    "compound_prop",
++    [prop for prop, info in ColumnPropInfos.items() if info.compound],
++)
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_column_hints_via_apply_hints_are_merged(
++    compound_prop: str,
++    with_apply_hints: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that column level hints via apply_hints are merged."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_consecutive_column_hints", destination="dummy")
++
++    item = _get_item_with_format({"id": 1, "other_id": 2, "third_id": 3}, item_format)
++
++    # Initially "id" is set as key
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        columns={"id": {compound_prop: True}},
++        **{},
++    )
++
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(compound_prop) is True
++
++    # We apply column-level hints, which will be merged
++    my_resource.apply_hints(columns={"other_id": {compound_prop: True}})  # type: ignore
++
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(compound_prop) is True
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(compound_prop) is True
++
++
++@pytest.mark.parametrize(
++    "key_hint",
++    ["merge_key", "primary_key"],
++)
++@pytest.mark.parametrize("with_apply_hints", [True, False], ids=["apply_hints", "resource_def"])
++@pytest.mark.parametrize("item_format", ALL_TEST_DATA_ITEM_FORMATS)
++def test_direct_key_hint_via_apply_hints_replace(
++    key_hint: str,
++    with_apply_hints: bool,
++    item_format: TestDataItemFormat,
++) -> None:
++    """Show that direct key hints via apply_hints replace."""
++    os.environ["COMPLETED_PROB"] = "1.0"
++    p = dlt.pipeline(pipeline_name="test_consecutive_column_hints", destination="dummy")
++
++    item = _get_item_with_format({"id": 1, "other_id": 2, "third_id": 3}, item_format)
++
++    # Initially "id" is set as key
++    my_resource = _get_resource(
++        with_apply_hints,
++        item,
++        columns={"id": {key_hint: True}},
++        **{},
++    )
++
++    p.run(my_resource)
++    assert p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint) is True
++
++    # We apply direct key hint, which will replace existing
++    my_resource.apply_hints(**{key_hint: "other_id"})  # type: ignore
++
++    p.run(my_resource)
++    assert not p.default_schema.tables["get_resource"]["columns"]["id"].get(key_hint)
++    assert p.default_schema.tables["get_resource"]["columns"]["other_id"].get(key_hint) is True

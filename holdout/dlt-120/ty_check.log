@@ -1,0 +1,1249 @@
+error[invalid-assignment]: Object of type `None` is not assignable to `str`
+  --> dlt/common/normalizers/json/relational.py:77:24
+   |
+77 |         self._load_id: str = None
+   |                        ---   ^^^^ Incompatible value of type `None`
+   |                        |
+   |                        Declared type
+   |
+
+error[invalid-assignment]: Object of type `(Mapping[str, Any] & ~AlwaysFalsy) | RelationalNormalizerConfig` is not assignable to attribute `normalizer_config` of type `RelationalNormalizerConfig`
+  --> dlt/common/normalizers/json/relational.py:99:9
+   |
+99 |         self.normalizer_config = self.schema._normalizers_config["json"].get("config") or {}  # type: ignore[assignment]
+   |         ^^^^^^^^^^^^^^^^^^^^^^
+   |
+info: element `Mapping[str, Any] & ~AlwaysFalsy` of union `(Mapping[str, Any] & ~AlwaysFalsy) | RelationalNormalizerConfig` is not assignable to `RelationalNormalizerConfig`
+
+error[invalid-assignment]: Object of type `RelationalNormalizerConfigPropagation | None` is not assignable to attribute `propagation_config` of type `RelationalNormalizerConfigPropagation`
+   --> dlt/common/normalizers/json/relational.py:100:9
+    |
+100 |         self.propagation_config = self.normalizer_config.get("propagation", None)
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: element `None` of union `RelationalNormalizerConfigPropagation | None` is not assignable to `RelationalNormalizerConfigPropagation`
+
+error[invalid-assignment]: Object of type `int | None` is not assignable to attribute `max_nesting` of type `int`
+   --> dlt/common/normalizers/json/relational.py:101:9
+    |
+101 |         self.max_nesting = self.normalizer_config.get("max_nesting", 1000)
+    |         ^^^^^^^^^^^^^^^^
+    |
+info: element `None` of union `int | None` is not assignable to `int`
+
+warning[invalid-legacy-positional-parameter]: Invalid use of the legacy convention for positional-only parameters
+   --> dlt/common/normalizers/json/relational.py:135:28
+    |
+135 |         def norm_row_dicts(dict_row: StrAny, __r_lvl: int, path: Tuple[str, ...] = ()) -> None:
+    |                            --------          ^^^^^^^ Parameter name begins with `__` but will not be treated as positional-only
+    |                            |
+    |                            Prior parameter here was positional-or-keyword
+    |
+info: A parameter can only be positional-only if it precedes all positional-or-keyword parameters
+
+error[invalid-argument-type]: Argument to bound method `DataItemNormalizer._add_row_id` is incorrect
+   --> dlt/common/normalizers/json/relational.py:249:57
+    |
+249 |                 self._add_row_id(table, wrap_v, wrap_v, parent_row_id, idx, is_root)
+    |                                                         ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/common/normalizers/json/relational.py:173:9
+    |
+173 |     def _add_row_id(
+    |         ^^^^^^^^^^^
+174 |         self,
+175 |         table: str,
+176 |         dict_row: DictStrAny,
+177 |         flattened_row: DictStrAny,
+178 |         parent_row_id: str,
+    |         ------------------ Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `DataItemNormalizer._add_row_id` is incorrect
+   --> dlt/common/normalizers/json/relational.py:276:71
+    |
+276 |             row_id = self._add_row_id(table, dict_row, flattened_row, parent_row_id, pos, is_root)
+    |                                                                       ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+   --> dlt/common/normalizers/json/relational.py:173:9
+    |
+173 |     def _add_row_id(
+    |         ^^^^^^^^^^^
+174 |         self,
+175 |         table: str,
+176 |         dict_row: DictStrAny,
+177 |         flattened_row: DictStrAny,
+178 |         parent_row_id: str,
+    |         ------------------ Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `DataItemNormalizer._add_row_id` is incorrect
+   --> dlt/common/normalizers/json/relational.py:276:86
+    |
+276 |             row_id = self._add_row_id(table, dict_row, flattened_row, parent_row_id, pos, is_root)
+    |                                                                                      ^^^ Expected `int`, found `int | None`
+    |
+info: element `None` of union `int | None` is not assignable to `int`
+info: Method defined here
+   --> dlt/common/normalizers/json/relational.py:173:9
+    |
+173 |     def _add_row_id(
+    |         ^^^^^^^^^^^
+    |
+   ::: dlt/common/normalizers/json/relational.py:179:9
+    |
+179 |         pos: int,
+    |         -------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `is_nested_table` is incorrect
+   --> dlt/common/normalizers/json/relational.py:340:32
+    |
+340 |         if not is_nested_table(table) and (
+    |                                ^^^^^ Expected `TTableSchema`, found `TTableSchema | None`
+    |
+info: element `None` of union `TTableSchema | None` is not assignable to `TTableSchema`
+info: Function defined here
+  --> dlt/common/schema/utils.py:77:5
+   |
+77 | def is_nested_table(table: TTableSchema) -> bool:
+   |     ^^^^^^^^^^^^^^^ ------------------- Parameter declared here
+   |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `TTableSchema | None`
+   --> dlt/common/normalizers/json/relational.py:341:13
+    |
+341 |             table.get("write_disposition") == "merge"
+    |             ^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to function `get_first_column_name_with_prop` is incorrect
+   --> dlt/common/normalizers/json/relational.py:348:56
+    |
+348 |             c_dlt_id = get_first_column_name_with_prop(table, "row_key", include_incomplete=True)
+    |                                                        ^^^^^ Expected `TTableSchema`, found `TTableSchema | None`
+    |
+info: element `None` of union `TTableSchema | None` is not assignable to `TTableSchema`
+info: Function defined here
+   --> dlt/common/schema/utils.py:742:5
+    |
+742 | def get_first_column_name_with_prop(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+743 |     table: TTableSchema, column_prop: Union[TColumnProp, str], include_incomplete: bool = False
+    |     ------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `DataItemNormalizer._normalize_row` is incorrect
+   --> dlt/common/normalizers/json/relational.py:387:13
+    |
+387 |             _r_lvl=max_nesting,  # we count backwards
+    |             ^^^^^^^^^^^^^^^^^^ Expected `int`, found `int | None`
+    |
+info: element `None` of union `int | None` is not assignable to `int`
+info: Method defined here
+   --> dlt/common/normalizers/json/relational.py:252:9
+    |
+252 |     def _normalize_row(
+    |         ^^^^^^^^^^^^^^
+    |
+   ::: dlt/common/normalizers/json/relational.py:260:9
+    |
+260 |         _r_lvl: int = 0,
+    |         --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `_normalize_prop` is incorrect
+   --> dlt/common/normalizers/json/relational.py:434:62
+    |
+434 |                 propagation_config["root"] = _normalize_prop(propagation_config["root"])
+    |                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Mapping[TColumnName, TColumnName]`, found `dict[TColumnName, TColumnName] | None`
+    |
+info: element `None` of union `dict[TColumnName, TColumnName] | None` is not assignable to `Mapping[TColumnName, TColumnName]`
+info: Function defined here
+   --> dlt/common/normalizers/json/relational.py:420:13
+    |
+420 |         def _normalize_prop(
+    |             ^^^^^^^^^^^^^^^
+421 |             mapping: Mapping[TColumnName, TColumnName]
+    |             ------------------------------------------ Parameter declared here
+    |
+
+error[not-iterable]: Object of type `dict[str, dict[TColumnName, TColumnName]] | None` may not be iterable
+   --> dlt/common/normalizers/json/relational.py:436:35
+    |
+436 |                 for table_name in propagation_config["tables"]:
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: It may not have an `__iter__` method and its `__getitem__` method has an incorrect signature for the old-style iteration protocol
+info: `__getitem__` must be at least as permissive as `def __getitem__(self, key: int): ...` to satisfy the old-style iteration protocol
+info: `None` does not implement `__iter__`
+
+error[invalid-assignment]: Cannot assign to a subscript on an object of type `None`
+   --> dlt/common/normalizers/json/relational.py:437:21
+    |
+437 |                     propagation_config["tables"][table_name] = _normalize_prop(
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: The full type of the subscripted object is `dict[str, dict[TColumnName, TColumnName]] | None`
+info: `None` does not have a `__setitem__` method.
+
+error[invalid-assignment]: Invalid subscript assignment with key of type `str | dict[TColumnName, TColumnName]` and value of type `dict[TColumnName, TColumnName]` on object of type `dict[str, dict[TColumnName, TColumnName]]`
+   --> dlt/common/normalizers/json/relational.py:437:21
+    |
+437 |                       propagation_config["tables"][table_name] = _normalize_prop(
+    |                       ^                            ---------- Expected key of type `str`, got `str | dict[TColumnName, TColumnName]`
+    |  _____________________|
+    | |
+438 | |                         propagation_config["tables"][table_name]
+439 | |                     )
+    | |_____________________^
+    |
+info: The full type of the subscripted object is `dict[str, dict[TColumnName, TColumnName]] | None`
+
+error[invalid-argument-type]: Method `__getitem__` of type `bound method dict[str, dict[TColumnName, TColumnName]].__getitem__(key: str, /) -> dict[TColumnName, TColumnName]` cannot be called with key of type `dict[TColumnName, TColumnName]` on object of type `dict[str, dict[TColumnName, TColumnName]]`
+   --> dlt/common/normalizers/json/relational.py:438:25
+    |
+438 |                         propagation_config["tables"][table_name]
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[not-subscriptable]: Cannot subscript object of type `None` with no `__getitem__` method
+   --> dlt/common/normalizers/json/relational.py:438:25
+    |
+438 |                         propagation_config["tables"][table_name]
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[not-subscriptable]: Cannot subscript object of type `None` with no `__getitem__` method
+   --> dlt/common/normalizers/json/relational.py:438:25
+    |
+438 |                         propagation_config["tables"][table_name]
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to function `validate_dict` is incorrect
+   --> dlt/common/normalizers/json/relational.py:442:13
+    |
+442 |             cls.RELATIONAL_CONFIG_TYPE,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `type[_TypedDict]`, found `type[RelationalNormalizerConfig]`
+    |
+info: Function defined here
+  --> dlt/common/validation.py:28:5
+   |
+28 | def validate_dict(
+   |     ^^^^^^^^^^^^^
+29 |     spec: Type[_TypedDict],
+   |     ---------------------- Parameter declared here
+   |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/common/schema/utils.py:176:12
+    |
+176 |     return stored_schema["version"], hash_, previous_hash, stored_schema["previous_hashes"]
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `tuple[int, str, str, list[str]]`, found `tuple[int, str, str | None, list[str]]`
+    |
+   ::: dlt/common/schema/utils.py:162:63
+    |
+162 | def bump_version_if_modified(stored_schema: TStoredSchema) -> Tuple[int, str, str, List[str]]:
+    |                                                               ------------------------------- Expected `tuple[int, str, str, list[str]]` because of return type
+    |
+info: the third tuple element is not compatible: `str | None` is not assignable to `str`
+info: └── element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-assignment]: Object of type `Any | None` is not assignable to `str`
+   --> dlt/common/schema/utils.py:217:21
+    |
+217 |     engine_version: str = loaded_schema_dict.get("engine_version")
+    |                     ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `Any | None`
+    |                     |
+    |                     Declared type
+    |
+info: element `None` of union `Any | None` is not assignable to `str`
+
+error[invalid-argument-type]: Argument is incorrect
+   --> dlt/common/schema/utils.py:345:9
+    |
+345 |         spec=TStoredSchema, doc=stored_schema, path=".", validator_f=simple_regex_validator
+    |         ^^^^^^^^^^^^^^^^^^ Expected `type[_TypedDict]`, found `<class 'TStoredSchema'>`
+    |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/common/schema/utils.py:365:12
+    |
+365 |     return None
+    |            ^^^^ expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `None`
+    |
+   ::: dlt/common/schema/utils.py:357:90
+    |
+357 | def autodetect_sc_type(detection_fs: Sequence[TTypeDetections], t: Type[Any], v: Any) -> TDataType:
+    |                                                                                          --------- Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]` because of return type
+    |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/common/schema/utils.py:373:51
+    |
+373 | def is_nullable_column(col: TColumnSchemaBase) -> bool:
+    |                                                   ---- Expected `bool` because of return type
+374 |     """Returns true if column is nullable"""
+375 |     return col.get("nullable", True)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `bool | None`
+    |
+info: element `None` of union `bool | None` is not assignable to `bool`
+
+error[invalid-argument-type]: Invalid argument to key "columns" with declared type `dict[str, TColumnSchema]` on TypedDict `TPartialTableSchema`
+   --> dlt/common/schema/utils.py:494:42
+    |
+494 |       partial_table: TPartialTableSchema = {
+    |  __________________________________________-
+495 | |         "name": table_name,
+496 | |         "columns": {} if new_columns is None else {c["name"]: c for c in new_columns},
+    | |         ---------  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ value of type `dict[str | None, TColumnSchema]`
+    | |         |
+    | |         key has declared type `dict[str, TColumnSchema]`
+497 | |     }
+    | |_____- TypedDict `TPartialTableSchema`
+    |
+info: Item declaration
+   --> dlt/common/schema/typing.py:299:5
+    |
+299 |     columns: TTableSchemaColumns
+    |     ---------------------------- Item declared here
+    |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:513:26
+    |
+513 |             schema_name, table_name, "resource", resource, tab_a.get("parent")
+    |                          ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                         --------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:513:60
+    |
+513 |             schema_name, table_name, "resource", resource, tab_a.get("parent")
+    |                                                            ^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                                                                     --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:533:26
+    |
+533 |             schema_name, tab_a["name"], "name", tab_a["name"], tab_b["name"]
+    |                          ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                         --------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:533:49
+    |
+533 |             schema_name, tab_a["name"], "name", tab_a["name"], tab_b["name"]
+    |                                                 ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                                                          --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:533:64
+    |
+533 |             schema_name, tab_a["name"], "name", tab_a["name"], tab_b["name"]
+    |                                                                ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                                                                     --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:539:26
+    |
+539 |             schema_name, table_name, "parent", tab_a.get("parent"), tab_b.get("parent")
+    |                          ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                         --------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:539:48
+    |
+539 |             schema_name, table_name, "parent", tab_a.get("parent"), tab_b.get("parent")
+    |                                                ^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                                                          --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `TablePropertiesConflictException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:539:69
+    |
+539 |             schema_name, table_name, "parent", tab_a.get("parent"), tab_b.get("parent")
+    |                                                                     ^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:69:9
+   |
+69 |     def __init__(self, schema_name: str, table_name: str, prop_name: str, val1: str, val2: str):
+   |         ^^^^^^^^                                                                     --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `CannotCoerceColumnException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:555:25
+    |
+555 |                         table_name,
+    |                         ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:47:9
+   |
+47 |     def __init__(
+   |         ^^^^^^^^
+48 |         self,
+49 |         schema_name: str,
+50 |         table_name: str,
+   |         --------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `CannotCoerceColumnException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:557:25
+    |
+557 |                         col_b["data_type"],
+    |                         ^^^^^^^^^^^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:47:9
+   |
+47 |     def __init__(
+   |         ^^^^^^^^
+48 |         self,
+49 |         schema_name: str,
+50 |         table_name: str,
+51 |         column_name: str,
+52 |         from_type: TDataType,
+   |         -------------------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to `CannotCoerceColumnException.__init__` is incorrect
+   --> dlt/common/schema/utils.py:558:25
+    |
+558 |                         tab_a_columns[col_b_name]["data_type"],
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:47:9
+   |
+47 |     def __init__(
+   |         ^^^^^^^^
+   |
+  ::: dlt/common/schema/exceptions.py:53:9
+   |
+53 |         to_type: TDataType,
+   |         ------------------ Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to bound method `NamingConvention.normalize_tables_path` is incorrect
+   --> dlt/common/schema/utils.py:623:50
+    |
+623 |     table["name"] = naming.normalize_tables_path(table["name"])
+    |                                                  ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/normalizers/naming/naming.py:58:9
+   |
+58 |     def normalize_tables_path(self, path: str) -> str:
+   |         ^^^^^^^^^^^^^^^^^^^^^       --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to bound method `NamingConvention.normalize_path` is incorrect
+   --> dlt/common/schema/utils.py:633:62
+    |
+633 |             new_col_name = c["name"] = naming.normalize_path(c["name"])
+    |                                                              ^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/normalizers/naming/naming.py:52:9
+   |
+52 |     def normalize_path(self, path: str) -> str:
+   |         ^^^^^^^^^^^^^^       --------- Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to bound method `NamingConvention.normalize_path` is incorrect
+   --> dlt/common/schema/utils.py:633:62
+    |
+633 |             new_col_name = c["name"] = naming.normalize_path(c["name"])
+    |                                                              ^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Method defined here
+  --> dlt/common/normalizers/naming/naming.py:52:9
+   |
+52 |     def normalize_path(self, path: str) -> str:
+   |         ^^^^^^^^^^^^^^       --------- Parameter declared here
+   |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `dict[str, Any] | None`
+   --> dlt/common/schema/utils.py:671:40
+    |
+671 |     return "x-normalizer" in table and table["x-normalizer"].get("seen-data", None) is True
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[no-matching-overload]: No overload matches arguments
+   --> dlt/common/schema/utils.py:684:13
+    |
+684 |             tables[table_name].pop(hint, None)  # type: ignore[misc]
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[no-matching-overload]: No overload matches arguments
+   --> dlt/common/schema/utils.py:690:17
+    |
+690 |                 tables[table_name]["columns"][col_name].pop(hint, None)  # type: ignore[misc]
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[no-matching-overload]: No overload of bound method `MutableMapping.setdefault` matches arguments
+   --> dlt/common/schema/utils.py:714:17
+    |
+714 |                 table_hints.setdefault(table_name, []).append(hint)
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: First overload defined here
+    --> stdlib/typing.pyi:1917:5
+     |
+1917 | /     @overload
+1918 | |     def setdefault(self: MutableMapping[_KT, _T | None], key: _KT, default: None = None, /) -> _T | None:
+1919 | |         """D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D"""
+     | |______________________________________________________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `setdefault`:
+info:   [_T](self: MutableMapping[_KT@MutableMapping, _T | None], key: _KT@MutableMapping, default: None = None, /) -> _T | None
+info:   (self, key: _KT@MutableMapping, default: _VT@MutableMapping, /) -> _VT@MutableMapping
+
+error[no-matching-overload]: No overload of bound method `MutableMapping.setdefault` matches arguments
+   --> dlt/common/schema/utils.py:719:21
+    |
+719 |                     col_hints.setdefault(table_name, {}).setdefault(col_name, []).append(hint)
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+info: First overload defined here
+    --> stdlib/typing.pyi:1917:5
+     |
+1917 | /     @overload
+1918 | |     def setdefault(self: MutableMapping[_KT, _T | None], key: _KT, default: None = None, /) -> _T | None:
+1919 | |         """D.setdefault(k[,d]) -> D.get(k,d), also set D[k]=d if k not in D"""
+     | |______________________________________________________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `setdefault`:
+info:   [_T](self: MutableMapping[_KT@MutableMapping, _T | None], key: _KT@MutableMapping, default: None = None, /) -> _T | None
+info:   (self, key: _KT@MutableMapping, default: _VT@MutableMapping, /) -> _VT@MutableMapping
+
+error[invalid-key]: TypedDict `TColumnSchema` can only be subscripted with a string literal key, got key of type `str`
+   --> dlt/common/schema/utils.py:737:62
+    |
+737 |         and not has_default_column_prop_value(column_prop, c[column_prop])  # type: ignore[literal-required]
+    |                                                              ^^^^^^^^^^^
+    |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/common/schema/utils.py:772:12
+    |
+772 |     return (dedup_sort_col, dedup_sort_order)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `tuple[str, Literal["asc", "desc"]] | None`, found `tuple[str, Literal["asc", "desc"] | None]`
+    |
+   ::: dlt/common/schema/utils.py:761:6
+    |
+761 | ) -> Optional[Tuple[str, TSortOrder]]:
+    |      -------------------------------- Expected `tuple[str, Literal["asc", "desc"]] | None` because of return type
+    |
+info: type `tuple[str, Literal["asc", "desc"] | None]` is not assignable to any element of the union `tuple[str, Literal["asc", "desc"]] | None`
+info: ├── the second tuple element is not compatible: `Literal["asc", "desc"] | None` is not assignable to `Literal["asc", "desc"]`
+info: │   └── element `None` of union `Literal["asc", "desc"] | None` is not assignable to `Literal["asc", "desc"]`
+info: └── ... omitted 1 union element without additional context
+
+error[invalid-argument-type]: Method `__getitem__` of type `bound method dict[str, TColumnSchema].__getitem__(key: str, /) -> TColumnSchema` cannot be called with key of type `None` on object of type `dict[str, TColumnSchema]`
+   --> dlt/common/schema/utils.py:785:16
+    |
+785 |     hint_val = table["columns"][cname]["x-active-record-timestamp"]  # type: ignore[typeddict-item]
+    |                ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-key]: Unknown key "x-active-record-timestamp" for TypedDict `TColumnSchema`
+   --> dlt/common/schema/utils.py:785:16
+    |
+785 |     hint_val = table["columns"][cname]["x-active-record-timestamp"]  # type: ignore[typeddict-item]
+    |                ----------------------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unknown key "x-active-record-timestamp"
+    |                |
+    |                TypedDict `TColumnSchema`
+    |
+
+error[invalid-key]: TypedDict `TTableSchema` can only be subscripted with a string literal key, got key of type `str`
+   --> dlt/common/schema/utils.py:805:22
+    |
+805 |         return table[table_hint_name]  # type: ignore[literal-required]
+    |                      ^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to function `get_inherited_table_hint` is incorrect
+   --> dlt/common/schema/utils.py:808:49
+    |
+808 |         return get_inherited_table_hint(tables, table.get("parent"), table_hint_name, allow_none)
+    |                                                 ^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:800:5
+    |
+800 | def get_inherited_table_hint(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+801 |     tables: TSchemaTables, table_name: str, table_hint_name: str, allow_none: bool = False
+    |                            --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `get_write_disposition` is incorrect
+   --> dlt/common/schema/utils.py:853:68
+    |
+853 |         table["write_disposition"] = get_write_disposition(tables, table_name)
+    |                                                                    ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:818:5
+    |
+818 | def get_write_disposition(tables: TSchemaTables, table_name: str) -> TWriteDisposition:
+    |     ^^^^^^^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `get_table_format` is incorrect
+   --> dlt/common/schema/utils.py:855:53
+    |
+855 |         if table_format := get_table_format(tables, table_name):
+    |                                                     ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:826:5
+    |
+826 | def get_table_format(tables: TSchemaTables, table_name: str) -> TTableFormat:
+    |     ^^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `get_file_format` is incorrect
+   --> dlt/common/schema/utils.py:858:51
+    |
+858 |         if file_format := get_file_format(tables, table_name):
+    |                                                   ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:832:5
+    |
+832 | def get_file_format(tables: TSchemaTables, table_name: str) -> TFileFormat:
+    |     ^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `get_merge_strategy` is incorrect
+   --> dlt/common/schema/utils.py:861:51
+    |
+861 |         if strategy := get_merge_strategy(tables, table_name):
+    |                                                   ^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:838:5
+    |
+838 | def get_merge_strategy(tables: TSchemaTables, table_name: str) -> TLoaderMergeStrategy:
+    |     ^^^^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-key]: Unknown key "x-merge-strategy" for TypedDict `TTableSchema`
+   --> dlt/common/schema/utils.py:862:13
+    |
+862 |             table["x-merge-strategy"] = strategy  # type: ignore[typeddict-unknown-key]
+    |             ----- ^^^^^^^^^^^^^^^^^^ Unknown key "x-merge-strategy"
+    |             |
+    |             TypedDict `TTableSchema`
+    |
+
+error[invalid-argument-type]: Argument to function `get_root_table` is incorrect
+   --> dlt/common/schema/utils.py:899:39
+    |
+899 |         return get_root_table(tables, table.get("parent"))
+    |                                       ^^^^^^^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:895:5
+    |
+895 | def get_root_table(tables: TSchemaTables, table_name: str) -> TTableSchema:
+    |     ^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `get_nested_tables` is incorrect
+   --> dlt/common/schema/utils.py:932:62
+    |
+932 |             resource_tables.extend(get_nested_tables(tables, table["name"]))
+    |                                                              ^^^^^^^^^^^^^ Expected `str`, found `str | None`
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+info: Function defined here
+   --> dlt/common/schema/utils.py:903:5
+    |
+903 | def get_nested_tables(tables: TSchemaTables, table_name: str) -> List[TTableSchema]:
+    |     ^^^^^^^^^^^^^^^^^                        --------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `str | None` is not assignable to `str`
+   --> dlt/common/schema/utils.py:949:21
+    |
+949 |     child_root_key: str = get_first_column_name_with_prop(child_table, "root_key")
+    |                     ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `str | None`
+    |                     |
+    |                     Declared type
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-assignment]: Object of type `str | None` is not assignable to `str`
+   --> dlt/common/schema/utils.py:955:19
+    |
+955 |     root_row_key: str = get_first_column_name_with_prop(root_table, "row_key")
+    |                   ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `str | None`
+    |                   |
+    |                   Declared type
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-argument-type]: Invalid argument to key "referenced_table" with declared type `str` on TypedDict `TTableReference`
+   --> dlt/common/schema/utils.py:957:12
+    |
+957 |     return TTableReference(
+    |            --------------- TypedDict `TTableReference`
+958 |         columns=[child_root_key],
+959 |         referenced_table=root_table["name"],
+    |         -----------------^^^^^^^^^^^^^^^^^^
+    |         |                |
+    |         |                value of type `str | None`
+    |         key has declared type `str`
+    |
+info: Item declaration
+   --> dlt/common/schema/typing.py:285:5
+    |
+285 |     referenced_table: str
+    |     --------------------- Item declared here
+    |
+
+error[invalid-assignment]: Object of type `str | None` is not assignable to `str`
+   --> dlt/common/schema/utils.py:977:23
+    |
+977 |     child_parent_key: str = get_first_column_name_with_prop(child_table, "parent_key")
+    |                       ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `str | None`
+    |                       |
+    |                       Declared type
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-assignment]: Object of type `str | None` is not assignable to `str`
+   --> dlt/common/schema/utils.py:978:21
+    |
+978 |     parent_row_key: str = get_first_column_name_with_prop(parent_table, "row_key")
+    |                     ---   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `str | None`
+    |                     |
+    |                     Declared type
+    |
+info: element `None` of union `str | None` is not assignable to `str`
+
+error[invalid-argument-type]: Argument to function `get_first_column_name_with_prop` is incorrect
+   --> dlt/common/schema/utils.py:978:59
+    |
+978 |     parent_row_key: str = get_first_column_name_with_prop(parent_table, "row_key")
+    |                                                           ^^^^^^^^^^^^ Expected `TTableSchema`, found `TTableSchema | None`
+    |
+info: element `None` of union `TTableSchema | None` is not assignable to `TTableSchema`
+info: Function defined here
+   --> dlt/common/schema/utils.py:742:5
+    |
+742 | def get_first_column_name_with_prop(
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+743 |     table: TTableSchema, column_prop: Union[TColumnProp, str], include_incomplete: bool = False
+    |     ------------------- Parameter declared here
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+    --> dlt/common/schema/utils.py:1149:5
+     |
+1149 |     parent_table_name: str = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["skip", "append", "replace", "merge"]`
+    --> dlt/common/schema/utils.py:1150:5
+     |
+1150 |     write_disposition: TWriteDisposition = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Sequence[TColumnSchema]`
+    --> dlt/common/schema/utils.py:1151:5
+     |
+1151 |     columns: Sequence[TColumnSchema] = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+    --> dlt/common/schema/utils.py:1153:5
+     |
+1153 |     resource: str = None,
+     |     ^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["evolve", "discard_value", "freeze", "discard_row"] | TSchemaContractDict`
+    --> dlt/common/schema/utils.py:1154:5
+     |
+1154 |     schema_contract: TSchemaContract = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["iceberg", "delta", "hive", "native"]`
+    --> dlt/common/schema/utils.py:1155:5
+     |
+1155 |     table_format: TTableFormat = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["preferred", "jsonl", "typed-jsonl", "insert_values", "parquet", ... omitted 3 literals]`
+    --> dlt/common/schema/utils.py:1156:5
+     |
+1156 |     file_format: TFileFormat = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Sequence[TTableReference]`
+    --> dlt/common/schema/utils.py:1157:5
+     |
+1157 |     references: Sequence[TTableReference] = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-argument-type]: Invalid argument to key "columns" with declared type `dict[str, TColumnSchema]` on TypedDict `TTableSchema`
+    --> dlt/common/schema/utils.py:1159:27
+     |
+1159 |       table: TTableSchema = {
+     |  ___________________________-
+1160 | |         "name": table_name,
+1161 | |         "columns": {} if columns is None else {c["name"]: c for c in columns},
+     | |         ---------  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ value of type `dict[str | None, TColumnSchema]`
+     | |         |
+     | |         key has declared type `dict[str, TColumnSchema]`
+1162 | |     }
+     | |_____- TypedDict `TTableSchema`
+     |
+info: Item declaration
+   --> dlt/common/schema/typing.py:299:5
+    |
+299 |     columns: TTableSchemaColumns
+    |     ---------------------------- Item declared here
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+    --> dlt/common/schema/utils.py:1190:13
+     |
+1190 |             spec=TColumnSchema,
+     |             ^^^^^^^^^^^^^^^^^^ Expected `type[_TypedDict]`, found `<class 'TColumnSchema'>`
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+    --> dlt/common/schema/utils.py:1199:5
+     |
+1199 |     data_type: TDataType = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+    --> dlt/common/schema/utils.py:1201:5
+     |
+1201 |     precision: int = None,
+     |     ^^^^^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `int`
+    --> dlt/common/schema/utils.py:1202:5
+     |
+1202 |     scale: int = None,
+     |     ^^^^^^^^^^^^^^^^^
+     |
+
+error[invalid-argument-type]: Argument is incorrect
+    --> dlt/common/schema/utils.py:1214:13
+     |
+1214 |             spec=TColumnSchema,
+     |             ^^^^^^^^^^^^^^^^^^ Expected `type[_TypedDict]`, found `<class 'TColumnSchema'>`
+     |
+
+error[invalid-return-type]: Return type does not match returned value
+    --> dlt/common/schema/utils.py:1222:24
+     |
+1222 | def default_hints() -> Dict[TColumnDefaultHint, List[TSimpleRegex]]:
+     |                        -------------------------------------------- Expected `dict[Literal["not_null", "nullable", "partition", "cluster", "primary_key", ... omitted 8 literals], list[TSimpleRegex]]` because of return type
+1223 |     return None
+     |            ^^^^ expected `dict[Literal["not_null", "nullable", "partition", "cluster", "primary_key", ... omitted 8 literals], list[TSimpleRegex]]`, found `None`
+     |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `<module 'dlt.common.libs.pyarrow'>`
+  --> dlt/normalize/items_normalizers.py:54:5
+   |
+54 |     pyarrow = None
+   |     -------   ^^^^ Incompatible value of type `None`
+   |     |
+   |     Declared type `<module 'dlt.common.libs.pyarrow'>`
+   |
+
+error[invalid-return-type]: Return type does not match returned value
+   --> dlt/normalize/items_normalizers.py:393:10
+    |
+393 |     ) -> DictStrAny:
+    |          ---------- Expected `dict[str, Any]` because of return type
+394 |         for name, mode in filtered_columns.items():
+395 |             if name in row:
+396 |                 if mode == "discard_row":
+397 |                     return None
+    |                            ^^^^ expected `dict[str, Any]`, found `None`
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `bool`
+   --> dlt/normalize/items_normalizers.py:414:33
+    |
+414 |                 should_descend: bool = None
+    |                                 ----   ^^^^ Incompatible value of type `None`
+    |                                 |
+    |                                 Declared type
+    |
+
+error[invalid-argument-type]: Argument to bound method `JsonLItemsNormalizer._filter_columns` is incorrect
+   --> dlt/normalize/items_normalizers.py:437:70
+    |
+437 |                         row = self._filter_columns(filtered_columns, row)  # type: ignore[arg-type]
+    |                                                                      ^^^ Expected `dict[str, Any]`, found `Mapping[str, Any] & ~AlwaysFalsy`
+    |
+info: Method defined here
+   --> dlt/normalize/items_normalizers.py:391:9
+    |
+391 |     def _filter_columns(
+    |         ^^^^^^^^^^^^^^^
+392 |         self, filtered_columns: Dict[str, TSchemaEvolutionMode], row: DictStrAny
+    |                                                                  --------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `TPartialTableSchema`
+   --> dlt/normalize/items_normalizers.py:527:32
+    |
+527 |         updated_table_partial: TPartialTableSchema = None
+    |                                -------------------   ^^^^ Incompatible value of type `None`
+    |                                |
+    |                                Declared type
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+   --> dlt/normalize/items_normalizers.py:559:9
+    |
+559 |         data_type: TDataType = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-parameter-default]: Default value of type `None` is not assignable to annotated parameter type `str`
+   --> dlt/normalize/items_normalizers.py:561:9
+    |
+561 |         table_name: str = None,
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Invalid assignment to key "data_type" with declared type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` on TypedDict `TColumnSchema`
+   --> dlt/normalize/items_normalizers.py:587:17
+    |
+587 |                 column_schema[column_prop] = hint_value
+    |                 ------------- -----------    ^^^^^^^^^^ value of type `bool`
+    |                 |             |
+    |                 |             key has declared type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |                 TypedDict `TColumnSchema`
+    |
+info: Item declaration
+   --> dlt/common/schema/typing.py:148:5
+    |
+148 |     data_type: Optional[TDataType]
+    |     ------------------------------ Item declared here
+    |
+
+error[invalid-assignment]: Invalid assignment to key "dedup_sort" with declared type `Literal["asc", "desc"] | None` on TypedDict `TColumnSchema`
+   --> dlt/normalize/items_normalizers.py:587:17
+    |
+587 |                 column_schema[column_prop] = hint_value
+    |                 ------------- -----------    ^^^^^^^^^^ value of type `bool`
+    |                 |             |
+    |                 |             key has declared type `Literal["asc", "desc"] | None`
+    |                 TypedDict `TColumnSchema`
+    |
+info: Item declaration
+   --> dlt/common/schema/typing.py:186:5
+    |
+186 |     dedup_sort: Optional[TSortOrder]
+    |     -------------------------------- Item declared here
+    |
+
+error[invalid-assignment]: Invalid assignment to key "name" with declared type `str | None` on TypedDict `TColumnSchema`
+   --> dlt/normalize/items_normalizers.py:587:17
+    |
+587 |                 column_schema[column_prop] = hint_value
+    |                 ------------- -----------    ^^^^^^^^^^ value of type `bool`
+    |                 |             |
+    |                 |             key has declared type `str | None`
+    |                 TypedDict `TColumnSchema`
+    |
+info: Item declaration
+   --> dlt/common/schema/typing.py:168:5
+    |
+168 |     name: Optional[str]
+    |     ------------------- Item declared here
+    |
+
+error[unresolved-attribute]: Attribute `get` is not defined on `None` in union `dict[str, Any] | None`
+   --> dlt/normalize/items_normalizers.py:604:43
+    |
+604 |             if not existing_column or not existing_column.get("x-normalizer", {}).get(
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-argument-type]: Argument to bound method `JsonLItemsNormalizer._infer_column` is incorrect
+   --> dlt/normalize/items_normalizers.py:608:41
+    |
+608 |                     k=col_name, v=None, data_type=None, table_name=table_name
+    |                                         ^^^^^^^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `None`
+    |
+info: Method defined here
+   --> dlt/normalize/items_normalizers.py:555:9
+    |
+555 |     def _infer_column(
+    |         ^^^^^^^^^^^^^
+556 |         self,
+557 |         k: str,
+558 |         v: Any,
+559 |         data_type: TDataType = None,
+    |         --------------------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `TColumnSchema`
+   --> dlt/normalize/items_normalizers.py:621:21
+    |
+621 |         new_column: TColumnSchema = None
+    |                     -------------   ^^^^ Incompatible value of type `None`
+    |                     |
+    |                     Declared type
+    |
+
+error[invalid-argument-type]: Argument to function `coerce_value` is incorrect
+   --> dlt/normalize/items_normalizers.py:638:38
+    |
+638 |             coerced_v = coerce_value(col_type, py_type, v)
+    |                                      ^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+info: Function defined here
+   --> dlt/common/data_types/type_helpers.py:100:5
+    |
+100 | def coerce_value(to_type: TDataType, from_type: TDataType, value: Any) -> Any:
+    |     ^^^^^^^^^^^^ ------------------ Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to `CannotCoerceColumnException.__init__` is incorrect
+   --> dlt/normalize/items_normalizers.py:647:21
+    |
+647 |                     table_columns[col_name]["data_type"],
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+info: Method defined here
+  --> dlt/common/schema/exceptions.py:47:9
+   |
+47 |     def __init__(
+   |         ^^^^^^^^
+   |
+  ::: dlt/common/schema/exceptions.py:53:9
+   |
+53 |         to_type: TDataType,
+   |         ------------------ Parameter declared here
+   |
+
+error[invalid-argument-type]: Argument to bound method `JsonLItemsNormalizer._infer_column` is incorrect
+   --> dlt/normalize/items_normalizers.py:684:49
+    |
+684 |                 self._infer_column(col_name, v, data_type=col_type, is_variant=is_variant),
+    |                                                 ^^^^^^^^^^^^^^^^^^ Expected `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`, found `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+info: Method defined here
+   --> dlt/normalize/items_normalizers.py:555:9
+    |
+555 |     def _infer_column(
+    |         ^^^^^^^^^^^^^
+556 |         self,
+557 |         k: str,
+558 |         v: Any,
+559 |         data_type: TDataType = None,
+    |         --------------------------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to function `normalize_timezone` is incorrect
+   --> dlt/normalize/items_normalizers.py:697:55
+    |
+697 |             coerced_v = normalize_timezone(coerced_v, timezone)
+    |                                                       ^^^^^^^^ Expected `bool`, found `bool | None`
+    |
+info: element `None` of union `bool | None` is not assignable to `bool`
+info: Function defined here
+   --> dlt/common/time.py:193:5
+    |
+193 | def normalize_timezone(dt: pendulum.DateTime, timezone: bool) -> pendulum.DateTime:
+    |     ^^^^^^^^^^^^^^^^^^                        -------------- Parameter declared here
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+   --> dlt/normalize/items_normalizers.py:709:25
+    |
+709 |         preferred_type: TDataType = None
+    |                         ---------   ^^^^ Incompatible value of type `None`
+    |                         |
+    |                         Declared type
+    |
+
+error[invalid-assignment]: Object of type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+   --> dlt/normalize/items_normalizers.py:711:13
+    |
+711 |             preferred_type = self.schema.get_preferred_type(col_name)
+    |             --------------   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None`
+    |             |
+    |             Declared type `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+    |
+info: element `None` of union `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals] | None` is not assignable to `Literal["text", "double", "bool", "timestamp", "bigint", ... omitted 6 literals]`
+
+error[invalid-assignment]: Object of type `None` is not assignable to `bytes`
+   --> dlt/normalize/items_normalizers.py:770:19
+    |
+770 |             line: bytes = None
+    |                   -----   ^^^^ Incompatible value of type `None`
+    |                   |
+    |                   Declared type
+    |
+
+error[unresolved-attribute]: Attribute `field` is not defined on `None` in union `Unknown | None`
+   --> dlt/normalize/items_normalizers.py:832:21
+    |
+832 |                     pa.field(data_normalizer.c_dlt_id, pyarrow.pyarrow.string(), nullable=False),
+    |                     ^^^^^^^^
+    |
+
+error[unresolved-attribute]: Attribute `array` is not defined on `None` in union `Unknown | None`
+   --> dlt/normalize/items_normalizers.py:833:35
+    |
+833 |                     lambda batch: pa.array(generate_dlt_ids(batch.num_rows)),
+    |                                   ^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `None` is not assignable to `bool`
+   --> dlt/normalize/items_normalizers.py:841:27
+    |
+841 |         should_normalize: bool = None
+    |                           ----   ^^^^ Incompatible value of type `None`
+    |                           |
+    |                           Declared type
+    |
+
+error[invalid-assignment]: Cannot assign to a subscript on an object of type `None`
+  --> tests/common/normalizers/custom_normalizers.py:25:9
+   |
+25 |         d_h["not_null"] = json_config["not_null"]
+   |         ^^^^^^^^^^^^^^^
+   |
+info: The full type of the subscripted object is `dict[Literal["not_null", "nullable", "partition", "cluster", "primary_key", ... omitted 8 literals], list[TSimpleRegex]] | None`
+info: `None` does not have a `__setitem__` method.
+
+error[not-subscriptable]: Cannot subscript object of type `None` with no `__getitem__` method
+  --> tests/common/normalizers/custom_normalizers.py:25:27
+   |
+25 |         d_h["not_null"] = json_config["not_null"]
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+error[invalid-method-override]: Invalid override of method `normalize_data_item`
+   --> tests/common/normalizers/custom_normalizers.py:27:9
+    |
+ 27 |       def normalize_data_item(
+    |  _________^
+ 28 | |         self, source_event: TDataItem, load_id: str, table_name
+ 29 | |     ) -> TNormalizedRowIterator:
+    | |_______________________________^ Definition is incompatible with `dlt.common.normalizers.json.relational.DataItemNormalizer.normalize_data_item`
+    |
+   ::: dlt/common/normalizers/json/relational.py:371:9
+    |
+371 |       def normalize_data_item(
+    |  _________-
+372 | |         self, item: TDataItem, load_id: str, table_name: str
+373 | |     ) -> TNormalizedRowIterator:
+    | |_______________________________- `dlt.common.normalizers.json.relational.DataItemNormalizer.normalize_data_item` defined here
+    |
+info: the parameter named `source_event` does not match `item` (and can be used as a keyword parameter)
+info: This violates the Liskov Substitution Principle
+
+error[invalid-yield]: Yield expression type does not match annotation
+  --> tests/common/normalizers/custom_normalizers.py:29:10
+   |
+29 |     ) -> TNormalizedRowIterator:
+   |          ---------------------- Function annotated with yield type `tuple[tuple[str, str], Mapping[str, Any]]` here
+30 |         yield (table_name, None), source_event
+   |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expression of type `tuple[tuple[Unknown, None], Any]`, expected `tuple[tuple[str, str], Mapping[str, Any]]`
+   |
+info: the first tuple element is not compatible: `tuple[Unknown, None]` is not assignable to `tuple[str, str]`
+info: └── the second tuple element is not compatible: `None` is not assignable to `str`
+
+Found 106 diagnostics

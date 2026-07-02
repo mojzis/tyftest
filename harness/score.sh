@@ -61,11 +61,12 @@ jq -nc \
   --argjson m "$METRICS" \
   --arg task "$TASK" --arg cond "$COND" --argjson rep "$REP" \
   --arg repo "$REPO_SLUG" --arg pin "$PIN_SHA" --arg ty "${TY_STATUS:-unknown}" \
-  --arg ec "$EC" \
+  --arg ec "$EC" --arg sname "$(session_name "$TASK" "$COND" "$REP")" \
   --argjson oracle_pass "$ORACLE_PASS" --arg f2p "$F2P" --arg p2p "$P2P" \
   --argjson regression_ok "$REGRESS_OK" --argjson oracle_applied "$ORACLE_APPLIED" \
   --argjson test_tampered "$TEST_TAMPERED" \
   '$m + {task:$task, cond:$cond, rep:$rep, repo:$repo, pin_sha:$pin,
+         session_name:$sname,
          ty_status:$ty, exit_code:$ec, oracle_pass:$oracle_pass,
          fail_to_pass:$f2p, pass_to_pass:$p2p, regression_ok:$regression_ok,
          oracle_applied:$oracle_applied, test_tampered:$test_tampered}'

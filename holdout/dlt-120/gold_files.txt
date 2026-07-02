@@ -1,0 +1,5 @@
+dlt/common/normalizers/json/__init__.py
+dlt/common/normalizers/json/relational.py
+dlt/common/schema/utils.py
+dlt/normalize/items_normalizers.py
+tests/common/normalizers/custom_normalizers.py

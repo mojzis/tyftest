@@ -6,7 +6,8 @@ next round so we don't re-learn it the expensive way.
 
 Conditions: **A** = no tyf. **C** = tyf + standard snippet. **D** = tyf + strong snippet.
 tyf only ever fired on `dlt-110` (extract task); on `dlt-103` it was invoked **zero**
-times in every condition.
+times in every condition. Root cause of the dlt-103 zero: `tyf-nonadoption-dlt103.md`
+(task is string/marker-anchored, not symbol-anchored — no symbol-find question to pull tyf).
 
 ---
 

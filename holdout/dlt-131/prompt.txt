@@ -1,0 +1,33 @@
+Re-declaring a resource's key hints doesn't replace the old ones — stale key
+columns linger.
+
+When a resource already has a primary key or merge key and hints are applied
+again with a different key, the new key columns are added but the columns that
+carried the key before keep it — the two declarations accumulate instead of the
+newer one replacing the older one. A related mix-up happens when key membership
+arrives through per-column hints: a column marked as a key inside a `columns`
+hint gets unioned with the key list given directly, instead of the direct key
+hint being authoritative for which columns form the key.
+
+This is visible end to end. With a merge write disposition (delete-insert
+strategy) and a merge key on one column, load some data; then change the
+resource's merge key to a different column and load overlapping data. The
+delete phase still behaves as if the old key were in force, so rows that should
+have been replaced under the new key are not replaced correctly.
+
+Explicitly clearing a key should also be honored: applying an empty key hint
+(empty list / empty string) must carry through to the computed table schema as
+an explicit empty key — with no column still marked — rather than being
+dropped.
+
+Expected: applying a key hint replaces the previous key placement (the old key
+columns lose the marker, both in the computed table schema and in what reaches
+the destination); the direct key hint determines exactly which columns form the
+key; an explicitly empty key clears it. Ordinary column hints (data types,
+nullability, descriptions, ...) keep merging/accumulating as before.
+
+Repro shape: a resource yielding rows with columns a and b; declare a key on a;
+compute the table schema or run to duckdb with merge disposition; re-apply
+hints with the key on b (and, separately, a column-level hint marking another
+column as key); the computed schema must show only the directly-declared key
+columns, and a second merge run must delete/insert by the new key.

@@ -1,0 +1,21 @@
+The JSON normalizer emits spurious schema updates for nested child tables that
+end up with no values.
+
+When a record contains a nested field whose value is itself a list/object, dlt
+normalizes it into a child table. That works. The problem shows up on a later
+record where the same nested field carries no data — its value is `None` (or a
+list/object that yields no columns). Even though nothing new is being inferred,
+the normalizer still reports a schema update for that already-known child table,
+as if a new (empty) column had to be added.
+
+Expected: normalizing a record whose nested field is `None` (or otherwise
+produces no columns for the child table) should yield an *empty* schema update —
+a child table that was already created must not trigger fresh column updates when
+a subsequent item carries no values for it.
+
+Repro shape: build a record with a nested field that creates parent + child
+tables, normalize it (schema update is non-empty, as expected). Then normalize a
+second record where that nested field is `None` — and a third where a deeper
+nested field is `None`. In each of the no-value cases the returned schema update
+should be empty. Deeply nested fields with very long names (that get shortened
+into child-table identifiers) must behave the same way.

@@ -1,0 +1,10 @@
+task_id:      dlt-120
+repo:         dlt-hub/dlt
+pin_sha:      0955489a3
+fix_sha:      c8b3da5b5
+prompt_file:  holdout/dlt-120/prompt.txt
+gold_files:   dlt/common/normalizers/json/__init__.py,dlt/common/normalizers/json/relational.py,dlt/common/schema/utils.py,dlt/normalize/items_normalizers.py,tests/common/normalizers/custom_normalizers.py
+oracle_patch: holdout/dlt-120/oracle.patch
+oracle_tests: [tests/normalize/test_json_item_inference.py::test_coerce_null_value_in_nested_table]
+pass_to_pass: [tests/normalize/test_json_item_inference.py::test_coerce_row]
+ty_status:    working

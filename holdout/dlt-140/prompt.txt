@@ -1,0 +1,39 @@
+Setting an explicit deduplication key on an incremental doesn't stick — the
+resource's primary key silently overrides it.
+
+The incremental cursor accepts its own optional primary key used purely for
+deduplication of rows that share the same cursor value. The documented
+contract: if not provided, the primary key defined by the resource is used;
+pass a tuple to define a compound key; pass an empty tuple to disable unique
+checks. In practice the precedence goes the wrong way — even when a
+deduplication key is explicitly given on the incremental (including the
+documented empty tuple), the resource's primary key stomps on it during
+extraction.
+
+Consequences: on tables with many rows sharing the same cursor value,
+deduplication cannot be disabled, so pipeline state gets flooded with unique
+hashes; and when a deduplication key different from the resource's primary key
+is given explicitly, dedup silently runs on the wrong columns.
+
+Repro shape:
+
+```python
+@dlt.resource(primary_key="id")
+def some_data(created_at=dlt.sources.incremental("created_at", primary_key=())):
+    yield [{"created_at": 1, "id": 1}, {"created_at": 1, "id": 2}]
+
+pipeline.extract(some_data())
+# unique_hashes in the incremental's state should stay empty (dedup disabled),
+# but the rows get hashed using the resource primary key instead
+```
+
+The same thing happens regardless of how the incremental reaches the resource:
+as the default of the decorated function's parameter, via the decorator's
+`incremental` argument, or applied later with `apply_hints(incremental=...)` —
+and also when the resource's primary key itself arrives later via
+`apply_hints(primary_key=...)` after the incremental was already set.
+
+Expected: a deduplication key explicitly set on the incremental is
+authoritative — the resource's primary key is only a fallback when the
+incremental never specified one. An explicit empty tuple disables
+deduplication entirely (no unique hashes accumulate in state).

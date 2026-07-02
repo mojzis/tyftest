@@ -1,0 +1,501 @@
+diff --git a/tests/common/normalizers/test_json_relational.py b/tests/common/normalizers/test_json_relational.py
+index 306b7f03c..99a429342 100644
+--- a/tests/common/normalizers/test_json_relational.py
++++ b/tests/common/normalizers/test_json_relational.py
+@@ -96,8 +96,8 @@ def test_nested_table_linking(norm: RelationalNormalizer) -> None:
+     assert len(rows) == 7
+     # root elem will not have a root hash if not explicitly added, "extend" is added only to child
+     root_row = next(t for t in rows if t[0][0] == "table")
+-    # root row must have parent table none
+-    assert root_row[0][1] is None
++    # root row must have parent path ()
++    assert root_row[0][1] == ()
+ 
+     root = root_row[1]
+     assert "_dlt_root_id" not in root
+@@ -116,12 +116,12 @@ def test_nested_table_linking(norm: RelationalNormalizer) -> None:
+     # filter 3 entries with list
+     list_rows = [t for t in rows if t[0][0] == "table__f__l"]
+     assert len(list_rows) == 3
+-    # all list rows must have table_f as parent
+-    assert all(r[0][1] == "table__f" for r in list_rows)
++    # all list rows must have ("table", "f") as parent path
++    assert all(r[0][1] == ("table", "f") for r in list_rows)
+     # get parent for list
+     f_row = next(t for t in rows if t[0][0] == "table__f")
+-    # parent of the list must be "table"
+-    assert f_row[0][1] == "table"
++    # parent path of the list must be ("table",)
++    assert f_row[0][1] == ("table",)
+     f_row_v = f_row[1]
+     # parent of "f" must be row_id
+     assert f_row_v["_dlt_parent_id"] == row_id
+@@ -160,10 +160,10 @@ def test_skip_nested_link_when_no_parent(norm: RelationalNormalizer) -> None:
+     assert all(
+         e[1]["_dlt_parent_id"] != digest128("level1", DLT_ID_LENGTH_BYTES) for e in list_rows
+     )
+-    assert all(r[0][1] == "table__f" for r in list_rows)
++    assert all(r[0][1] == ("table", "f") for r in list_rows)
+     obj_rows = [t for t in rows if t[0][0] == "table__f__o"]
+     assert all(e[1]["_dlt_parent_id"] != digest128("level1", DLT_ID_LENGTH_BYTES) for e in obj_rows)
+-    assert all(r[0][1] == "table__f" for r in obj_rows)
++    assert all(r[0][1] == ("table", "f") for r in obj_rows)
+ 
+ 
+ def test_yields_parents_first(norm: RelationalNormalizer) -> None:
+@@ -222,19 +222,19 @@ def test_yields_parent_relation(norm: RelationalNormalizer) -> None:
+     # normalizer must return parent table first and move in order of the list elements when yielding child tables
+     # the yielding order if fully defined
+     expected_parents = [
+-        ("table", None),
+-        ("table__f", "table"),
+-        ("table__f__l", "table__f"),
+-        ("table__f__o", "table__f"),
++        ("table", (), ("table",)),
++        ("table__f", ("table",), ("f",)),
++        ("table__f__l", ("table", "f"), ("l",)),
++        ("table__f__o", ("table", "f"), ("o",)),
+         # "table__f__b" is not yielded as it is fully flattened into table__f
+-        ("table__f__b__a", "table__f"),
++        ("table__f__b__a", ("table", "f"), ("b", "a")),
+         # same for table__d -> fully flattened into table
+-        ("table__d__a", "table"),
+-        ("table__d__b__a", "table"),
++        ("table__d__a", ("table",), ("d", "a")),
++        ("table__d__b__a", ("table",), ("d", "b", "a")),
+         # table__e is yielded it however only contains linking information
+-        ("table__e", "table"),
+-        ("table__e__o", "table__e"),
+-        ("table__e__b__a", "table__e"),
++        ("table__e", ("table",), ("e",)),
++        ("table__e__o", ("table", "e"), ("o",)),
++        ("table__e__b__a", ("table", "e"), ("b", "a")),
+     ]
+     parents = list(r[0] for r in rows)
+     assert parents == expected_parents
+@@ -329,7 +329,7 @@ def test_control_descending(norm: RelationalNormalizer) -> None:
+     # prevent yielding descendants of "f" but yield all else
+     rows_gen = norm.normalize_data_item(row, "load_id", "table")
+     rows_gen.send(None)
+-    (table, _), _ = rows_gen.send(True)
++    (table, _, _), _ = rows_gen.send(True)
+     assert table == "table__f"
+     # won't yield anything else
+     with pytest.raises(StopIteration):
+@@ -339,11 +339,11 @@ def test_control_descending(norm: RelationalNormalizer) -> None:
+     rows_gen = norm.normalize_data_item(row, "load_id", "table")
+     rows_gen.send(None)
+     rows_gen.send(True)
+-    (table, _), one_row = rows_gen.send(True)
++    (table, _, _), one_row = rows_gen.send(True)
+     assert table == "table__f__l"
+     assert one_row["value"] == "a"
+     # get next element in the list - even with sending False - we do not descend
+-    (table, _), one_row = rows_gen.send(False)
++    (table, _, _), one_row = rows_gen.send(False)
+     assert table == "table__f__l"
+     assert one_row["value"] == "b"
+ 
+@@ -355,7 +355,7 @@ def test_control_descending(norm: RelationalNormalizer) -> None:
+     next(rows_gen)
+     next(rows_gen)
+     next(rows_gen)
+-    (table, _), one_row = rows_gen.send(True)
++    (table, _, _), one_row = rows_gen.send(True)
+     assert table == "table__f__lo"
+     # do not descend into lists
+     with pytest.raises(StopIteration):
+@@ -393,12 +393,12 @@ def test_list_in_list() -> None:
+     zen__webpath = [row for row in rows if row[0][0] == "zen__webpath"]
+     # two rows in web__zenpath for two lists
+     assert len(zen__webpath) == 2
+-    assert zen__webpath[0][0] == ("zen__webpath", "zen")
++    assert zen__webpath[0][0] == ("zen__webpath", ("zen",), ("webpath",))
+     # _dlt_id was hardcoded in the original row
+     assert zen__webpath[0][1]["_dlt_parent_id"] == "123456"
+     assert zen__webpath[0][1]["_dlt_list_idx"] == 0
+     assert zen__webpath[1][1]["_dlt_list_idx"] == 1
+-    assert zen__webpath[1][0] == ("zen__webpath", "zen")
++    assert zen__webpath[1][0] == ("zen__webpath", ("zen",), ("webpath",))
+     # inner lists
+     zen__webpath__list = [row for row in rows if row[0][0] == "zen__webpath__list"]
+     # actually both list of objects and list of number will be in the same table
+@@ -441,7 +441,7 @@ def test_child_row_deterministic_hash(norm: RelationalNormalizer) -> None:
+     assert len(distinct_hashes) == len(children)
+ 
+     # compute hashes for all children
+-    for (table, _), ch in children:
++    for (table, _, _), ch in children:
+         expected_hash = digest128(
+             f"{ch['_dlt_parent_id']}_{table}_{ch['_dlt_list_idx']}", DLT_ID_LENGTH_BYTES
+         )
+@@ -520,7 +520,7 @@ def test_propagates_root_context(norm: RelationalNormalizer) -> None:
+     }
+     normalized_rows = list(norm._normalize_row(row, {}, ("table",), _r_lvl=1000, is_root=True))
+     # all non-root rows must have:
+-    non_root = [r for r in normalized_rows if r[0][1] is not None]
++    non_root = [r for r in normalized_rows if r[0][1] != ()]
+     assert all(r[1]["_dlt_root_id"] == "###" for r in non_root)
+     assert all(r[1]["_partition_ts"] == 12918291.1212 for r in non_root)
+     assert all("__not_found" not in r[1] for r in non_root)
+@@ -558,7 +558,7 @@ def test_propagates_table_context(
+         row["lvl1"][0]["_dlt_id"] = "row_id_lvl1"  # type: ignore[index]
+ 
+     normalized_rows = list(norm._normalize_row(row, {}, ("table",), _r_lvl=1000, is_root=True))
+-    non_root = [r for r in normalized_rows if r[0][1] is not None]
++    non_root = [r for r in normalized_rows if r[0][1] != ()]
+     # _dlt_root_id in all non root
+     assert all(r[1]["_dlt_root_id"] == "###" for r in non_root)
+     # __not_found nowhere
+@@ -591,7 +591,7 @@ def test_propagates_table_context_to_lists(norm: RelationalNormalizer) -> None:
+     row = {"_dlt_id": "###", "timestamp": 12918291.1212, "lvl1": [1, 2, 3, [4, 5, 6]]}
+     normalized_rows = list(norm._normalize_row(row, {}, ("table",), _r_lvl=1000, is_root=True))
+     # _partition_ts == timestamp on all child tables
+-    non_root = [r for r in normalized_rows if r[0][1] is not None]
++    non_root = [r for r in normalized_rows if r[0][1] != ()]
+     assert all(r[1]["_partition_ts"] == 12918291.1212 for r in non_root)
+     # just make sure that list of lists are present
+     assert len([r for r in non_root if r[0][0] == "table__lvl1__list"]) == 3
+@@ -630,7 +630,7 @@ def test_preserves_json_types_list(norm: RelationalNormalizer) -> None:
+     # make sure only 1 row is emitted, the list is not normalized
+     assert len(normalized_rows) == 1
+     # value is kept in root row -> market as json
+-    root_row = next(r for r in normalized_rows if r[0][1] is None)
++    root_row = next(r for r in normalized_rows if r[0][1] == ())
+     assert root_row[1]["value"] == row["value"]
+ 
+     # same should work for a list
+@@ -639,7 +639,7 @@ def test_preserves_json_types_list(norm: RelationalNormalizer) -> None:
+     # make sure only 1 row is emitted, the list is not normalized
+     assert len(normalized_rows) == 1
+     # value is kept in root row -> market as json
+-    root_row = next(r for r in normalized_rows if r[0][1] is None)
++    root_row = next(r for r in normalized_rows if r[0][1] == ())
+     assert root_row[1]["value"] == row["value"]
+ 
+ 
+@@ -653,9 +653,10 @@ def test_wrap_in_dict(norm: RelationalNormalizer) -> None:
+     assert len(rows) == 6
+     assert rows[0][0] == (
+         "listex",
+-        None,
++        (),
++        ("listex",),
+     )
+-    assert rows[1][0] == ("listex__value", "listex")
++    assert rows[1][0] == ("listex__value", ("listex",), ("value",))
+     assert rows[-1][1]["value"] == "A"
+ 
+ 
+diff --git a/tests/common/schema/test_normalize_identifiers.py b/tests/common/schema/test_normalize_identifiers.py
+index a1cb18152..f6cb90c57 100644
+--- a/tests/common/schema/test_normalize_identifiers.py
++++ b/tests/common/schema/test_normalize_identifiers.py
+@@ -446,7 +446,7 @@ def assert_new_schema_values_custom_normalizers(schema: Schema) -> None:
+     assert schema.naming.make_path("A", "B", "!C") == "A__B__!C"
+     assert schema.naming.break_path("A__B__!C") == ["A", "B", "!C"]
+     row = list(schema.normalize_data_item({"bool": True}, "load_id", "a_table"))
+-    assert row[0] == (("a_table", None), {"bool": True})
++    assert row[0] == (("a_table", (), ()), {"bool": True})
+ 
+ 
+ def test_update_schema_normalizer_props() -> None:
+diff --git a/tests/common/schema/test_schema.py b/tests/common/schema/test_schema.py
+index 7b5a329e7..ebdc1dd11 100644
+--- a/tests/common/schema/test_schema.py
++++ b/tests/common/schema/test_schema.py
+@@ -1,5 +1,5 @@
+ import os
+-from typing import Dict
++from typing import Dict, Any
+ from types import MethodType
+ 
+ import pytest
+@@ -832,3 +832,55 @@ def test_get_new_columns(schema: Schema) -> None:
+     ]
+     with pytest.raises(SchemaCorruptedException):
+         schema.get_new_table_columns("events", existing_columns, case_sensitive=False)
++
++
++@pytest.mark.parametrize(
++    "include_self",
++    [True, False],
++)
++@pytest.mark.parametrize("max_nesting", [0, 1, 2, 3, 4, 5])
++def test_get_nested_tables(include_self: bool, max_nesting: int) -> None:
++    # Use a schema with tables that have a nesting level higher than 1
++    eth_v3: Dict[str, Any] = load_yml_case("schemas/eth/ethereum_schema_v3")
++    schema_eth = Schema.from_dict(eth_v3)
++
++    # Ensure max table nesting and include salf args are respected
++    children = [
++        "blocks__transactions",
++        "blocks__uncles",
++    ]
++    grandchildren = [
++        "blocks__transactions__logs",
++        "blocks__transactions__access_list",
++    ]
++    grandgrandchildren = [
++        "blocks__transactions__logs__topics",
++        "blocks__transactions__access_list__storage_keys",
++    ]
++    levels = [
++        [],
++        children,
++        children + grandchildren,
++        children + grandchildren + grandgrandchildren,
++    ]
++
++    descendant_tbl_schemas = utils.get_nested_tables(
++        tables=schema_eth.tables,
++        table_name="blocks",
++        max_nesting=max_nesting,
++        include_self=include_self,
++    )
++    descendant_tbl_names = [tbl["name"] for tbl in descendant_tbl_schemas]
++
++    expected = levels[min(max_nesting, 3)]
++    if include_self:
++        expected = ["blocks"] + expected
++
++    assert set(expected) == set(descendant_tbl_names)
++
++    # Ensure non existend table doesn't return anything
++
++    assert [] == utils.get_nested_tables(
++        tables=schema_eth.tables,
++        table_name="non_existend",
++    )
+diff --git a/tests/normalize/test_json_item_filtering.py b/tests/normalize/test_json_item_filtering.py
+index 14a635427..a1183044f 100644
+--- a/tests/normalize/test_json_item_filtering.py
++++ b/tests/normalize/test_json_item_filtering.py
+@@ -96,13 +96,15 @@ def test_filter_parent_table_schema_update(item_normalizer: JsonLItemsNormalizer
+ 
+     updates = []
+ 
+-    for (t, p), row in schema.normalize_data_item(source_row, "load_id", "event_bot"):
++    for (t, p, _), row in schema.normalize_data_item(source_row, "load_id", "event_bot"):
+         row = item_normalizer._filter_row(t, row)
+         if not row:
+             # those rows are fully removed
+             assert t in ["event_bot__metadata", "event_bot__metadata__elvl1"]
+         else:
+-            row, partial_table = item_normalizer._coerce_row(t, p, row)
++            row, partial_table = item_normalizer._coerce_row(
++                t, schema.naming.shorten_fragments(*p), row
++            )
+             updates.append(partial_table)
+ 
+     # try to apply updates
+@@ -123,14 +125,16 @@ def test_filter_parent_table_schema_update(item_normalizer: JsonLItemsNormalizer
+         [TSimpleRegex("re:^metadata___dlt_"), TSimpleRegex("re:^metadata__elvl1___dlt_")]
+     )
+     schema._compile_settings()
+-    for (t, p), row in schema.normalize_data_item(source_row, "load_id", "event_bot"):
++    for (t, p, _), row in schema.normalize_data_item(source_row, "load_id", "event_bot"):
+         row = item_normalizer._filter_row(t, row)
+-        if p is None:
++        if p == ():
+             assert "_dlt_id" in row
+         else:
+             # full linking not wiped out
+             assert set(row.keys()).issuperset(["_dlt_id", "_dlt_parent_id", "_dlt_list_idx"])
+-        row, partial_table = item_normalizer._coerce_row(t, p, row)
++        row, partial_table = item_normalizer._coerce_row(
++            t, schema.naming.shorten_fragments(*p), row
++        )
+         updates.append(partial_table)
+         schema.update_table(partial_table)
+ 
+diff --git a/tests/normalize/test_json_item_inference.py b/tests/normalize/test_json_item_inference.py
+index ef76a5d84..459a5490b 100644
+--- a/tests/normalize/test_json_item_inference.py
++++ b/tests/normalize/test_json_item_inference.py
+@@ -10,7 +10,7 @@ from dlt.common.configuration.container import Container
+ from dlt.common.destination.capabilities import DestinationCapabilitiesContext
+ from dlt.common.json import custom_pua_decode
+ from dlt.common.schema import Schema, utils
+-from dlt.common.schema.typing import TColumnSchema
++from dlt.common.schema.typing import TColumnSchema, TSchemaUpdate
+ from dlt.common.schema.exceptions import (
+     CannotCoerceColumnException,
+     CannotCoerceNullException,
+@@ -20,7 +20,7 @@ from dlt.common.schema.exceptions import (
+ )
+ from dlt.common.storages.schema_storage import SchemaStorage
+ from dlt.common.time import ensure_pendulum_datetime_non_utc
+-from dlt.common.typing import StrAny
++from dlt.common.typing import StrAny, TDataItems
+ from dlt.common.utils import uniq_id
+ from dlt.normalize.items_normalizers import JsonLItemsNormalizer
+ from dlt.normalize.normalize import Normalize
+@@ -611,6 +611,88 @@ def test_coerce_null_value_over_not_null(item_normalizer: JsonLItemsNormalizer)
+         item_normalizer._coerce_row("event_user", None, row)
+ 
+ 
++@pytest.mark.parametrize(
++    "nested_item",
++    [
++        [1, 2],
++        [
++            {
++                "timestamp": 82178.1298812,
++            }
++        ],
++    ],
++    ids=["nested_item_list", "nested_item_dict"],
++)
++def test_coerce_null_value_in_nested_table(
++    item_normalizer: JsonLItemsNormalizer, nested_item: TDataItems
++) -> None:
++    """Ensure that a column previously created as a child table
++    does not attempt new column updates in a subsequent run when it has no values."""
++
++    def _normalize_items_chunk(items: TDataItems) -> TSchemaUpdate:
++        schema_update = item_normalizer._normalize_chunk(
++            root_table_name="nested",
++            items=items,
++            may_have_pua=False,
++            skip_write=True,
++        )
++        return schema_update
++
++    # use very long column names
++    col_name_a = "a" * (item_normalizer.naming.max_length + 1)
++    norm_col_name_a = item_normalizer.naming.normalize_path(col_name_a)
++    nested_tbl_name = item_normalizer.naming.shorten_fragments("nested", f"{norm_col_name_a}")
++
++    col_name_b = "b" * (item_normalizer.naming.max_length + 1)
++    norm_col_name_b = item_normalizer.naming.normalize_path(col_name_b)
++    nested_nested_tbl_name = item_normalizer.naming.shorten_fragments(
++        "nested", f"{norm_col_name_a}", f"{norm_col_name_b}"
++    )
++
++    # create parent and child tables
++    schema_update = _normalize_items_chunk(
++        [
++            {
++                "timestamp": 82178.1298812,
++                col_name_a: [
++                    {
++                        "timestamp": 82178.1298812,
++                        col_name_b: nested_item,
++                    }
++                ],
++            },
++        ]
++    )
++    assert "nested" in schema_update
++    assert nested_tbl_name in schema_update
++    assert nested_nested_tbl_name in schema_update
++
++    # verify that empty child table columns don't create schema updates
++    schema_update = _normalize_items_chunk(
++        [
++            {
++                "timestamp": 82178.1298812,
++                col_name_a: [
++                    {
++                        "timestamp": 82178.1298812,
++                        col_name_b: None,
++                    }
++                ],
++            },
++        ]
++    )
++    assert not schema_update
++    schema_update = _normalize_items_chunk(
++        [
++            {
++                "timestamp": 82178.1298812,
++                col_name_a: None,
++            },
++        ]
++    )
++    assert not schema_update
++
++
+ # def test_coerce_new_null_value(item_normalizer: JsonLItemsNormalizer) -> None:
+ #     row = {"timestamp": None}
+ #     new_row, new_table = item_normalizer._coerce_row("event_user", None, row)
+diff --git a/tests/pipeline/test_schema_contracts.py b/tests/pipeline/test_schema_contracts.py
+index aa1caa82f..3daf790eb 100644
+--- a/tests/pipeline/test_schema_contracts.py
++++ b/tests/pipeline/test_schema_contracts.py
+@@ -5,6 +5,7 @@ from typing import Any, Callable, Iterator, Union, Optional, Type
+ from dlt.common.schema.typing import TSchemaContract
+ from dlt.common.utils import uniq_id
+ from dlt.common.schema.exceptions import DataValidationError
++from dlt.common.typing import TDataItems
+ 
+ from dlt.extract import DltResource
+ from dlt.pipeline.pipeline import Pipeline
+@@ -829,3 +830,66 @@ def test_write_to_existing_database_tables_frozen() -> None:
+             table_name="test_items",
+             schema_contract={"tables": "freeze", "columns": "freeze", "data_type": "freeze"},
+         )
++
++
++@pytest.mark.parametrize(
++    "nested_item",
++    [
++        [1, 2],
++        [
++            {
++                "timestamp": 82178.1298812,
++            }
++        ],
++    ],
++    ids=["nested_item_list", "nested_item_dict"],
++)
++def test_coerce_null_value_in_nested_table(nested_item: TDataItems) -> None:
++    """Ensure that a column previously loaded as a child table
++    does not create new columns in a subsequent run when it has no values."""
++    pipeline = get_pipeline()
++
++    @dlt.resource
++    def nested(data: TDataItems):
++        yield data
++
++    # create parent and child tables
++    data = [
++        {
++            "timestamp": 82178.1298812,
++            "a": [
++                {
++                    "timestamp": 82178.1298812,
++                    "b": nested_item,
++                }
++            ],
++        },
++    ]
++    pipeline.run(nested(data), schema_contract={"columns": "freeze"})
++
++    assert "nested" in pipeline.default_schema.tables
++    assert "nested__a" in pipeline.default_schema.tables
++    assert "nested__a__b" in pipeline.default_schema.tables
++
++    # verify that empty child table columns don't create new columns,
++    # i.e. violate the freeze contract on columns
++    data = [
++        {
++            "timestamp": 82178.1298812,
++            "a": [
++                {
++                    "timestamp": 82178.1298812,
++                    "b": None,
++                }
++            ],
++        },
++    ]
++    pipeline.run(nested(data), schema_contract={"columns": "freeze"})
++
++    data = [
++        {
++            "timestamp": 82178.1298812,
++            "a": None,
++        },
++    ]
++    pipeline.run(nested(data), schema_contract={"columns": "freeze"})

@@ -9,7 +9,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
 
 TASKS=("$@"); [ ${#TASKS[@]} -eq 0 ] && mapfile -t TASKS < <(list_tasks)
 [ ${#TASKS[@]} -eq 0 ] && { echo "no tasks in holdout/"; exit 1; }
-OUT="${OUT:-$ROOT/results/results.jsonl}"     # override with OUT=... for a separate round
+# Default: per-invocation file stamped with the driver's start time — separate
+# attempts never append into each other; merge explicitly via
+# `analyze.py results/adhoc.*.jsonl`. Round scripts set OUT (stamped) themselves.
+OUT="${OUT:-$ROOT/results/adhoc.$(date +%Y%m%d-%H%M%S).jsonl}"
 mkdir -p "$(dirname "$OUT")"
 
 # Usage-limit backstop: if a cell dies because the Claude usage limit was hit,

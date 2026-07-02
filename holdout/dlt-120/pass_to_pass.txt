@@ -1,0 +1,1 @@
+tests/normalize/test_json_item_inference.py::test_coerce_row

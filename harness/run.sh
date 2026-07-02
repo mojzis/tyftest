@@ -40,7 +40,7 @@ if [ "${DRY:-0}" = "1" ]; then
 {"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","content":"# Definition\\nfoo.py:1:1"}]}}'
     fi
     {
-      echo '{"type":"system","subtype":"init"}'
+      echo '{"type":"system","subtype":"init","session_id":"00000000-dry0-0000-0000-000000000000"}'
       [ -n "$TYF_LINE" ] && echo "$TYF_LINE"
       echo '{"type":"assistant","message":{"content":[{"type":"tool_use","id":"r1","name":"Read","input":{"file_path":"x.py"}}],"usage":{}}}'
       echo '{"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"r1","content":"def x(): pass"}]}}'
@@ -61,7 +61,8 @@ fi
 log "$TASK/$COND/rep$REP — model=$MODEL wall=${WALL}s tyf=$([ "$COND" = A ] && echo absent || echo present)"
 set +e
 ( cd "$RUN" && timeout "$WALL" env PATH="$RUN_PATH" \
-    claude -p "$PROMPT" --model "$MODEL" "${CLAUDE_COMMON[@]}" \
+    claude -p "$PROMPT" --model "$MODEL" -n "$(session_name "$TASK" "$COND" "$REP")" \
+    "${CLAUDE_COMMON[@]}" \
     > "$RUN/transcript.jsonl" 2> "$RUN/claude.err" )
 EC=$?
 set -e
