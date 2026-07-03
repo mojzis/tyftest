@@ -1,0 +1,17 @@
+[project]
+name = "tyftest"
+version = "0.0.0"
+description = "Controlled experiment: does the tyf CLAUDE.md snippet earn its keep?"
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb>=1.0",
+    "marimo>=0.23.13",
+    "pandas>=2.0",
+    "plotly>=6.0",
+]
+
+# Not an installable package — just a pinned env for the ad-hoc analysis tools
+# (harness/trajectory.py, docs/learnings/tyf_analysis.py). The hot-path harness
+# scripts run under bare `python3` and are stdlib-only.
+[tool.uv]
+package = false

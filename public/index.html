@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tyftest — notebooks</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #666; --card: #f6f7f9;
+    --border: #e4e6ea; --accent: #2f81f7; --accent-fg: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --fg: #e6edf3; --muted: #8b949e; --card: #161b22;
+      --border: #30363d; --accent: #2f81f7; --accent-fg: #fff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 4rem 1.25rem 6rem; }
+  header h1 { font-size: 1.9rem; margin: 0 0 .35rem; letter-spacing: -0.01em; }
+  header p { color: var(--muted); margin: 0 0 2.5rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .card {
+    display: block; border: 1px solid var(--border); background: var(--card);
+    border-radius: 12px; padding: 1.25rem 1.4rem; margin: 0 0 1rem;
+    color: inherit; transition: border-color .15s ease, transform .15s ease;
+  }
+  .card:hover { border-color: var(--accent); text-decoration: none; transform: translateY(-1px); }
+  .card h2 { font-size: 1.15rem; margin: 0 0 .3rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .meta { margin-top: .6rem; font-size: .8rem; color: var(--muted); }
+  .tag {
+    display: inline-block; font-size: .72rem; font-weight: 600; letter-spacing: .02em;
+    background: var(--accent); color: var(--accent-fg); border-radius: 999px;
+    padding: .12rem .55rem; vertical-align: middle; margin-left: .5rem;
+  }
+  footer { margin-top: 3rem; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>tyftest — analysis notebooks</h1>
+    <p>Does the <code>tyf</code> CLAUDE.md snippet earn its keep? Marimo notebooks
+       from a controlled A/B experiment on Claude Code.</p>
+  </header>
+
+  <main>
+    <a class="card" href="dlt131.html">
+      <h2>dlt-131 — how the <code>tyf</code> snippet changes agent behavior <span class="tag">round 4</span></h2>
+      <p>The round where the tool actually got used. tyf flips the opening
+         navigation reflex grep→tyf (5/5), front-loads orientation, and cuts
+         reads, edits, context churn and cost by ~30% — with tighter run-to-run
+         spread. Includes trajectory frames and a failure post-mortem.</p>
+      <div class="meta">Task: reverted dlt bug-fix (PR #3431) · Opus · 5 reps × 2 conditions</div>
+    </a>
+  </main>
+
+  <footer>
+    Source: <a href="https://github.com/mojzis/tyftest">github.com/mojzis/tyftest</a>.
+    Notebooks are static exports — outputs are baked in; the live introspect DB is not required to view them.
+  </footer>
+</div>
+</body>
+</html>
