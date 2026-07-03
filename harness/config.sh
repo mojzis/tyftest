@@ -89,6 +89,15 @@ PIN_FILE="$ROOT/repos/$REPO.pin"        # written by setup_repo.sh
 #   D = tyf + STRONG snippet          (claude-snippet-strong.md)
 read -r -a CONDS <<< "${CONDS_OVERRIDE:-A B C}"
 REPS="${REPS:-3}"
+# Floor-abort backstop (opt-in, off by default). After a small pilot of rep(s)
+# from EVERY condition, if a task fails in ALL of them (no arm passed -> the cell
+# can't discriminate A vs D), skip its remaining reps to save spend. Requires
+# failure across BOTH arms, so an asymmetric "A fails, D passes" result survives,
+# and it NEVER triggers on a pass. FLOOR_PILOT_PER_COND = reps per condition in
+# the pilot (1 -> 2-run A/D pilot; 2 -> 4-run, fewer false aborts on borderline
+# tasks). Aborted cells write no row; the pilot rows land in the same OUT file.
+FLOOR_ABORT="${FLOOR_ABORT:-0}"
+FLOOR_PILOT_PER_COND="${FLOOR_PILOT_PER_COND:-1}"
 # TASKS is discovered from holdout/ at run time:
 list_tasks() { ls "$ROOT/holdout" 2>/dev/null | sort; }
 

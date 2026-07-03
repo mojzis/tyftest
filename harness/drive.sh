@@ -3,7 +3,8 @@
 # order (avoids all-A-then-all-C drift / rate-limit artifacts). run -> score ->
 # append one JSON row to results/results.jsonl.
 #   drive.sh [task ...]      (default: all tasks in holdout/)
-#   env: DRY=1, REPS=N, MODEL=...
+#   env: DRY=1, REPS=N, MODEL=..., FLOOR_ABORT=1 (skip a task's remaining reps
+#        once a pilot of both arms all fails — see config.sh)
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/config.sh"
 
@@ -32,17 +33,41 @@ LIMIT_MAX_RETRIES="${LIMIT_MAX_RETRIES:-4}"    # per-cell cap on limit waits (ov
 OVERLOAD_MAX_RETRIES="${OVERLOAD_MAX_RETRIES:-3}"
 OVERLOAD_BACKOFF="${OVERLOAD_BACKOFF:-180}"    # seconds; doubled each retry
 
-# build the cell list, then shuffle
-CELLS=()
-for t in "${TASKS[@]}"; do for c in "${CONDS[@]}"; do
-  for r in $(seq 1 "$REPS"); do CELLS+=("$t|$c|$r"); done
-done; done
-mapfile -t CELLS < <(printf '%s\n' "${CELLS[@]}" | shuf)
+# build the cell list. Without FLOOR_ABORT: one shuffle (drift / rate-limit
+# artifact avoidance), same as before. With FLOOR_ABORT: split into a PILOT
+# phase (rep 1..FLOOR_PILOT_PER_COND of every cond, shuffled) that runs BEFORE
+# the BULK (shuffled), so a both-arms floor is known before the pricey reps go.
+declare -A PILOT_EXP PILOT_SCORED PILOT_PASS ABORTED
+if [ "$FLOOR_ABORT" = 1 ]; then
+  PILOT=(); BULK=()
+  for t in "${TASKS[@]}"; do
+    PILOT_EXP[$t]=0; PILOT_SCORED[$t]=0; PILOT_PASS[$t]=0; ABORTED[$t]=0
+    for c in "${CONDS[@]}"; do for r in $(seq 1 "$REPS"); do
+      if [ "$r" -le "$FLOOR_PILOT_PER_COND" ]; then
+        PILOT+=("$t|$c|$r"); PILOT_EXP[$t]=$(( PILOT_EXP[$t] + 1 ))
+      else BULK+=("$t|$c|$r"); fi
+    done; done
+  done
+  mapfile -t PILOT < <(printf '%s\n' "${PILOT[@]}" | shuf)
+  [ ${#BULK[@]} -gt 0 ] && mapfile -t BULK < <(printf '%s\n' "${BULK[@]}" | shuf)
+  CELLS=("${PILOT[@]}" ${BULK[@]+"${BULK[@]}"})
+  log "floor-abort ON: pilot=${#PILOT[@]} cell(s) (rep<=$FLOOR_PILOT_PER_COND/cond) before ${#BULK[@]} bulk cell(s)"
+else
+  CELLS=()
+  for t in "${TASKS[@]}"; do for c in "${CONDS[@]}"; do
+    for r in $(seq 1 "$REPS"); do CELLS+=("$t|$c|$r"); done
+  done; done
+  mapfile -t CELLS < <(printf '%s\n' "${CELLS[@]}" | shuf)
+fi
 
 log "pilot: ${#CELLS[@]} cells  tasks=[${TASKS[*]}] conds=[${CONDS[*]}] reps=$REPS dry=${DRY:-0}"
 i=0
 for cell in "${CELLS[@]}"; do
   i=$((i+1)); IFS='|' read -r t c r <<< "$cell"
+  if [ "$FLOOR_ABORT" = 1 ] && [ "${ABORTED[$t]}" = 1 ]; then
+    log "[$i/${#CELLS[@]}] $t/$c/rep$r — SKIP (task floored in pilot: no arm passed)"
+    continue
+  fi
   RUN="$ROOT/runs/$t/$c/rep$r"
   lim_tries=0; ovl_tries=0
   while :; do   # retry loop: re-enters only for a FRESH re-run (limit reset / overload backoff)
@@ -99,7 +124,21 @@ PY
   ROW="$(python3 -c 'import json,sys; r=json.loads(sys.argv[1]); r["gate"]=sys.argv[2]; print(json.dumps(r))' "$ROW" "$GATE")"
   echo "$ROW" >> "$OUT"
   [ "$GATE" != "ok" ] && log "  gate: $GATE"
+  # floor-abort bookkeeping: tally this task's pilot outcomes; once every pilot
+  # cell has scored and NONE passed, mark the task aborted (skips its bulk reps).
+  if [ "$FLOOR_ABORT" = 1 ] && [ "$r" -le "$FLOOR_PILOT_PER_COND" ]; then
+    PILOT_SCORED[$t]=$(( PILOT_SCORED[$t] + 1 ))
+    [ "$(printf '%s' "$ROW" | jq -r '.oracle_pass')" = true ] && PILOT_PASS[$t]=$(( PILOT_PASS[$t] + 1 ))
+    if [ "${PILOT_SCORED[$t]}" -ge "${PILOT_EXP[$t]}" ] && [ "${PILOT_PASS[$t]}" -eq 0 ]; then
+      ABORTED[$t]=1
+      log "  FLOOR: $t failed all ${PILOT_EXP[$t]} pilot run(s) across [${CONDS[*]}] — skipping its remaining reps"
+    fi
+  fi
   break   # cell done; leave the usage-limit retry loop
   done
 done
+if [ "$FLOOR_ABORT" = 1 ]; then
+  ab=(); for t in "${TASKS[@]}"; do [ "${ABORTED[$t]}" = 1 ] && ab+=("$t"); done
+  [ ${#ab[@]} -gt 0 ] && log "floored (both arms, reps skipped): ${ab[*]}"
+fi
 log "wrote rows to $OUT  (total now: $(wc -l < "$OUT"))"

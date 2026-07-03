@@ -98,3 +98,12 @@ print(f"  test-tampered (flag only; tests restored at scoring): {len(tamper)}")
 print(f"  ty_status=degraded runs: {len(degraded)}")
 print(f"  regression failures (pass_to_pass not green): "
       f"{sum(1 for r in rows if not r.get('regression_ok'))}")
+# floored = no arm passed on the whole task -> non-discriminating. A thin n
+# (fewer reps than the matrix) means FLOOR_ABORT skipped the rest of that task.
+floored = []
+for task in sorted({r["task"] for r in rows}):
+    trs = [r for r in rows if r["task"] == task]
+    if trs and not any(r.get("oracle_pass") for r in trs):
+        floored.append((task, len(trs), "".join(sorted({r["cond"] for r in trs}))))
+print(f"  floored tasks (no arm passed; thin n = pilot-aborted): {len(floored)}"
+      + (f"  -> {floored}" if floored else ""))
