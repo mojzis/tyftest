@@ -1,0 +1,34 @@
+diff --git a/litestar/_kwargs/kwargs_model.py b/litestar/_kwargs/kwargs_model.py
+index 2fb631ce9..ab914fa40 100644
+--- a/litestar/_kwargs/kwargs_model.py
++++ b/litestar/_kwargs/kwargs_model.py
+@@ -494,7 +494,10 @@ class KwargsModel:
+                 k
+                 for k, f in field_definitions.items()
+                 if isinstance(f.kwarg_definition, ParameterKwarg)
+-                and (f.kwarg_definition.param_type in (ParamType.HEADER, ParamType.QUERY, ParamType.COOKIE))
++                and (
++                    f.kwarg_definition.param_type in (ParamType.HEADER, ParamType.QUERY, ParamType.COOKIE)
++                    and f.kwarg_definition.name is not None
++                )
+             ),
+             *list(layered_parameters.keys()),
+         }
+diff --git a/litestar/typing.py b/litestar/typing.py
+index 8574a765e..016a900f7 100644
+--- a/litestar/typing.py
++++ b/litestar/typing.py
+@@ -511,7 +511,12 @@ class FieldDefinition:
+                 )
+             # if not, create a new KwargDefinition
+             else:
+-                model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
++                if (name := kwargs.get("name")) == "data":
++                    model: type[KwargDefinition] = BodyKwarg
++                elif name is None:
++                    model = KwargDefinition
++                else:
++                    model = ParameterKwarg
+                 kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
+ 
+         kwargs.setdefault("annotation", unwrapped)

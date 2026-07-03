@@ -1,0 +1,3 @@
+test_annotated_metadata_does_not_shadow_dependency
+test_annotated_metadata_does_not_shadow_path_param
+test_constraint_metadata_does_not_shadow_dependency

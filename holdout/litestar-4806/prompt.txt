@@ -1,0 +1,35 @@
+Adding Annotated metadata to a handler parameter makes it stop receiving its
+value from a dependency (or from the path) — requests start failing with 400.
+
+A handler parameter whose value comes from a declared dependency works fine
+with a plain type hint. But as soon as the same parameter's annotation is
+wrapped in Annotated with any metadata at all — an arbitrary object, or a
+constraint like annotated_types.Gt(5) — the request fails with a 400 saying a
+required query parameter is missing. The metadata changes where the framework
+thinks the value comes from: instead of using the dependency, it now demands a
+query parameter of that name.
+
+Path parameters hit the same thing: a parameter that binds to a `{foo:int}`
+path segment with a plain `int` hint stops binding once the hint becomes
+`Annotated[int, ...]`, and the request 400s asking for a missing query
+parameter.
+
+Repro shape:
+
+```python
+async def provide_foo() -> str:
+    return "from-dependency"
+
+@get("/", dependencies={"foo": provide_foo})
+async def handler(foo: Annotated[str, "arbitrary metadata"]) -> str:
+    return foo
+
+# client.get("/") -> 400 "Missing required query parameter 'foo' ..."
+# with a plain `foo: str` hint it returns 200 "from-dependency"
+```
+
+Expected: Annotated metadata on a parameter's type should not change how the
+value is sourced. A parameter provided by a dependency or bound to a path
+parameter keeps working identically whether or not its annotation carries
+extra metadata — the metadata should only add validation/documentation, not
+reclassify the parameter as a query parameter.

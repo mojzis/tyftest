@@ -1,0 +1,169 @@
+error[invalid-argument-type]: Argument to bound method `MutableScopeHeaders.add` is incorrect
+  --> litestar/response/base.py:90:34
+   |
+90 |                 self.headers.add(k, v)  # pyright: ignore[reportArgumentType]
+   |                                  ^ Expected `str`, found `object`
+   |
+info: Method defined here
+   --> litestar/datastructures/headers.py:137:9
+    |
+137 |     def add(self, key: str, value: str) -> None:
+    |         ^^^       -------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument to bound method `MutableScopeHeaders.add` is incorrect
+  --> litestar/response/base.py:90:37
+   |
+90 |                 self.headers.add(k, v)  # pyright: ignore[reportArgumentType]
+   |                                     ^ Expected `str`, found `object`
+   |
+info: Method defined here
+   --> litestar/datastructures/headers.py:137:9
+    |
+137 |     def add(self, key: str, value: str) -> None:
+    |         ^^^                 ---------- Parameter declared here
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> litestar/response/base.py:243:21
+    |
+243 |             [Cookie(key=key, value=value) for key, value in cookies.items()]
+    |                     ^^^^^^^ Expected `str`, found `object`
+    |
+
+error[invalid-argument-type]: Argument is incorrect
+   --> litestar/response/base.py:243:30
+    |
+243 |             [Cookie(key=key, value=value) for key, value in cookies.items()]
+    |                              ^^^^^^^^^^^ Expected `str | None`, found `object`
+    |
+
+error[no-matching-overload]: No overload of `dict.__init__` matches arguments
+   --> litestar/response/base.py:249:13
+    |
+249 |             dict(headers) if isinstance(headers, Mapping) else {h.name: h.value for h in headers or {}}
+    |             ^^^^^^^^^^^^^
+    |
+info: First overload defined here
+    --> stdlib/builtins.pyi:3101:5
+     |
+3101 | /     @overload
+3102 | |     def __init__(self, /) -> None: ...
+     | |______________________________________^ First overload defined here
+     |
+info: Possible overloads for bound method `__init__`:
+info:   (self, /) -> None
+info:   (self: dict[str, _VT@dict], /, **kwargs: _VT@dict) -> None
+info:   (self, map: SupportsKeysAndGetItem[_KT@dict, _VT@dict], /) -> None
+info:   (self: dict[str, _VT@dict], map: SupportsKeysAndGetItem[str, _VT@dict], /, **kwargs: _VT@dict) -> None
+info:   (self, iterable: Iterable[tuple[_KT@dict, _VT@dict]], /) -> None
+info:   (self: dict[str, _VT@dict], iterable: Iterable[tuple[str, _VT@dict]], /, **kwargs: _VT@dict) -> None
+info:   (self: dict[str, str], iterable: Iterable[list[str]], /) -> None
+info:   (self: dict[bytes, bytes], iterable: Iterable[list[bytes]], /) -> None
+
+error[invalid-argument-type]: Argument to `ASGIRedirectResponse.__init__` is incorrect
+   --> litestar/response/redirect.py:166:13
+    |
+166 |             status_code=self.status_code or status_code,  # type:ignore[arg-type]
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Expected `Literal[301, 302, 303, 307, 308] | None`, found `int | None`
+    |
+info: element `int` of union `int | None` is not assignable to `Literal[301, 302, 303, 307, 308] | None`
+info: Method defined here
+  --> litestar/response/redirect.py:37:9
+   |
+37 |     def __init__(
+   |         ^^^^^^^^
+38 |         self,
+39 |         path: str | bytes,
+40 |         media_type: str | None = None,
+41 |         status_code: RedirectStatusType | None = None,
+   |         --------------------------------------------- Parameter declared here
+   |
+
+error[call-top-callable]: Object of type `Top[(...) -> object]` is not safe to call; its signature is not known
+  --> litestar/response/sse.py:67:23
+   |
+67 |             content = content()
+   |                       ^^^^^^^^^
+   |
+info: This type includes all possible callables, so it cannot safely be called because there is no valid set of arguments for it
+info: Intersection element `Top[(...) -> object]` is incompatible with this call site
+info: Attempted to call intersection type `Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object]`
+info: Attempted to call union type `(Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object] & ~Iterator[object] & ~AsyncIterator[object]) | (AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object] & ~Iterator[object] & ~AsyncIterator[object]) | ((() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & ~Iterator[object] & ~AsyncIterator[object])`
+
+error[call-top-callable]: Object of type `Top[(...) -> object]` is not safe to call; its signature is not known
+  --> litestar/response/sse.py:67:23
+   |
+67 |             content = content()
+   |                       ^^^^^^^^^
+   |
+info: This type includes all possible callables, so it cannot safely be called because there is no valid set of arguments for it
+info: Intersection element `Top[(...) -> object]` is incompatible with this call site
+info: Attempted to call intersection type `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object]`
+info: Attempted to call union type `(Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object] & ~Iterator[object] & ~AsyncIterator[object]) | (AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & Top[(...) -> object] & ~Iterator[object] & ~AsyncIterator[object]) | ((() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & ~Iterator[object] & ~AsyncIterator[object])`
+
+error[invalid-assignment]: Object of type `object` is not assignable to `Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | (() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage])`
+  --> litestar/response/sse.py:67:13
+   |
+67 |             content = content()
+   |             -------   ^^^^^^^^^ Incompatible value of type `object`
+   |             |
+   |             Declared type `Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | (() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage])`
+   |
+
+error[invalid-assignment]: Object of type `AsyncIteratorWrapper[object]` is not assignable to attribute `content_async_iterator` of type `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+  --> litestar/response/sse.py:72:13
+   |
+72 |             self.content_async_iterator = AsyncIteratorWrapper(content)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+info: type `AsyncIteratorWrapper[object]` is not assignable to protocol `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info: └── protocol member `__aiter__` is incompatible
+info:     └── incompatible return types: `AsyncIteratorWrapper[object]` is not assignable to `AsyncIterator[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:         └── type `AsyncIteratorWrapper[object]` is not assignable to protocol `AsyncIterator[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:             └── protocol member `__anext__` is incompatible
+info:                 └── incompatible return types: `CoroutineType[Any, Any, object]` is not assignable to `Awaitable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                     └── type `CoroutineType[Any, Any, object]` is not assignable to protocol `Awaitable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                         └── protocol member `__await__` is incompatible
+info:                             └── incompatible return types: `Generator[Any, None, object]` is not assignable to `Generator[Any, Any, int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+
+error[invalid-assignment]: Object of type `(AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & ~Iterable[object]) | ((() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & AsyncIterable[object] & ~Iterable[object])` is not assignable to attribute `content_async_iterator` of type `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+  --> litestar/response/sse.py:74:13
+   |
+74 |             self.content_async_iterator = content
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+info: element `(() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & AsyncIterable[object] & ~Iterable[object]` of union `(AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] & ~Iterable[object]) | ((() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & AsyncIterable[object] & ~Iterable[object])` is not assignable to `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info: └── no element of intersection `(() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]) & AsyncIterable[object] & ~Iterable[object]` is assignable to `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:     ├── type `() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]` is not assignable to protocol `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:     │   └── protocol member `__aiter__` is not defined on type `() -> Iterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:     └── protocol `AsyncIterable[object]` is not assignable to protocol `AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:         └── protocol member `__aiter__` is incompatible
+info:             └── incompatible return types: `AsyncIterator[object]` is not assignable to `AsyncIterator[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                 └── protocol `AsyncIterator[object]` is not assignable to protocol `AsyncIterator[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                     └── protocol member `__anext__` is incompatible
+info:                         └── incompatible return types: `Awaitable[object]` is not assignable to `Awaitable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                             └── protocol `Awaitable[object]` is not assignable to protocol `Awaitable[int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+info:                                 └── protocol member `__await__` is incompatible
+info:                                     └── incompatible return types: `Generator[Any, Any, object]` is not assignable to `Generator[Any, Any, int | str | bytes | dict[str, Any] | ServerSentEventMessage]`
+
+error[invalid-return-type]: Return type does not match returned value
+  --> litestar/response/sse.py:89:29
+   |
+89 |     def _call_next(self) -> bytes:
+   |                             ----- Expected `bytes` because of return type
+90 |         try:
+91 |             return next(self.iterator)
+   |                    ^^^^^^^^^^^^^^^^^^^ expected `bytes`, found `object`
+   |
+
+error[invalid-assignment]: Object of type `(Iterable[Unknown] & AsyncIterable[object]) | AsyncIterable[Unknown]` is not assignable to `AsyncIterable[str | bytes]`
+  --> litestar/response/streaming.py:73:24
+   |
+73 |         self.iterator: AsyncIterable[str | bytes] | AsyncGenerator[str | bytes, None] = (
+   |                        -------------------------------------------------------------- Declared type
+74 |             iterator if isinstance(iterator, (AsyncIterable, AsyncIterator)) else AsyncIteratorWrapper(iterator)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Incompatible value of type `(Iterable[Unknown] & AsyncIterable[object]) | AsyncIterable[Unknown]`
+   |
+
+Found 13 diagnostics

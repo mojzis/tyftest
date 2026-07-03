@@ -1,0 +1,23 @@
+Cookies set directly on a returned Response object lose to route-level
+response_cookies when both use the same cookie key.
+
+A route handler can declare cookies declaratively via the handler's
+`response_cookies=[...]` option, and a handler body can also set cookies on
+the specific `Response` object it returns. When both define a cookie with the
+same key, the client ends up with the route-level value — the value set on
+the returned Response is silently discarded.
+
+Repro shape:
+
+```python
+@get("/test", response_cookies=[Cookie(key="test", value="1")])
+def handler() -> Response:
+    return Response(content=None, cookies=[Cookie(key="test", value="2")])
+
+# client.get("/test").cookies.get("test") comes back "1", expected "2"
+```
+
+Expected: the more specific setting wins — a cookie set on the Response
+instance the handler returned takes precedence over the route-level default
+for the same key. Cookies that only exist at one of the two levels keep
+working as before.

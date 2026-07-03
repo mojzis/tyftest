@@ -1,0 +1,10 @@
+task_id:      litestar-4833
+repo:         litestar-org/litestar
+pin_sha:      64aa84762
+fix_sha:      a51555af3
+prompt_file:  holdout/litestar-4833/prompt.txt
+gold_files:   litestar/_kwargs/kwargs_model.py,litestar/_openapi/path_item.py
+oracle_patch: holdout/litestar-4833/oracle.patch
+oracle_tests: []      # curate holdout/litestar-4833/oracle_tests.txt   (FAIL_TO_PASS)
+pass_to_pass: []      # curate holdout/litestar-4833/pass_to_pass.txt
+ty_status:    working

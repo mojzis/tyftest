@@ -1,0 +1,1 @@
+tests/unit/test_openapi/test_schema.py::test_msgspec_optional_annotated_meta_propagates

@@ -1,0 +1,41 @@
+Fields typed `T | None` without a default value are missing from the
+`required` array of generated OpenAPI schemas, even though a request that
+omits them is rejected at runtime.
+
+Being nullable and being optional are two different things: a field whose
+type allows `null` but which has no default still has to be sent by the
+client (possibly as an explicit null). Per OpenAPI 3.1 such a field belongs
+in `required` — and for Pydantic models the schema Litestar emits also
+disagrees with what the model's own `model_json_schema()` reports. The
+problem shows up for every model flavor (plain dataclasses, msgspec Structs,
+attrs classes, Pydantic models) as well as for query parameters declared
+directly in a handler signature.
+
+Repro shape:
+
+```python
+@dataclass
+class Person:
+    id: str
+    nickname: Optional[str]  # nullable, no default -> must be provided
+
+@post("/")
+def create_person(data: Person) -> Person:
+    return data
+
+# The generated component schema for Person lists only ["id"] in
+# "required"; expected ["id", "nickname"].
+
+@get("/items")
+def list_items(cursor: Optional[int]) -> None:  # nullable, no default
+    ...
+
+# The generated query parameter "cursor" comes out with required=False,
+# yet a request without it fails validation. Expected required=True.
+```
+
+Expected: whether a field or parameter is required is decided by the
+presence of a default, not by nullability. `T | None` with no default is
+required; `T | None = None` (or any other default) stays not required;
+non-nullable fields behave as before. An explicit `required=...` passed via
+`Parameter(...)` must keep winning over the inferred value.

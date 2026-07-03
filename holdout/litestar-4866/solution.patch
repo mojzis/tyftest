@@ -1,0 +1,171 @@
+diff --git a/litestar/response/base.py b/litestar/response/base.py
+index e512279dc..78015879f 100644
+--- a/litestar/response/base.py
++++ b/litestar/response/base.py
+@@ -386,6 +386,9 @@ class Response(Generic[T]):
+         except (AttributeError, ValueError, TypeError) as e:
+             raise ImproperlyConfiguredException("Unable to serialize response content") from e
+ 
++    def _merge_cookies(self, cookies: Iterable[Cookie] | None) -> Iterable[Cookie] | None:
++        return self.cookies if cookies is None else itertools.chain(cookies, self.cookies)
++
+     def to_asgi_response(
+         self,
+         request: Request,
+@@ -415,7 +418,6 @@ class Response(Generic[T]):
+         """
+ 
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+ 
+         if type_encoders:
+             type_encoders = {**type_encoders, **(self.response_type_encoders or {})}
+@@ -427,7 +429,7 @@ class Response(Generic[T]):
+         return ASGIResponse(
+             background=self.background or background,
+             body=self.render(self.content, media_type, get_serializer(type_encoders)),
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             headers=headers,
+             is_head_response=is_head_response,
+diff --git a/litestar/response/file.py b/litestar/response/file.py
+index f5d1d228a..baa49b92d 100644
+--- a/litestar/response/file.py
++++ b/litestar/response/file.py
+@@ -1,6 +1,5 @@
+ from __future__ import annotations
+ 
+-import itertools
+ from email.utils import formatdate
+ from mimetypes import encodings_map, guess_type
+ from typing import TYPE_CHECKING, Literal
+@@ -317,7 +316,6 @@ class File(Response):
+         """
+ 
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+ 
+         media_type = self.media_type or media_type
+         if media_type is not None:
+@@ -340,7 +338,7 @@ class File(Response):
+             chunk_size=self.chunk_size,
+             content_disposition_type=self.content_disposition_type,  # pyright: ignore[reportArgumentType]
+             content_length=0,
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             etag=self.etag,
+             file_info=self.file_info,
+diff --git a/litestar/response/redirect.py b/litestar/response/redirect.py
+index 414771d6e..1ee70ce5d 100644
+--- a/litestar/response/redirect.py
++++ b/litestar/response/redirect.py
+@@ -1,6 +1,5 @@
+ from __future__ import annotations
+ 
+-import itertools
+ from typing import TYPE_CHECKING, Any, Literal
+ from urllib.parse import urlencode
+ 
+@@ -150,7 +149,6 @@ class Redirect(Response[Any]):
+         type_encoders: TypeEncodersMap | None = None,
+     ) -> ASGIResponse:
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
+ 
+         return ASGIRedirectResponse(
+@@ -158,7 +156,7 @@ class Redirect(Response[Any]):
+             background=self.background or background,
+             body=b"",
+             content_length=None,
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             headers=headers,
+             is_head_response=is_head_response,
+diff --git a/litestar/response/sse.py b/litestar/response/sse.py
+index a760dbb55..7775d725c 100644
+--- a/litestar/response/sse.py
++++ b/litestar/response/sse.py
+@@ -1,6 +1,5 @@
+ from __future__ import annotations
+ 
+-import itertools
+ import re
+ from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
+ from dataclasses import dataclass
+@@ -292,14 +291,13 @@ class ServerSentEvent(Stream):
+             )
+ 
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
+ 
+         return ASGIStreamingSSEResponse(
+             ping_interval=self.ping_interval,
+             background=self.background or background,
+             content_length=0,
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             headers=headers,
+             is_head_response=is_head_response,
+diff --git a/litestar/response/streaming.py b/litestar/response/streaming.py
+index 1067cf647..2b52c00c7 100644
+--- a/litestar/response/streaming.py
++++ b/litestar/response/streaming.py
+@@ -1,6 +1,5 @@
+ from __future__ import annotations
+ 
+-import itertools
+ from collections.abc import AsyncGenerator, AsyncIterable, AsyncIterator, Callable, Iterable, Iterator
+ from functools import partial
+ from typing import TYPE_CHECKING, Any, Union
+@@ -198,7 +197,6 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
+         """
+ 
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+ 
+         media_type = get_enum_string_value(media_type or self.media_type or MediaType.JSON)
+ 
+@@ -209,7 +207,7 @@ class Stream(Response[StreamType[Union[str, bytes]]]):
+         return ASGIStreamingResponse(
+             background=self.background or background,
+             content_length=0,
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             headers=headers,
+             is_head_response=is_head_response,
+diff --git a/litestar/response/template.py b/litestar/response/template.py
+index 001d2bc02..f049d5ef0 100644
+--- a/litestar/response/template.py
++++ b/litestar/response/template.py
+@@ -1,7 +1,6 @@
+ from __future__ import annotations
+ 
+ import html
+-import itertools
+ from mimetypes import guess_type
+ from pathlib import PurePath
+ from typing import TYPE_CHECKING, Any, cast
+@@ -114,7 +113,6 @@ class Template(Response[bytes]):
+             raise ImproperlyConfiguredException("Template engine is not configured")
+ 
+         headers = {**headers, **self.headers} if headers is not None else self.headers
+-        cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
+ 
+         media_type = self.media_type or media_type
+         if not media_type:
+@@ -142,7 +140,7 @@ class Template(Response[bytes]):
+             background=self.background or background,
+             body=body,
+             content_length=None,
+-            cookies=cookies,
++            cookies=self._merge_cookies(cookies),
+             encoding=self.encoding,
+             headers=headers,
+             is_head_response=is_head_response,

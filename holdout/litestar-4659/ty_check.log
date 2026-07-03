@@ -1,0 +1,41 @@
+error[unresolved-attribute]: Attribute `append` is not defined on `str` in union `list[str] | str`
+   --> litestar/_kwargs/extractors.py:142:13
+    |
+142 |             output[k].append(v)  # type: ignore[union-attr]
+    |             ^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Invalid subscript assignment with key of type `str` and value of type `list[str | Any | UploadFile]` on object of type `dict[str, str | list[str] | UploadFile]`
+   --> litestar/_kwargs/extractors.py:382:13
+    |
+382 |             form_values[name] = [value]  # pyright: ignore
+    |             ^^^^^^^^^^^^^^^^^^^^-------
+    |                                 |
+    |                                 Expected value of type `str | list[str] | UploadFile`, got `list[str | Any | UploadFile]`
+    |
+info: The full type of the subscripted object is `dict[str, Any] | dict[str, str | list[str] | UploadFile]`
+
+error[invalid-assignment]: Object of type `dict[str, str | list[str]]` is not assignable to attribute `form` of type `dict[str, str | list[str] | UploadFile] | _EmptyEnum`
+   --> litestar/_kwargs/extractors.py:433:13
+    |
+433 |             scope_state.form = form_values = (  # type: ignore[assignment]
+    |             ^^^^^^^^^^^^^^^^
+    |
+info: type `dict[str, str | list[str]]` is not assignable to any element of the union `dict[str, str | list[str] | UploadFile] | _EmptyEnum`
+info: ├── element `UploadFile` of union `str | list[str] | UploadFile` is not assignable to `str | list[str]`
+info: └── ... omitted 1 union element without additional context
+
+error[invalid-return-type]: Return type does not match returned value
+   --> litestar/_kwargs/extractors.py:508:12
+    |
+508 |     return dto_extractor  # type:ignore[return-value]
+    |            ^^^^^^^^^^^^^ expected `(ASGIConnection[Any, Any, Any, Any], /) -> Coroutine[Any, Any, Any]`, found `def dto_extractor(connection: Request[Any, Any, Any]) -> CoroutineType[Any, Any, Any]`
+    |
+   ::: litestar/_kwargs/extractors.py:495:6
+    |
+495 | ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
+    |      ------------------------------------------------------------------------ Expected `(ASGIConnection[Any, Any, Any, Any], /) -> Coroutine[Any, Any, Any]` because of return type
+    |
+info: the first parameter has an incompatible type: `ASGIConnection[Any, Any, Any, Any]` is not assignable to `Request[Any, Any, Any]`
+
+Found 4 diagnostics

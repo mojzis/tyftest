@@ -9,7 +9,7 @@ export ROOT
 TYF_BIN="$ROOT/bin/tyf"
 
 # --- target repo (selectable) ---
-# Pick the repo to operate on with REPO=dlt|feast|dagster (default dlt, the pilot).
+# Pick the repo to operate on with REPO=dlt|feast|litestar|dagster (default dlt, the pilot).
 # Per-repo §0 facts (core dir, offline deps, test stack) live in the case block.
 # See docs/tyf-experiment-task-mining.md §0.
 REPO="${REPO:-dlt}"
@@ -61,6 +61,27 @@ case "$REPO" in
         upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
     }
     ;;
+  litestar)
+    REPO_SLUG="litestar-org/litestar"
+    REPO_URL="https://github.com/litestar-org/litestar"
+    REPO_CORE="litestar"                # core package dir for task mining
+    REPO_PKG="litestar"                 # import name
+    PY_VER="3.12"                       # lock supports 3.11+; 3.12 for wheel safety
+    OFFLINE_DEPS=""                     # offline = tests/unit, EXCEPT redis-parametrized
+                                        # cases (docker_service_fixtures) and
+                                        # tests/unit/test_testing/test_sub_client/ (spawns a
+                                        # real uvicorn subprocess). 4655 tests pass in ~60s.
+    # Pinned test stack = the repo's own uv.lock: `uv sync` with the dev+test
+    # dependency groups, targeted at the out-of-tree venv via UV_PROJECT_ENVIRONMENT.
+    # sync installs litestar editable from $REPO_SRC; drop it so cwd wins.
+    install_stack() {
+        ( cd "$REPO_SRC" && UV_PROJECT_ENVIRONMENT="$VENV" \
+            uv sync --locked --group dev --group test >/dev/null 2>&1 ) \
+            || log "WARN: uv sync of locked dev+test groups failed"
+        upin install ty $OFFLINE_DEPS >/dev/null
+        upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
+    }
+    ;;
   dagster)
     REPO_SLUG="dagster-io/dagster"
     REPO_URL="https://github.com/dagster-io/dagster"
@@ -74,7 +95,7 @@ case "$REPO" in
         upin uninstall "$REPO_PKG" >/dev/null 2>&1 || true
     }
     ;;
-  *) echo "unknown REPO=$REPO (want dlt|feast|dagster)" >&2; exit 1 ;;
+  *) echo "unknown REPO=$REPO (want dlt|feast|litestar|dagster)" >&2; exit 1 ;;
 esac
 REPO_SRC="$ROOT/repos/$REPO-src"        # pristine pinned clone
 VENV="$ROOT/repos/$REPO.venv"           # OUT-OF-TREE venv (survives per-run reset)

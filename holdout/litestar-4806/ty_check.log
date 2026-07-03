@@ -1,0 +1,39 @@
+error[invalid-assignment]: Object of type `dict[str, ((dict[str, Any], ASGIConnection[Unknown, Unknown, Unknown, Unknown], /) -> Awaitable[None]) | ((values: dict[str, Any], connection: Request[Any, Any, Any]) -> CoroutineType[Any, Any, None])]` is not assignable to `dict[str, (dict[str, Any], ASGIConnection[Unknown, Unknown, Unknown, Unknown], /) -> Awaitable[None]]`
+   --> litestar/_kwargs/kwargs_model.py:144:37
+    |
+144 |           reserved_kwargs_extractors: dict[str, Extractor] = {
+    |  _____________________________________--------------------___^
+    | |                                     |
+    | |                                     Declared type
+145 | |             "data": create_data_extractor(self),
+146 | |             "state": state_extractor,
+147 | |             "scope": scope_extractor,
+148 | |             "request": request_extractor,
+149 | |             "socket": socket_extractor,
+150 | |             "headers": headers_extractor,
+151 | |             "cookies": cookies_extractor,
+152 | |             "query": query_extractor,
+153 | |             "body": body_extractor,  # type: ignore[dict-item]
+154 | |         }
+    | |_________^ Incompatible value of type `dict[str, ((dict[str, Any], ASGIConnection[Unknown, Unknown, Unknown, Unknown], /) -> Awaitable[None]) | ((values: dict[str, Any], connection: Request[Any, Any, Any]) -> CoroutineType[Any, Any, None])]`
+    |
+info: element `(values: dict[str, Any], connection: Request[Any, Any, Any]) -> CoroutineType[Any, Any, None]` of union `((dict[str, Any], ASGIConnection[Unknown, Unknown, Unknown, Unknown], /) -> Awaitable[None]) | ((values: dict[str, Any], connection: Request[Any, Any, Any]) -> CoroutineType[Any, Any, None])` is not assignable to `(dict[str, Any], ASGIConnection[Unknown, Unknown, Unknown, Unknown], /) -> Awaitable[None]`
+info: └── the second parameter has an incompatible type: `ASGIConnection[Unknown, Unknown, Unknown, Unknown]` is not assignable to `Request[Any, Any, Any]`
+
+error[unresolved-attribute]: Object of type `BaseException` has no attribute `exceptions`
+   --> litestar/_kwargs/kwargs_model.py:443:27
+    |
+443 |                     raise excgroup.exceptions[0] from excgroup  # type: ignore[attr-defined]
+    |                           ^^^^^^^^^^^^^^^^^^^
+    |
+
+error[invalid-assignment]: Object of type `_EmptyEnum` is not assignable to `<module 'annotated_types'>`
+  --> litestar/typing.py:30:5
+   |
+30 |     annotated_types = Empty  # type: ignore[assignment]
+   |     ---------------   ^^^^^ Incompatible value of type `_EmptyEnum`
+   |     |
+   |     Declared type `<module 'annotated_types'>`
+   |
+
+Found 3 diagnostics

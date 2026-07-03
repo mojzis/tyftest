@@ -1,0 +1,2 @@
+tests/unit/test_kwargs/test_multipart_data.py::test_postman_multipart_form_data
+tests/unit/test_kwargs/test_multipart_data.py::test_image_upload

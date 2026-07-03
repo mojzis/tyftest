@@ -1,0 +1,10 @@
+task_id:      litestar-4866
+repo:         litestar-org/litestar
+pin_sha:      64aa84762
+fix_sha:      3eef8ae56
+prompt_file:  holdout/litestar-4866/prompt.txt
+gold_files:   litestar/response/base.py,litestar/response/file.py,litestar/response/redirect.py,litestar/response/sse.py,litestar/response/streaming.py,litestar/response/template.py
+oracle_patch: holdout/litestar-4866/oracle.patch
+oracle_tests: []      # curate holdout/litestar-4866/oracle_tests.txt   (FAIL_TO_PASS)
+pass_to_pass: []      # curate holdout/litestar-4866/pass_to_pass.txt
+ty_status:    working

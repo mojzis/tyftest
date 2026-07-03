@@ -1,0 +1,33 @@
+A POST endpoint whose request body is consumed only by an injected dependency
+ends up with no requestBody in the generated OpenAPI schema.
+
+When the handler function itself declares a `data` parameter, everything is
+fine. But if the handler leaves `data` to a dependency — the dependency
+declares `data`, parses the body, and passes a derived value to the handler —
+the endpoint still receives and validates the request body at runtime exactly
+as expected (wrong payloads get a 400), yet the documented schema for that
+operation is missing the request body entirely. Anyone consuming the OpenAPI
+document (generated clients, docs UI) sees an operation that appears to take
+no body.
+
+Repro shape:
+
+```python
+async def dependency_with_data(data: list[str]) -> list[str]:
+    return data
+
+@post("/", dependencies={"some_data": dependency_with_data})
+def handler(some_data: list[str]) -> None:
+    return
+
+app = Litestar([handler])
+app.openapi_schema.paths["/"].post.request_body
+# None — but a POST with a JSON body of the wrong shape still returns 400,
+# and a valid ["1", "2"] body reaches the dependency and handler fine
+```
+
+Expected: the OpenAPI operation documents the request body it actually
+accepts — here a required JSON body with schema `{"items": {"type": "string"},
+"type": "array"}`, taken from the `data` annotation of the dependency, since
+that is what the endpoint parses and validates at runtime. Handlers that
+declare `data` directly keep working as before.

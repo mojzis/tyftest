@@ -1,0 +1,2 @@
+tests/unit/test_openapi/test_responses.py::test_create_error_responses
+tests/unit/test_openapi/test_responses.py::test_create_error_responses_with_non_http_status_code

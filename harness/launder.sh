@@ -45,8 +45,14 @@ log "git laundered -> single 'Initial import' commit"
 # MissingDependencyException): not having them installed is the normal state.
 OPTIONAL_MODS='win_precise_time|winreg|_winapi|pwd|grp|airflow|connectorx'
 TY_STATUS="working"
+# Without an explicit version ty assumes the pyproject requires-python FLOOR,
+# which flags version-gated stdlib imports (e.g. typing.TypeAliasType behind
+# try/except on litestar) as unresolved even though the venv python has them.
+# Resolve for the interpreter the venv actually runs.
+TY_PY_VER="$("$VENV/bin/python" -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
 if [ -s "$HOLD/gold_files.txt" ]; then
-    VIRTUAL_ENV="$VENV" PATH="$VENV/bin:$PATH" "$VENV/bin/ty" check $(cat "$HOLD/gold_files.txt") \
+    VIRTUAL_ENV="$VENV" PATH="$VENV/bin:$PATH" "$VENV/bin/ty" check \
+        --python-version "$TY_PY_VER" $(cat "$HOLD/gold_files.txt") \
         > "$HOLD/ty_check.log" 2>&1 || true
     # real degradation = an unresolved import that is NOT a known platform-optional module
     if grep -E 'unresolved-import' "$HOLD/ty_check.log" \

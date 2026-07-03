@@ -1,0 +1,34 @@
+Submitting a multipart form without selecting a file gets rejected with a 400
+even though the handler declares the file field optional.
+
+When a browser submits a form that contains a file input the user left empty,
+the multipart body still carries a part for that field — with `filename=""`
+and an empty body. A handler that models the form with an
+`Optional[UploadFile]` field (defaulting to None) should accept such a
+request, but instead the request fails validation with a 400 client error.
+
+Repro shape:
+
+```python
+@dataclass
+class UploadForm:
+    file: Optional[UploadFile] = None
+
+@post("/", signature_namespace={"UploadForm": UploadForm, "UploadFile": UploadFile})
+async def handler(
+    data: Annotated[UploadForm, Body(media_type=RequestEncodingType.MULTI_PART)],
+) -> str:
+    return "none" if data.file is None else "file"
+
+# POST a multipart body containing one part:
+#   Content-Disposition: form-data; name="file"; filename=""
+#   Content-Type: application/octet-stream
+#   (empty content)
+# -> responds 400, expected 201 with body "none"
+```
+
+Expected: a multipart part with an empty filename and empty body counts as "no
+file submitted" for a field typed `Optional[UploadFile]` — the request
+succeeds and the field comes through as None. Submitting a real file to the
+same handler must keep working exactly as before (field populated with the
+upload).

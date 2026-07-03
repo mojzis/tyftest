@@ -1,0 +1,239 @@
+diff --git a/tests/unit/test_openapi/conftest.py b/tests/unit/test_openapi/conftest.py
+index d79142d83..db5a1d5f1 100644
+--- a/tests/unit/test_openapi/conftest.py
++++ b/tests/unit/test_openapi/conftest.py
+@@ -44,9 +44,11 @@ def create_person_controller() -> type[Controller]:
+             from_date: Optional[Union[int, datetime, date]] = None,
+             to_date: Optional[Union[int, datetime, date]] = None,
+             gender: Optional[Union[Gender, list[Gender]]] = Parameter(
+-                examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
++                required=False, examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
++            ),
++            lucky_number: Optional[LuckyNumber] = Parameter(
++                required=False, examples=[Example(value=LuckyNumber.SEVEN)]
+             ),
+-            lucky_number: Optional[LuckyNumber] = Parameter(examples=[Example(value=LuckyNumber.SEVEN)]),
+             # header parameter
+             secret_header: str = Parameter(header="secret"),
+             # cookie parameter
+diff --git a/tests/unit/test_openapi/test_parameters.py b/tests/unit/test_openapi/test_parameters.py
+index c6e9cfb65..ecd27b226 100644
+--- a/tests/unit/test_openapi/test_parameters.py
++++ b/tests/unit/test_openapi/test_parameters.py
+@@ -82,7 +82,7 @@ def test_create_parameters(person_controller: type[Controller]) -> None:
+     assert is_schema_value(name.schema)
+     assert name.schema.one_of
+     assert len(name.schema.one_of) == 3
+-    assert not name.required
++    assert name.required
+     assert name.schema.examples
+ 
+     assert from_date.param_in == ParamType.QUERY
+@@ -515,3 +515,33 @@ def test_two_parameters_but_one_not_included_in_schema() -> None:
+         parameter_names = {param["name"] for param in handler_schema["parameters"]}
+         assert "param1" in parameter_names
+         assert "param2" not in parameter_names
++
++
++@pytest.mark.parametrize(
++    ("annotation", "default", "expected_required"),
++    [
++        pytest.param(Optional[int], ..., True, id="nullable-no-default-is-required"),
++        pytest.param(Optional[int], None, False, id="nullable-with-default-is-not-required"),
++        pytest.param(int, ..., True, id="non-nullable-no-default-is-required"),
++        pytest.param(int, 0, False, id="non-nullable-with-default-is-not-required"),
++    ],
++)
++def test_nullable_query_param_required(annotation: Any, default: Any, expected_required: bool) -> None:
++    # https://github.com/litestar-org/litestar/issues/4673
++    if default is ...:
++
++        @get("/test")
++        def handler(param: annotation) -> None:  # pyright: ignore[reportInvalidTypeForm]
++            pass
++    else:
++
++        @get("/test")
++        def handler(param: annotation = default) -> None:  # pyright: ignore[reportInvalidTypeForm]
++            pass
++
++    with create_test_client(handler) as client:
++        path_item = client.app.openapi_schema.paths["/test"]  # type: ignore[index]
++        params = {p.name: p for p in (path_item.get.parameters or [])}  # type: ignore[union-attr]
++        param = params["param"]
++        assert not isinstance(param, Reference)
++        assert param.required is expected_required
+diff --git a/tests/unit/test_openapi/test_spec_generation.py b/tests/unit/test_openapi/test_spec_generation.py
+index 40623e91f..fc8132d63 100644
+--- a/tests/unit/test_openapi/test_spec_generation.py
++++ b/tests/unit/test_openapi/test_spec_generation.py
+@@ -47,7 +47,11 @@ def test_spec_generation(cls: Any) -> None:
+                 },
+             },
+             "type": "object",
+-            "required": ["complex", "first_name", "id", "last_name"],
++            "required": sorted(
++                ["complex", "first_name", "id", "last_name"]
++                + (["optional", "pets"] if cls is MsgSpecStructPerson else [])
++                + (["optional"] if cls is DataclassPerson else [])
++            ),
+             "title": f"{cls.__name__}",
+         }
+ 
+diff --git a/tests/unit/test_openapi/test_typescript_converter/test_converter.py b/tests/unit/test_openapi/test_typescript_converter/test_converter.py
+index 54c1d5d28..7e35de030 100644
+--- a/tests/unit/test_openapi/test_typescript_converter/test_converter.py
++++ b/tests/unit/test_openapi/test_typescript_converter/test_converter.py
+@@ -28,7 +28,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -173,7 +173,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -201,7 +201,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -223,7 +223,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -251,7 +251,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -269,7 +269,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -308,7 +308,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -333,7 +333,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	from_date?: null | number | string | string;
+ 	gender?: "A" | "F" | "M" | "O" | ("A" | "F" | "M" | "O")[] | null;
+ 	lucky_number?: 2 | 7 | null;
+-	name?: null | string | string[];
++	name: null | string | string[];
+ 	page: number;
+ 	pageSize: number;
+ 	to_date?: null | number | string | string;
+@@ -368,7 +368,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -447,7 +447,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+@@ -476,7 +476,7 @@ def test_openapi_to_typescript_converter(person_controller: type[Controller], pe
+ 	first_name: string;
+ 	id: string;
+ 	last_name: string;
+-	optional?: null | string;
++	optional: null | string;
+ 	pets?: null | {
+ 	age: number;
+ 	name: string;
+diff --git a/tests/unit/test_plugins/test_attrs/test_schema_spec_generation.py b/tests/unit/test_plugins/test_attrs/test_schema_spec_generation.py
+index e3a9b786b..60af5bd18 100644
+--- a/tests/unit/test_plugins/test_attrs/test_schema_spec_generation.py
++++ b/tests/unit/test_plugins/test_attrs/test_schema_spec_generation.py
+@@ -13,9 +13,9 @@ def test_spec_generation() -> None:
+         first_name: str
+         last_name: str
+         id: str
+-        optional: Optional[str]
+         complex: dict[str, list[dict[str, str]]]
+-        pets: Optional[list[DataclassPet]]
++        optional: Optional[str] = None
++        pets: Optional[list[DataclassPet]] = None
+ 
+     @post("/")
+     def handler(data: Person) -> Person:
+diff --git a/tests/unit/test_plugins/test_pydantic/test_openapi.py b/tests/unit/test_plugins/test_pydantic/test_openapi.py
+index ca185e1a4..4db952efa 100644
+--- a/tests/unit/test_plugins/test_pydantic/test_openapi.py
++++ b/tests/unit/test_plugins/test_pydantic/test_openapi.py
+@@ -323,7 +323,7 @@ def test_spec_generation(cls: Any) -> None:
+                 },
+             },
+             "type": "object",
+-            "required": ["complex", "first_name", "id", "last_name", "union"],
++            "required": ["complex", "first_name", "id", "last_name", "optional", "union"],
+             "title": f"{cls.__name__}",
+         }
+ 
+diff --git a/tests/unit/test_typing.py b/tests/unit/test_typing.py
+index af2ff01db..70901587e 100644
+--- a/tests/unit/test_typing.py
++++ b/tests/unit/test_typing.py
+@@ -349,13 +349,17 @@ def test_is_required() -> None:
+         is True
+     )
+ 
+-    assert FieldDefinition.from_annotation(Optional[str]).is_required is False
++    # Nullable type without a default is required (nullability != optionality)
++    nullable_field = FieldDefinition.from_annotation(Optional[str])
++    assert nullable_field.is_required is True
++    assert nullable_field.is_optional is True
+     assert FieldDefinition.from_annotation(str).is_required is True
+ 
+-    assert FieldDefinition.from_annotation(Any).is_required is False
++    assert FieldDefinition.from_annotation(Any).is_required is True
+ 
++    # from_annotation only sees the type, not the default value from the struct definition
+     assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_default"]).is_required is True
+-    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is False
++    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is True
+ 
+ 
+ def test_field_definition_bound_type() -> None:

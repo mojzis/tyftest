@@ -1,0 +1,39 @@
+Metadata attached to an optional msgspec Struct field via
+`Annotated[..., msgspec.Meta(...)]` silently disappears from the generated
+OpenAPI schema.
+
+When a msgspec Struct is used as a request body, field-level `msgspec.Meta`
+carries description, examples, title, and validation constraints into the
+OpenAPI schema for that field. That works for a plain annotated field, but as
+soon as the same field is made optional (`Optional[Annotated[T,
+msgspec.Meta(...)]]`, i.e. it may also be None), everything from the Meta is
+dropped: no description, no examples, and constraints such as gt/le or
+min_length/max_length/pattern never appear on the property in the schema.
+
+Repro shape:
+
+```python
+from typing import Annotated, Optional
+import msgspec
+from litestar import post
+
+class Body(msgspec.Struct):
+    required_field: Annotated[str, msgspec.Meta(description="d", examples=["ex"])]
+    optional_field: Optional[Annotated[str, msgspec.Meta(description="d2", examples=["ex2"])]] = None
+    optional_int: Optional[Annotated[int, msgspec.Meta(gt=1, le=100)]] = None
+    optional_str: Optional[Annotated[str, msgspec.Meta(min_length=2, max_length=8, pattern="^[a-z]+$")]] = None
+
+@post("/thing")
+async def handler(data: Body) -> None: ...
+
+# In the generated OpenAPI schema:
+#   required_field carries description "d" and examples ["ex"]  (correct)
+#   optional_field has no description and no examples at all
+#   optional_int is missing exclusiveMinimum/maximum
+#   optional_str is missing minLength/maxLength/pattern
+```
+
+Expected: an optional annotated field propagates its Meta exactly like the
+required one does — description, examples, title, and the numeric/string
+constraints all land on that property's schema; only the nullability should
+differ.

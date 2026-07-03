@@ -1,0 +1,2 @@
+tests/unit/test_openapi/test_schema.py::test_create_schema_from_msgspec_annotated_type
+tests/unit/test_openapi/test_schema.py::test_annotated_types
