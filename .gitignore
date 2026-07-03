@@ -13,3 +13,7 @@ __pycache__/
 
 # Keep the tracked record: docs/, holdout/, harness/, results/*.jsonl,
 # TOOL_VERSION.md, README.md
+
+# marimo session/output cache
+notebooks/__marimo__/
+__marimo__/
